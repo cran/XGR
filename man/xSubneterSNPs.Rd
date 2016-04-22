@@ -105,7 +105,8 @@ displayed in the screen. By default, it sets to true for display}
 RData files. See \code{\link{xRDataLoader}} for details}
 }
 \value{
-a subgraph with a maximum score, an object of class "igraph"
+a subgraph with a maximum score, an object of class "igraph". It has
+ndoe attributes: signficance, score
 }
 \description{
 \code{xSubneterSNPs} is supposed to identify maximum-scoring gene
@@ -155,7 +156,7 @@ utils::write.table(output, file="subnet_nodes.txt", sep="\\t",
 row.names=FALSE)
 
 # d) visualise the identified subnet
-## do visualisation with nodes colored according to the significance (you provide)
+## do visualisation with nodes colored according to the significance
 xVisNet(g=subnet, pattern=-log10(as.numeric(V(subnet)$significance)),
 vertex.shape="sphere", colormap="wyr")
 ## do visualisation with nodes colored according to transformed scores
