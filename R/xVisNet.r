@@ -34,10 +34,10 @@
 #' # 2a) visualise in one go
 #' xVisNet(g=g, vertex.shape="sphere", glayout=layout_with_kk)
 #' # 2b) visualise the graph with layout first calculated
-#' glayout <- layout_(g, with_kk(), normalize(), component_wise())
+#' glayout <- layout_(g, with_kk(), component_wise())
 #' xVisNet(g=g, vertex.shape="sphere", glayout=glayout)
 #' # 2c) visualise the graph with layout appended to the graph itself
-#' g <- add_layout_(g, with_kk(), normalize(), component_wise())
+#' g <- add_layout_(g, with_kk(), component_wise())
 #' xVisNet(g=g, vertex.shape="sphere")
 #'
 #' # 4) visualise the graph with vertices being color-coded by the pattern
@@ -45,7 +45,7 @@
 #' names(pattern) <- V(g)$name
 #' xVisNet(g=g, pattern=pattern, colormap="bwr", vertex.shape="sphere")
 
-xVisNet <- function(g, pattern=NULL, colormap=c("yr","jet","gbr","wyr","br","bwr","rainbow","wb"), ncolors=40, zlim=NULL, colorbar=T, newpage=T, glayout=layout_nicely, vertex.frame.color=NA, vertex.size=NULL, vertex.color=NULL, vertex.shape=NULL, vertex.label=NULL, vertex.label.cex=NULL, vertex.label.dist=NULL, vertex.label.color="black", edge.arrow.size=0.8, ...)
+xVisNet <- function(g, pattern=NULL, colormap=c("yr","jet","gbr","wyr","br","bwr","rainbow","wb"), ncolors=40, zlim=NULL, colorbar=T, newpage=T, glayout=layout_with_kk, vertex.frame.color=NA, vertex.size=NULL, vertex.color=NULL, vertex.shape=NULL, vertex.label=NULL, vertex.label.cex=NULL, vertex.label.dist=0.3, vertex.label.color="blue", edge.arrow.size=0.3, ...)
 {
     
     if (class(g) != "igraph"){
@@ -63,6 +63,16 @@ xVisNet <- function(g, pattern=NULL, colormap=c("yr","jet","gbr","wyr","br","bwr
     		#dev.off()
     	}
     }
+    
+    if(!is.null(pattern)){
+		pattern[is.infinite(pattern)] <- max(pattern[!is.infinite(pattern)])
+		if(is.null(zlim)){
+			vmax <- ceiling(stats::quantile(pattern, 0.75))
+			vmin <- floor(min(pattern))
+			zlim <- c(vmin, vmax)
+		}
+    }
+    
     
     par_old <- graphics::par()
     

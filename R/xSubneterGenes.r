@@ -20,8 +20,7 @@
 #' \dontrun{
 #' # Load the library
 #' library(XGR)
-#' library(igraph)
-#' library(dnet)
+#' RData.location="~/Sites/SVN/github/RDataCentre/Portal"
 #'
 #' # a) provide the input nodes/genes with the significance info
 #' ## load human genes
@@ -33,7 +32,7 @@
 #' # b1) find maximum-scoring subnet based on the given significance threshold
 #' subnet <- xSubneterGenes(data=data, network="STRING_high", subnet.significance=0.01)
 #' # b2) find maximum-scoring subnet with the desired node number=50
-#' subnet <- xSubneterGenes(data=data, network="STRING_high", subnet.size=50)
+#' subnet <- xSubneterGenes(data=data, network="STRING_high", subnet.size=50, RData.location=RData.location)
 #'
 #' # c) save subnet results to the files called 'subnet_edges.txt' and 'subnet_nodes.txt'
 #' output <- igraph::get.data.frame(subnet, what="edges")
@@ -49,11 +48,10 @@
 #' 
 #' # e) visualise the identified subnet as a circos plot
 #' library(RCircos)
-#' library(GenomicRanges)
 #' xCircos(g=subnet, entity="Gene")
 #' }
 
-xSubneterGenes <- function(data, network=c("STRING_highest","STRING_high","STRING_medium","PCommonsUN_high","PCommonsUN_medium","PCommonsDN_high","PCommonsDN_medium","PCommonsDN_Reactome","PCommonsDN_KEGG","PCommonsDN_HumanCyc","PCommonsDN_PID","PCommonsDN_PANTHER","PCommonsDN_ReconX","PCommonsDN_TRANSFAC","PCommonsDN_PhosphoSite","PCommonsDN_CTD"), network.customised=NULL, seed.genes=T, subnet.significance=0.01, subnet.size=NULL, verbose=T, RData.location="https://github.com/hfang-bristol/RDataCentre/blob/master/XGR/1.0.0")
+xSubneterGenes <- function(data, network=c("STRING_highest","STRING_high","STRING_medium","PCommonsUN_high","PCommonsUN_medium","PCommonsDN_high","PCommonsDN_medium","PCommonsDN_Reactome","PCommonsDN_KEGG","PCommonsDN_HumanCyc","PCommonsDN_PID","PCommonsDN_PANTHER","PCommonsDN_ReconX","PCommonsDN_TRANSFAC","PCommonsDN_PhosphoSite","PCommonsDN_CTD"), network.customised=NULL, seed.genes=T, subnet.significance=0.01, subnet.size=NULL, verbose=T, RData.location="https://github.com/hfang-bristol/RDataCentre/blob/master/Portal")
 {
 
     startT <- Sys.time()

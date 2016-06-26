@@ -13,7 +13,7 @@ fast = TRUE, parallel = TRUE, multicores = NULL,
 path.mode = c("all_paths", "shortest_paths", "all_shortest_paths"),
 true.path.rule = T, verbose = T,
 RData.location =
-"https://github.com/hfang-bristol/RDataCentre/blob/master/XGR/1.0.0")
+"https://github.com/hfang-bristol/RDataCentre/blob/master/Portal")
 }
 \arguments{
 \item{data}{an input vector. It contains a list of SNPs of interest}
@@ -57,16 +57,15 @@ maximum of the pre-calculated average between two SNPs in pair),
 complete-linkage concept: the least of any maximum similarity between a
 term of one SNP and a term of the other SNP). When comparing BM-based
 similarity between SNPs, "BM.average" and "BM.max" are sensitive to the
-number of terms invovled; instead, "BM.complete" is much robust in this
+number of terms involved; instead, "BM.complete" is much robust in this
 aspect. By default, it uses "BM.average"}
 
 \item{method.term}{the method used to measure semantic similarity
 between terms. It can be "Resnik" for information content (IC) of most
 informative common ancestor (MICA) (see
 \url{http://dl.acm.org/citation.cfm?id=1625914}), "Lin" for 2*IC at
-MICA divided by the sum of IC at pairs of terms (see
-\url{https://www.cse.iitb.ac.in/~cs626-449/Papers/WordSimilarity/3.pdf}),
-"Schlicker" for weighted version of 'Lin' by the 1-prob(MICA) (see
+MICA divided by the sum of IC at pairs of terms, "Schlicker" for
+weighted version of 'Lin' by the 1-prob(MICA) (see
 \url{http://www.ncbi.nlm.nih.gov/pubmed/16776819}), "Jiang" for 1 -
 difference between the sum of IC at pairs of terms and 2*IC at MICA
 (see \url{http://arxiv.org/pdf/cmp-lg/9709008.pdf}), "Pesquita" for
@@ -122,8 +121,9 @@ RData files. See \code{\link{xRDataLoader}} for details}
 }
 \value{
 It returns an object of class "igraph", with nodes for input SNPs and
-edges for pair-wise semantic similarity between them. If no similarity
-is calculuated, it returns NULL.
+edges for pair-wise semantic similarity between them. Also added graph
+attribute is 'dag' storing the annotated ontology DAG used. If no
+similarity is calculuated, it returns NULL.
 }
 \description{
 \code{xSocialiserSNPs} is supposed to calculate pair-wise semantic
@@ -147,7 +147,7 @@ subgraph.
 \dontrun{
 # Load the library
 library(XGR)
-library(igraph)
+RData.location="~/Sites/SVN/github/RDataCentre/Portal"
 
 # SNP-based similarity analysis using GWAS Catalog traits (mapped to EF)
 # a) provide the input SNPs of interest (eg 8 randomly chosen SNPs)
@@ -157,11 +157,11 @@ data <- sample(allSNPs,8)
 data
 
 # b) perform similarity analysis
-sim <- xSocialiserSNPs(data=data)
+sim <- xSocialiserSNPs(data=data, RData.location=RData.location)
 
 # b') optionally, enrichment analysis for input SNPs plus their LD SNPs
 ## LD based on European population (EUR) with r2>=0.8
-#sim <- xSocialiserSNPs(data=data, include.LD="EUR", LD.r2=0.8)
+#sim <- xSocialiserSNPs(data=data, include.LD="EUR", LD.r2=0.8, RData.location=RData.location)
 
 # c) save similarity results to the file called 'EF_similarity.txt'
 output <- igraph::get.data.frame(sim, what="edges")

@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Function to make enrichment results conciser by removing...</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+
+<table width="100%" summary="page for xEnrichConciser"><tr><td>xEnrichConciser</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Function to make enrichment results conciser by removing redundant terms</h2>
+
+<h3>Description</h3>
+
+<p><code>xEnrichConciser</code> is supposed to make enrichment results conciser
+by removing redundant terms. A redundant term (called 'B') is claimed
+if its overlapped part (A&amp;B) with a more significant term (called 'A')
+meets both criteria: 1) |A&amp;B| &gt; 0.9*|B|; and 2) |A&amp;B| &lt; 0.5*|A|.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+xEnrichConciser(eTerm, cutoff = c(0.9, 0.5), verbose = T)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>eTerm</code></td>
+<td>
+<p>an object of class &quot;eTerm&quot;</p>
+</td></tr>
+<tr valign="top"><td><code>cutoff</code></td>
+<td>
+<p>a cutoff vector used to remove redunant terms. By
+default, it has the first element 0.9 and the second element 0.5. It
+means, for a term (less significant; called 'B'), if there is a more
+significant term (called 'A'), their overlapped members cover at least
+90
+term B will be defined as redundant and thus being removed</p>
+</td></tr>
+<tr valign="top"><td><code>verbose</code></td>
+<td>
+<p>logical to indicate whether the messages will be
+displayed in the screen. By default, it sets to false for no display</p>
+</td></tr>
+</table>
+
+
+<h3>Value</h3>
+
+<p>an object of class &quot;eTerm&quot;, after redundant terms being removed.
+</p>
+
+
+<h3>Note</h3>
+
+<p>none
+</p>
+
+
+<h3>See Also</h3>
+
+<p><code>xEnricherGenes</code>, <code>xEnricherSNPs</code>
+</p>
+
+
+<h3>Examples</h3>
+
+<pre>
+## Not run: 
+eTerm_concise &lt;- xEnrichConciser(eTerm)
+
+## End(Not run)
+</pre>
+
+
+</body></html>

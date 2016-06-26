@@ -5,8 +5,8 @@
 #' @param data an input vector containing a list of genes or SNPs of interest between which pair-wise semantic similarity is calculated/socialized
 #' @param annotation the vertices/nodes for which annotation data are provided. It can be a sparse Matrix of class "dgCMatrix" (with variants/genes as rows and terms as columns), or a list of nodes/terms each containing annotation data, or an object of class 'GS' (basically a list for each node/term with annotation data)
 #' @param g an object of class "igraph" to represent DAG. It must have node/vertice attributes: "name" (i.e. "Term ID"), "term_id" (i.e. "Term ID"), "term_name" (i.e "Term Name") and "term_distance" (i.e. Term Distance: the distance to the root; always 0 for the root itself)
-#' @param measure the measure used to derive semantic similarity between genes/SNPs from semantic similarity between terms. Take the semantic similartity between SNPs as an example. It can be "average" for average similarity between any two terms (one from SNP 1, the other from SNP 2), "max" for the maximum similarity between any two terms, "BM.average" for best-matching (BM) based average similarity (i.e. for each term of either SNP, first calculate maximum similarity to any term in the other SNP, then take average of maximum similarity; the final BM-based average similiary is the pre-calculated average between two SNPs in pair), "BM.max" for BM based maximum similarity (i.e. the same as "BM.average", but the final BM-based maximum similiary is the maximum of the pre-calculated average between two SNPs in pair), "BM.complete" for BM-based complete-linkage similarity (inspired by complete-linkage concept: the least of any maximum similarity between a term of one SNP and a term of the other SNP). When comparing BM-based similarity between SNPs, "BM.average" and "BM.max" are sensitive to the number of terms invovled; instead, "BM.complete" is much robust in this aspect. By default, it uses "BM.average"
-#' @param method.term the method used to measure semantic similarity between terms. It can be "Resnik" for information content (IC) of most informative common ancestor (MICA) (see \url{http://dl.acm.org/citation.cfm?id=1625914}), "Lin" for 2*IC at MICA divided by the sum of IC at pairs of terms (see \url{https://www.cse.iitb.ac.in/~cs626-449/Papers/WordSimilarity/3.pdf}), "Schlicker" for weighted version of 'Lin' by the 1-prob(MICA) (see \url{http://www.ncbi.nlm.nih.gov/pubmed/16776819}), "Jiang" for 1 - difference between the sum of IC at pairs of terms and 2*IC at MICA (see \url{http://arxiv.org/pdf/cmp-lg/9709008.pdf}), "Pesquita" for graph information content similarity related to Tanimoto-Jacard index (ie. summed information content of common ancestors divided by summed information content of all ancestors of term1 and term2 (see \url{http://www.ncbi.nlm.nih.gov/pubmed/18460186}))
+#' @param measure the measure used to derive semantic similarity between genes/SNPs from semantic similarity between terms. Take the semantic similartity between SNPs as an example. It can be "average" for average similarity between any two terms (one from SNP 1, the other from SNP 2), "max" for the maximum similarity between any two terms, "BM.average" for best-matching (BM) based average similarity (i.e. for each term of either SNP, first calculate maximum similarity to any term in the other SNP, then take average of maximum similarity; the final BM-based average similiary is the pre-calculated average between two SNPs in pair), "BM.max" for BM based maximum similarity (i.e. the same as "BM.average", but the final BM-based maximum similiary is the maximum of the pre-calculated average between two SNPs in pair), "BM.complete" for BM-based complete-linkage similarity (inspired by complete-linkage concept: the least of any maximum similarity between a term of one SNP and a term of the other SNP). When comparing BM-based similarity between SNPs, "BM.average" and "BM.max" are sensitive to the number of terms involved; instead, "BM.complete" is much robust in this aspect. By default, it uses "BM.average"
+#' @param method.term the method used to measure semantic similarity between terms. It can be "Resnik" for information content (IC) of most informative common ancestor (MICA) (see \url{http://dl.acm.org/citation.cfm?id=1625914}), "Lin" for 2*IC at MICA divided by the sum of IC at pairs of terms, "Schlicker" for weighted version of 'Lin' by the 1-prob(MICA) (see \url{http://www.ncbi.nlm.nih.gov/pubmed/16776819}), "Jiang" for 1 - difference between the sum of IC at pairs of terms and 2*IC at MICA (see \url{http://arxiv.org/pdf/cmp-lg/9709008.pdf}), "Pesquita" for graph information content similarity related to Tanimoto-Jacard index (ie. summed information content of common ancestors divided by summed information content of all ancestors of term1 and term2 (see \url{http://www.ncbi.nlm.nih.gov/pubmed/18460186}))
 #' @param rescale logical to indicate whether the resulting values are rescaled to the range [0,1]. By default, it sets to true
 #' @param force logical to indicate whether the only most specific terms (for each SNP) will be used. By default, it sets to true. It is always advisable to use this since it is computationally fast but without compromising accuracy (considering the fact that true-path-rule has been applied when running \code{\link{xDAGanno}})
 #' @param fast logical to indicate whether a vectorised fast computation is used. By default, it sets to true. It is always advisable to use this vectorised fast computation; since the conventional computation is just used for understanding scripts
@@ -16,7 +16,7 @@
 #' @param true.path.rule logical to indicate whether the true-path rule should be applied to propagate annotations. By default, it sets to true
 #' @param verbose logical to indicate whether the messages will be displayed in the screen. By default, it sets to true for display
 #' @return 
-#' It returns an object of class "igraph", with nodes for input genes/SNPs and edges for pair-wise semantic similarity between them. If no similarity is calculuated, it returns NULL.
+#' It returns an object of class "igraph", with nodes for input genes/SNPs and edges for pair-wise semantic similarity between them. Also added graph attribute is 'dag' storing the annotated ontology DAG used. If no similarity is calculuated, it returns NULL.
 #' @note For the mode "shortest_paths", the induced subgraph is the most concise, and thus informative for visualisation when there are many nodes in query, while the mode "all_paths" results in the complete subgraph.
 #' @export
 #' @import Matrix
@@ -26,7 +26,6 @@
 #' \dontrun{
 #' # Load the library
 #' library(XGR)
-#' library(igraph)
 #' 
 #' # 1) SNP-based enrichment analysis using GWAS Catalog traits (mapped to EF)
 #' # 1a) ig.EF (an object of class "igraph" storing as a directed graph)
@@ -140,7 +139,7 @@ xSocialiser <- function(data, annotation, g, measure=c("BM.average","BM.max","BM
     }
     
     ## a list of SNPs, each containing terms annotated by
-    SNPs2terms <- sapply(1:length(SNPs), function(x){
+    SNPs2terms <- lapply(1:length(SNPs), function(x){
         res <- names(which(sGT[x,]==1))
         if(force){
             subg <- dnet::dDAGinduce(ig, nodes_query=res, path.mode="all_paths")
@@ -152,7 +151,7 @@ xSocialiser <- function(data, annotation, g, measure=c("BM.average","BM.max","BM
     terms <- unique(unlist(SNPs2terms))
     
     ## also instore index for terms (in SNPs2terms)
-    SNPs2terms_index <- sapply(SNPs2terms, function(x){
+    SNPs2terms_index <- lapply(SNPs2terms, function(x){
         match(x, terms)
     })
     
@@ -440,7 +439,7 @@ xSocialiser <- function(data, annotation, g, measure=c("BM.average","BM.max","BM
 	
 		if(verbose){
 			now <- Sys.time()
-			message(sprintf("Also rescale similarity into the [0,1] range (%s)", nrow(sim), as.character(now)), appendLF=T)
+			message(sprintf("Also rescale similarity into the [0,1] range (%s)", as.character(now)), appendLF=T)
 		}
 	
 		# rescale to [0 1]
@@ -456,6 +455,9 @@ xSocialiser <- function(data, annotation, g, measure=c("BM.average","BM.max","BM
     
     if (class(sim) == "dgCMatrix" | class(sim) == "dsCMatrix"){
     	res <- xConverter(sim, from="dgCMatrix", to="igraph", verbose=F)
+    	
+		## append a graph attribute 'dag' storing the underlying annotated ontology DAG
+		res$dag <- ig
     }
     
     ## no edges

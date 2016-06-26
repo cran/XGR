@@ -4,24 +4,29 @@
 \alias{xSubneterSNPs}
 \title{Function to identify a gene network from an input network given a list of seed SNPs together with the significance level (e.g. GWAS reported p-values)}
 \usage{
-xSubneterSNPs(data, include.LD = NA, LD.r2 = 0.8,
-network = c("STRING_highest", "STRING_high", "STRING_medium",
-"PCommonsUN_high", "PCommonsUN_medium", "PCommonsDN_high",
+xSubneterSNPs(data, include.LD = NA, LD.customised = NULL, LD.r2 = 0.8,
+significance.threshold = 5e-05, distance.max = 2e+05,
+decay.kernel = c("slow", "linear", "rapid"), decay.exponent = 2,
+GR.SNP = "dbSNP_GWAS", GR.Gene = "UCSC_genes", scoring.scheme =
+c("max",
+"sum", "sequential"), network = c("STRING_highest", "STRING_high",
+"STRING_medium", "PCommonsUN_high", "PCommonsUN_medium",
+"PCommonsDN_high",
 "PCommonsDN_medium", "PCommonsDN_Reactome", "PCommonsDN_KEGG",
 "PCommonsDN_HumanCyc", "PCommonsDN_PID", "PCommonsDN_PANTHER",
 "PCommonsDN_ReconX", "PCommonsDN_TRANSFAC", "PCommonsDN_PhosphoSite",
-"PCommonsDN_CTD"), network.customised = NULL, distance.max = 2e+05,
-seed.genes = T, subnet.significance = 5e-05, subnet.size = NULL,
-verbose = T,
+"PCommonsDN_CTD"), network.customised = NULL, seed.genes = T,
+subnet.significance = 5e-05, subnet.size = NULL, verbose = T,
 RData.location =
-"https://github.com/hfang-bristol/RDataCentre/blob/master/XGR/1.0.0")
+"https://github.com/hfang-bristol/RDataCentre/blob/master/Portal")
 }
 \arguments{
 \item{data}{a named input vector containing the sinificance level for
-nodes (dbSNP). For this named vector, the element names are dbSNP, the
-element values for the significance level (measured as p-value or fdr).
-Alternatively, it can be a matrix or data frame with two columns: 1st
-column for dbSNP, 2nd column for the significance level}
+nodes (dbSNP). For this named vector, the element names are dbSNP ID
+(or in the format such as 'chr16:28525386'), the element values for the
+significance level (measured as p-value or fdr). Alternatively, it can
+be a matrix or data frame with two columns: 1st column for dbSNP, 2nd
+column for the significance level}
 
 \item{include.LD}{additional SNPs in LD with Lead SNPs are also
 included. By default, it is 'NA' to disable this option. Otherwise, LD
@@ -34,9 +39,60 @@ population can be one of 5 super populations ("AFR", "AMR", "EAS",
 "TSI", "YRI"). Explanations for population code can be found at
 \url{http://www.1000genomes.org/faq/which-populations-are-part-your-study}}
 
+\item{LD.customised}{a user-input matrix or data frame with 3 columns:
+1st column for Lead SNPs, 2nd column for LD SNPs, and 3rd for LD r2
+value. It is designed to allow the user analysing their precalcuated LD
+info. This customisation (if provided) has the high priority over
+built-in LD SNPs}
+
 \item{LD.r2}{the LD r2 value. By default, it is 0.8, meaning that SNPs
 in LD (r2>=0.8) with input SNPs will be considered as LD SNPs. It can
 be any value from 0.8 to 1}
+
+\item{significance.threshold}{the given significance threshold. By
+default, it is set to NULL, meaning there is no constraint on the
+significance level when transforming the significance level of SNPs
+into scores. If given, those SNPs below this are considered significant
+and thus scored positively. Instead, those above this are considered
+insigificant and thus receive no score}
+
+\item{distance.max}{the maximum distance between genes and SNPs. Only
+those genes no far way from this distance will be considered as seed
+genes. This parameter will influence the distance-component weights
+calculated for nearby SNPs per gene}
+
+\item{decay.kernel}{a character specifying a decay kernel function. It
+can be one of 'slow' for slow decay, 'linear' for linear decay, and
+'rapid' for rapid decay}
+
+\item{decay.exponent}{an integer specifying a decay exponent. By
+default, it sets to 2}
+
+\item{GR.SNP}{the genomic regions of SNPs. By default, it is
+'dbSNP_GWAS', that is, SNPs from dbSNP (version 146) restricted to GWAS
+SNPs and their LD SNPs (hg19). It can be 'dbSNP_Common', that is,
+Common SNPs from dbSNP (version 146) plus GWAS SNPs and their LD SNPs
+(hg19). Alternatively, the user can specify the customised input. To do
+so, first save your RData file (containing an GR object) into your
+local computer, and make sure the GR object content names refer to
+dbSNP IDs. Then, tell "GR.SNP" with your RData file name (with or
+without extension), plus specify your file RData path in
+"RData.location"}
+
+\item{GR.Gene}{the genomic regions of genes. By default, it is
+'UCSC_genes', that is, UCSC known canonical genes (together with
+genomic locations) based on human genome assembly hg19. Even the user
+can specify the customised input. To do so, first save your RData file
+(containing an GR object) into your local computer, and make sure the
+GR object content names refer to Gene Symbols. Then, tell "GR.Gene"
+with your RData file name (with or without extension), plus specify
+your file RData path in "RData.location"}
+
+\item{scoring.scheme}{the method used to calculate seed gene scores
+under a set of SNPs. It can be one of "sum" for adding up, "max" for
+the maximum, and "sequential" for the sequential weighting. The
+sequential weighting is done via: \eqn{\sum_{i=1}{\frac{R_{i}}{i}}},
+where \eqn{R_{i}} is the \eqn{i^{th}} rank (in a descreasing order)}
 
 \item{network}{the built-in network. Currently two sources of network
 information are supported: the STRING database (version 10) and the
@@ -74,11 +130,6 @@ network data that are not listed in the above argument 'network'. This
 customisation (if provided) has the high priority over built-in
 network}
 
-\item{distance.max}{the maximum distance between genes and SNPs. Only
-those genes no far way from this distance will be considered as seed
-genes. This parameter will influence the distance-component weights
-calculated for nearby SNPs per gene}
-
 \item{seed.genes}{logical to indicate whether the identified network is
 restricted to seed genes (ie nearby genes that are located within
 defined distance window centred on lead or LD SNPs). By default, it
@@ -106,46 +157,44 @@ RData files. See \code{\link{xRDataLoader}} for details}
 }
 \value{
 a subgraph with a maximum score, an object of class "igraph". It has
-ndoe attributes: signficance, score
+ndoe attributes: significance, score
 }
 \description{
 \code{xSubneterSNPs} is supposed to identify maximum-scoring gene
 subnetwork from an input graph with the node information on the
 significance (measured as p-values or fdr). To do so, it defines seed
-genes and their weights that take into account the distance to and the
+genes and their scores that take into account the distance to and the
 significance of input SNPs. It returns an object of class "igraph".
 }
 \note{
 The algorithm identifying a gene subnetwork that is likely modulated by
 input SNPs and/or their LD SNPs includes two major steps. The first
-step is to define and score nearby genes that are located within
-distance window of input and/or LD SNPs. The second step is to use
-\code{\link{xSubneterGenes}} for identifying a maximum-scoring gene
-subnetwork that contains as many highly scored genes as possible but a
-few lowly scored genes as linkers.
+step is to use \code{\link{xSNP2GeneScores}} for defining and scoring
+nearby genes that are located within distance window of input and/or LD
+SNPs. The second step is to use \code{\link{xSubneterGenes}} for
+identifying a maximum-scoring gene subnetwork that contains as many
+highly scored genes as possible but a few less scored genes as linkers.
 }
 \examples{
 \dontrun{
 # Load the library
 library(XGR)
-library(igraph)
-library(dnet)
-library(GenomicRanges)
+RData.location="~/Sites/SVN/github/RDataCentre/Portal"
 
 # a) provide the seed SNPs with the weight info
 ## load ImmunoBase
 ImmunoBase <- xRDataLoader(RData.customised='ImmunoBase')
 ## get lead SNPs reported in AS GWAS and their significance info (p-values)
 gr <- ImmunoBase$AS$variant
-seeds.snps <- as.matrix(mcols(gr)[,c(1,3)])
+data <- GenomicRanges::mcols(gr)[,c(1,3)]
 
 # b) perform network analysis
 # b1) find maximum-scoring subnet based on the given significance threshold
-subnet <- xSubneterSNPs(data=seeds.snps, network="STRING_high",
-seed.genes=F, subnet.significance=0.01)
-# b2) find maximum-scoring subnet with the desired node number=50
-subnet <- xSubneterSNPs(data=data, network="STRING_high",
-subnet.size=50)
+subnet <- xSubneterSNPs(data=data, network="STRING_high", seed.genes=F,
+subnet.significance=0.01, RData.location=RData.location)
+# b2) find maximum-scoring subnet with the desired node number=30
+subnet <- xSubneterSNPs(data=data, network="STRING_high", seed.genes=F,
+subnet.size=30)
 
 # c) save subnet results to the files called 'subnet_edges.txt' and 'subnet_nodes.txt'
 output <- igraph::get.data.frame(subnet, what="edges")
@@ -164,10 +213,10 @@ xVisNet(g=subnet, pattern=V(subnet)$score, vertex.shape="sphere")
 
 # e) visualise the identified subnet as a circos plot
 library(RCircos)
-xCircos(g=subnet, entity="Gene")
+xCircos(g=subnet, entity="Gene", RData.location=RData.location)
 }
 }
 \seealso{
-\code{\link{xSubneterGenes}}
+\code{\link{xSNP2GeneScores}}, \code{\link{xSubneterGenes}}
 }
 

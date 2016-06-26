@@ -43,16 +43,15 @@ maximum of the pre-calculated average between two SNPs in pair),
 complete-linkage concept: the least of any maximum similarity between a
 term of one SNP and a term of the other SNP). When comparing BM-based
 similarity between SNPs, "BM.average" and "BM.max" are sensitive to the
-number of terms invovled; instead, "BM.complete" is much robust in this
+number of terms involved; instead, "BM.complete" is much robust in this
 aspect. By default, it uses "BM.average"}
 
 \item{method.term}{the method used to measure semantic similarity
 between terms. It can be "Resnik" for information content (IC) of most
 informative common ancestor (MICA) (see
 \url{http://dl.acm.org/citation.cfm?id=1625914}), "Lin" for 2*IC at
-MICA divided by the sum of IC at pairs of terms (see
-\url{https://www.cse.iitb.ac.in/~cs626-449/Papers/WordSimilarity/3.pdf}),
-"Schlicker" for weighted version of 'Lin' by the 1-prob(MICA) (see
+MICA divided by the sum of IC at pairs of terms, "Schlicker" for
+weighted version of 'Lin' by the 1-prob(MICA) (see
 \url{http://www.ncbi.nlm.nih.gov/pubmed/16776819}), "Jiang" for 1 -
 difference between the sum of IC at pairs of terms and 2*IC at MICA
 (see \url{http://arxiv.org/pdf/cmp-lg/9709008.pdf}), "Pesquita" for
@@ -105,7 +104,8 @@ displayed in the screen. By default, it sets to true for display}
 }
 \value{
 It returns an object of class "igraph", with nodes for input genes/SNPs
-and edges for pair-wise semantic similarity between them. If no
+and edges for pair-wise semantic similarity between them. Also added
+graph attribute is 'dag' storing the annotated ontology DAG used. If no
 similarity is calculuated, it returns NULL.
 }
 \description{
@@ -127,7 +127,6 @@ subgraph.
 \dontrun{
 # Load the library
 library(XGR)
-library(igraph)
 
 # 1) SNP-based enrichment analysis using GWAS Catalog traits (mapped to EF)
 # 1a) ig.EF (an object of class "igraph" storing as a directed graph)

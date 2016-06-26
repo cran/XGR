@@ -4,10 +4,16 @@
 \alias{xCircos}
 \title{Function to visualise a network as a circos plot}
 \usage{
-xCircos(g, entity = c("SNP", "Gene"), top_num = 50, ideogram = T,
-chr.exclude = "auto", entity.label.cex = 0.8, verbose = T,
+xCircos(g, entity = c("SNP", "Gene"), top_num = 50, colormap = c("yr",
+"bwr", "jet", "gbr", "wyr", "br", "rainbow", "wb",
+"lightyellow-orange"),
+rescale = T, nodes.query = NULL, ideogram = T, chr.exclude = "auto",
+entity.label.cex = 0.7, entity.label.side = c("out", "in"),
+entity.label.track = 1, entity.label.query = NULL,
+GR.SNP = c("dbSNP_GWAS", "dbSNP_Common"), GR.Gene = c("UCSC_knownGene",
+"UCSC_knownCanonical"), verbose = T,
 RData.location =
-"https://github.com/hfang-bristol/RDataCentre/blob/master/XGR/1.0.0")
+"https://github.com/hfang-bristol/RDataCentre/blob/master/Portal")
 }
 \arguments{
 \item{g}{an object of class "igraph". For example, it stores semantic
@@ -19,6 +25,23 @@ being plotted. It can be either "SNP" or "Gene"}
 
 \item{top_num}{the top number of similarity edges to be plotted}
 
+\item{colormap}{short name for the colormap. It can be one of "jet"
+(jet colormap), "bwr" (blue-white-red colormap), "gbr" (green-black-red
+colormap), "wyr" (white-yellow-red colormap), "br" (black-red
+colormap), "yr" (yellow-red colormap), "wb" (white-black colormap), and
+"rainbow" (rainbow colormap, that is,
+red-yellow-green-cyan-blue-magenta). Alternatively, any
+hyphen-separated HTML color names, e.g. "lightyellow-orange" (by
+default), "blue-black-yellow", "royalblue-white-sandybrown",
+"darkgreen-white-darkviolet". A list of standard color names can be
+found in \url{http://html-color-codes.info/color-names}}
+
+\item{rescale}{logical to indicate whether the edge values are rescaled
+to the range [0,1]. By default, it sets to true}
+
+\item{nodes.query}{nodes in query for which edges attached to them will
+be displayed. By default, it sets to NULL meaning no such restriction}
+
 \item{ideogram}{logical to indicate whether chromosome banding is
 plotted}
 
@@ -29,6 +52,39 @@ is excluded}
 
 \item{entity.label.cex}{the font size of genes/SNPs labels. Default is
 0.8}
+
+\item{entity.label.side}{the position of genes/SNPs labels relative to
+chromosome ideogram. It can be "out" (by default) or "in"}
+
+\item{entity.label.track}{an integer specifying the plot track for
+genes/SNPs labels. Default is 1}
+
+\item{entity.label.query}{which genes/SNPs labels in query will be
+displayed. By default, it sets to NULL meaning all will be displayed.
+If labes in query can not be found, then all will be displayed}
+
+\item{GR.SNP}{the genomic regions of SNPs. By default, it is
+'dbSNP_GWAS', that is, SNPs from dbSNP (version 146) restricted to GWAS
+SNPs and their LD SNPs (hg19). It can be 'dbSNP_Common', that is,
+Common SNPs from dbSNP (version 146) plus GWAS SNPs and their LD SNPs
+(hg19). Alternatively, the user can specify the customised input. To do
+so, first save your RData file (containing an GR object) into your
+local computer, and make sure the GR object content names refer to
+dbSNP IDs. Then, tell "GR.SNP" with your RData file name (with or
+without extension), plus specify your file RData path in
+"RData.location"}
+
+\item{GR.Gene}{the genomic regions of genes. By default, it is
+'UCSC_knownGene', that is, UCSC known genes (together with genomic
+locations) based on human genome assembly hg19. It can be
+'UCSC_knownCanonical', that is, UCSC known canonical genes (together
+with genomic locations) based on human genome assembly hg19.
+Alternatively, the user can specify the customised input. To do so,
+first save your RData file (containing an GR object) into your local
+computer, and make sure the GR object content names refer to Gene
+Symbols. Then, tell "GR.Gene" with your RData file name (with or
+without extension), plus specify your file RData path in
+"RData.location"}
 
 \item{verbose}{logical to indicate whether the messages will be
 displayed in the screen. By default, it sets to true for display}
@@ -42,7 +98,10 @@ the colour of the links
 }
 \description{
 \code{xCircos} is used to visualise a network as a circos plot. The
-network must be a 'igraph' object.
+network must be a 'igraph' object. The degree of similarity between
+SNPs (or genes) is visualised by the colour of links. This function can
+be used either to visualise the most similar links or to plot links
+involving an input SNP (or gene).
 }
 \note{
 none
@@ -51,9 +110,8 @@ none
 \dontrun{
 # Load the library
 library(XGR)
-library(igraph)
 library(RCircos)
-library(GenomicRanges)
+RData.location="~/Sites/SVN/github/RDataCentre/Portal"
 
 # provide genes and SNPs reported in AS GWAS studies
 ImmunoBase <- xRDataLoader(RData.customised='ImmunoBase')
@@ -61,21 +119,27 @@ ImmunoBase <- xRDataLoader(RData.customised='ImmunoBase')
 # 1) SNP-based similarity analysis using GWAS Catalog traits (mapped to EF)
 ## Get lead SNPs reported in AS GWAS
 example.snps <- names(ImmunoBase$AS$variants)
-SNP.g <- xSocialiserSNPs(example.snps, include.LD=NA)
+SNP.g <- xSocialiserSNPs(example.snps, include.LD=NA,
+RData.location=RData.location)
 # Circos plot of the EF-based SNP similarity network
 #out.file <- "SNP_Circos.pdf"
 #pdf(file=out.file, height=12, width=12, compress=TRUE)
-xCircos(g=SNP.g, entity="SNP")
+xCircos(g=SNP.g, entity="SNP", RData.location=RData.location)
 #dev.off()
+# Circos plot involving nodes 'rs6871626'
+xCircos(g=SNP.g, entity="SNP", nodes.query="rs6871626",
+RData.location=RData.location)
 
 # 2) Gene-based similarity analysis using Disease Ontology (DO)
 ## Get genes within 10kb away from AS GWAS lead SNPs
 example.genes <- names(which(ImmunoBase$AS$genes_variants<=10000))
-gene.g <- xSocialiserGenes(example.genes, ontology=c("DO")
+gene.g <- xSocialiserGenes(example.genes, ontology="DO",
+RData.location=RData.location)
 # Circos plot of the DO-based gene similarity network
 #out.file <- "Gene_Circos.pdf"
 #pdf(file=out.file, height=12, width=12, compress=TRUE)
-xCircos(g=gene.g, entity="Gene", chr.exclude="chrY")
+xCircos(g=gene.g, entity="Gene", chr.exclude="chrY",
+RData.location=RData.location)
 #dev.off()
 }
 }

@@ -22,12 +22,15 @@
 #' \itemize{
 #'  \item{\code{term_info}: a matrix of nTerm X 4 containing snp/gene set information, where nTerm is the number of terms, and the 4 columns are "id" (i.e. "Term ID"), "name" (i.e. "Term Name"), "namespace" and "distance"}
 #'  \item{\code{annotation}: a list of terms containing annotations, each term storing its annotations. Always, terms are identified by "id"}
+#'  \item{\code{g}: an igraph object to represent DAG}
 #'  \item{\code{data}: a vector containing input data in consideration. It is not always the same as the input data as only those mappable are retained}
 #'  \item{\code{background}: a vector containing the background data. It is not always the same as the input data as only those mappable are retained}
 #'  \item{\code{overlap}: a list of overlapped snp/gene sets, each storing snps overlapped between a snp/gene set and the given input data (i.e. the snps of interest). Always, gene sets are identified by "id"}
+#'  \item{\code{fc}: a vector containing fold changes}
 #'  \item{\code{zscore}: a vector containing z-scores}
 #'  \item{\code{pvalue}: a vector containing p-values}
 #'  \item{\code{adjp}: a vector containing adjusted p-values. It is the p value but after being adjusted for multiple comparisons}
+#'  \item{\code{cross}: a matrix of nTerm X nTerm, with an on-diagnal cell for the overlapped-members observed in an individaul term, and off-diagnal cell for the overlapped-members shared betwene two terms}
 #'  \item{\code{call}: the call that produced this result}
 #' }
 #' @note The interpretation of the algorithms used to account for the hierarchy of the ontology is:
@@ -45,7 +48,6 @@
 #' \dontrun{
 #' # Load the library
 #' library(XGR)
-#' library(igraph)
 #' 
 #' # Gene-based enrichment analysis using Mammalian Phenotype Ontology (MP)
 #' # a) provide the input Genes of interest (eg 100 randomly chosen human genes)
@@ -68,21 +70,18 @@
 #' output <- data.frame(term=rownames(res), res)
 #' utils::write.table(output, file="MP_enrichments.txt", sep="\t", row.names=FALSE)
 #'
-#' # e) visualise the top 10 significant terms in the ontology hierarchy
-#' ## load ig.MP (an object of class "igraph" storing as a directed graph)
-#' g <- xRDataLoader(RData='ig.MP')
-#' g
-#' nodes_query <- names(sort(eTerm$adjp)[1:10])
-#' nodes.highlight <- rep("red", length(nodes_query))
-#' names(nodes.highlight) <- nodes_query
-#' subg <- dnet::dDAGinduce(g, nodes_query)
+#' # e) barplot of significant enrichment results
+#' bp <- xEnrichBarplot(eTerm, top_num="auto", displayBy="adjp")
+#' print(bp)
+#'
+#' # f) visualise the top 10 significant terms in the ontology hierarchy
 #' # color-code terms according to the adjust p-values (taking the form of 10-based negative logarithm)
-#' dnet::visDAG(g=subg, data=-1*log10(eTerm$adjp[V(subg)$name]), node.info="both", zlim=c(0,2), node.attrs=list(color=nodes.highlight))
+#' xEnrichDAGplot(eTerm, top_num=10, displayBy="adjp", node.info=c("full_term_name"))
 #' # color-code terms according to the z-scores
-#' dnet::visDAG(g=subg, data=eTerm$zscore[V(subg)$name], node.info="both", colormap="darkblue-white-darkorange", node.attrs=list(color=nodes.highlight))
+#' xEnrichDAGplot(eTerm, top_num=10, displayBy="zscore", node.info=c("full_term_name"))
 #' }
 
-xEnricherGenes <- function(data, background=NULL, ontology=c("GOBP","GOMF","GOCC","PS","PS2","SF","DO","HPPA","HPMI","HPCM","HPMA","MP", "MsigdbH", "MsigdbC1", "MsigdbC2CGP", "MsigdbC2CPall", "MsigdbC2CP", "MsigdbC2KEGG", "MsigdbC2REACTOME", "MsigdbC2BIOCARTA", "MsigdbC3TFT", "MsigdbC3MIR", "MsigdbC4CGN", "MsigdbC4CM", "MsigdbC5BP", "MsigdbC5MF", "MsigdbC5CC", "MsigdbC6", "MsigdbC7", "DGIdb"), size.range=c(10,2000), min.overlap=3, which.distance=NULL, test=c("hypergeo","fisher","binomial"), p.adjust.method=c("BH", "BY", "bonferroni", "holm", "hochberg", "hommel"), ontology.algorithm=c("none","pc","elim","lea"), elim.pvalue=1e-2, lea.depth=2, path.mode=c("all_paths","shortest_paths","all_shortest_paths"), true.path.rule=F, verbose=T, RData.location="https://github.com/hfang-bristol/RDataCentre/blob/master/XGR/1.0.0")
+xEnricherGenes <- function(data, background=NULL, ontology=c("GOBP","GOMF","GOCC","PS","PS2","SF","DO","HPPA","HPMI","HPCM","HPMA","MP", "MsigdbH", "MsigdbC1", "MsigdbC2CGP", "MsigdbC2CPall", "MsigdbC2CP", "MsigdbC2KEGG", "MsigdbC2REACTOME", "MsigdbC2BIOCARTA", "MsigdbC3TFT", "MsigdbC3MIR", "MsigdbC4CGN", "MsigdbC4CM", "MsigdbC5BP", "MsigdbC5MF", "MsigdbC5CC", "MsigdbC6", "MsigdbC7", "DGIdb"), size.range=c(10,2000), min.overlap=3, which.distance=NULL, test=c("hypergeo","fisher","binomial"), p.adjust.method=c("BH", "BY", "bonferroni", "holm", "hochberg", "hommel"), ontology.algorithm=c("none","pc","elim","lea"), elim.pvalue=1e-2, lea.depth=2, path.mode=c("all_paths","shortest_paths","all_shortest_paths"), true.path.rule=F, verbose=T, RData.location="https://github.com/hfang-bristol/RDataCentre/blob/master/Portal")
 {
     startT <- Sys.time()
     message(paste(c("Start at ",as.character(startT)), collapse=""), appendLF=T)
@@ -101,6 +100,8 @@ xEnricherGenes <- function(data, background=NULL, ontology=c("GOBP","GOMF","GOCC
     }else{
         stop("The input data must be a vector.\n")
     }
+    
+    data <- as.character(data)
     
     if(!is.na(ontology)){
 	
@@ -273,12 +274,17 @@ xEnricherGenes <- function(data, background=NULL, ontology=c("GOBP","GOMF","GOCC
 	
 	# replace EntrezGenes with gene symbols	
 	if(1 & class(eTerm)=="eTerm"){
+		## overlap
 		overlap <- eTerm$overlap
 		overlap_symbols <- lapply(overlap,function(x){
 			ind <- match(x, allGeneID)
 			allSymbol[ind]
 		})
 		eTerm$overlap <- overlap_symbols
+		## data
+		eTerm$data <- allSymbol[match(eTerm$data,allGeneID)]
+		## background
+		eTerm$background <- allSymbol[match(eTerm$background,allGeneID)]		
 	}
 	
 	if(verbose){

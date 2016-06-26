@@ -73,7 +73,7 @@ maximum of the pre-calculated average between two SNPs in pair),
 complete-linkage concept: the least of any maximum similarity between a
 term of one SNP and a term of the other SNP). When comparing BM-based
 similarity between SNPs, &quot;BM.average&quot; and &quot;BM.max&quot; are sensitive to the
-number of terms invovled; instead, &quot;BM.complete&quot; is much robust in this
+number of terms involved; instead, &quot;BM.complete&quot; is much robust in this
 aspect. By default, it uses &quot;BM.average&quot;</p>
 </td></tr>
 <tr valign="top"><td><code>method.term</code></td>
@@ -82,9 +82,8 @@ aspect. By default, it uses &quot;BM.average&quot;</p>
 between terms. It can be &quot;Resnik&quot; for information content (IC) of most
 informative common ancestor (MICA) (see
 <a href="http://dl.acm.org/citation.cfm?id=1625914">http://dl.acm.org/citation.cfm?id=1625914</a>), &quot;Lin&quot; for 2*IC at
-MICA divided by the sum of IC at pairs of terms (see
-<a href="https://www.cse.iitb.ac.in/~cs626-449/Papers/WordSimilarity/3.pdf">https://www.cse.iitb.ac.in/~cs626-449/Papers/WordSimilarity/3.pdf</a>),
-&quot;Schlicker&quot; for weighted version of 'Lin' by the 1-prob(MICA) (see
+MICA divided by the sum of IC at pairs of terms, &quot;Schlicker&quot; for
+weighted version of 'Lin' by the 1-prob(MICA) (see
 <a href="http://www.ncbi.nlm.nih.gov/pubmed/16776819">http://www.ncbi.nlm.nih.gov/pubmed/16776819</a>), &quot;Jiang&quot; for 1 -
 difference between the sum of IC at pairs of terms and 2*IC at MICA
 (see <a href="http://arxiv.org/pdf/cmp-lg/9709008.pdf">http://arxiv.org/pdf/cmp-lg/9709008.pdf</a>), &quot;Pesquita&quot; for
@@ -157,7 +156,8 @@ displayed in the screen. By default, it sets to true for display</p>
 <h3>Value</h3>
 
 <p>It returns an object of class &quot;igraph&quot;, with nodes for input genes/SNPs
-and edges for pair-wise semantic similarity between them. If no
+and edges for pair-wise semantic similarity between them. Also added
+graph attribute is 'dag' storing the annotated ontology DAG used. If no
 similarity is calculuated, it returns NULL.
 </p>
 
@@ -184,7 +184,6 @@ subgraph.
 ## Not run: 
 # Load the library
 library(XGR)
-library(igraph)
 
 # 1) SNP-based enrichment analysis using GWAS Catalog traits (mapped to EF)
 # 1a) ig.EF (an object of class "igraph" storing as a directed graph)

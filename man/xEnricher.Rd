@@ -107,6 +107,7 @@ information, where nTerm is the number of terms, and the 4 columns are
 "distance"}
 \item{\code{annotation}: a list of terms containing annotations, each
 term storing its annotations. Always, terms are identified by "id"}
+\item{\code{g}: an igraph object to represent DAG}
 \item{\code{data}: a vector containing input data in consideration. It
 is not always the same as the input data as only those mappable are
 retained}
@@ -117,10 +118,14 @@ retained}
 snps/genes overlapped between a snp/gene set and the given input data
 (i.e. the snps/genes of interest). Always, gene sets are identified by
 "id"}
+\item{\code{fc}: a vector containing fold changes}
 \item{\code{zscore}: a vector containing z-scores}
 \item{\code{pvalue}: a vector containing p-values}
 \item{\code{adjp}: a vector containing adjusted p-values. It is the p
 value but after being adjusted for multiple comparisons}
+\item{\code{cross}: a matrix of nTerm X nTerm, with an on-diagnal cell
+for the overlapped-members observed in an individaul term, and
+off-diagnal cell for the overlapped-members shared betwene two terms}
 \item{\code{call}: the call that produced this result}
 }
 }
@@ -136,14 +141,14 @@ The interpretation of the algorithms used to account for the hierarchy
 of the ontology is:
 \itemize{
 \item{"none": does not consider the ontology hierarchy at all.}
-\item{"lea": computers the significance of a term in terms of the
+\item{"lea": estimates the significance of a term in terms of the
 significance of its children at the maximum depth (e.g. 2). Precisely,
 once snps/genes are already annotated to any children terms with a more
 signficance than itself, then all these snps/genes are eliminated from
 the use for the recalculation of the signifance at that term. The final
 p-values takes the maximum of the original p-value and the recalculated
 p-value.}
-\item{"elim": computers the significance of a term in terms of the
+\item{"elim": estimates the significance of a term in terms of the
 significance of its all children. Precisely, once snps/genes are
 already annotated to a signficantly enriched term under the cutoff of
 e.g. pvalue<1e-2, all these snps/genes are eliminated from the
@@ -187,20 +192,17 @@ output <- data.frame(term=rownames(res), res)
 utils::write.table(output, file="EF_enrichments.txt", sep="\\t",
 row.names=FALSE)
 
-# 1g) visualise the top 10 significant terms in the ontology hierarchy
-g <- xRDataLoader(RData='ig.EF')
-g
-nodes_query <- names(sort(eTerm$adjp)[1:10])
-nodes.highlight <- rep("red", length(nodes_query))
-names(nodes.highlight) <- nodes_query
-subg <- dnet::dDAGinduce(g, nodes_query)
+# 1g) barplot of significant enrichment results
+bp <- xEnrichBarplot(eTerm, top_num="auto", displayBy="adjp")
+print(bp)
+
+# 1h) visualise the top 10 significant terms in the ontology hierarchy
 # color-code terms according to the adjust p-values (taking the form of 10-based negative logarithm)
-dnet::visDAG(g=subg, data=-1*log10(eTerm$adjp[V(subg)$name]),
-node.info="both", zlim=c(0,2), node.attrs=list(color=nodes.highlight))
+xEnrichDAGplot(eTerm, top_num=10, displayBy="adjp",
+node.info=c("full_term_name"))
 # color-code terms according to the z-scores
-dnet::visDAG(g=subg, data=eTerm$zscore[V(subg)$name], node.info="both",
-colormap="darkblue-white-darkorange",
-node.attrs=list(color=nodes.highlight))
+xEnrichDAGplot(eTerm, top_num=10, displayBy="zscore",
+node.info=c("full_term_name"))
 }
 }
 \seealso{

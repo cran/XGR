@@ -10,17 +10,26 @@
 <h3>Description</h3>
 
 <p><code>xCircos</code> is used to visualise a network as a circos plot. The
-network must be a 'igraph' object.
+network must be a 'igraph' object. The degree of similarity between
+SNPs (or genes) is visualised by the colour of links. This function can
+be used either to visualise the most similar links or to plot links
+involving an input SNP (or gene).
 </p>
 
 
 <h3>Usage</h3>
 
 <pre>
-xCircos(g, entity = c("SNP", "Gene"), top_num = 50, ideogram = T,
-chr.exclude = "auto", entity.label.cex = 0.8, verbose = T,
+xCircos(g, entity = c("SNP", "Gene"), top_num = 50, colormap = c("yr",
+"bwr", "jet", "gbr", "wyr", "br", "rainbow", "wb",
+"lightyellow-orange"),
+rescale = T, nodes.query = NULL, ideogram = T, chr.exclude = "auto",
+entity.label.cex = 0.7, entity.label.side = c("out", "in"),
+entity.label.track = 1, entity.label.query = NULL,
+GR.SNP = c("dbSNP_GWAS", "dbSNP_Common"), GR.Gene = c("UCSC_knownGene",
+"UCSC_knownCanonical"), verbose = T,
 RData.location =
-"https://github.com/hfang-bristol/RDataCentre/blob/master/XGR/1.0.0")
+"https://github.com/hfang-bristol/RDataCentre/blob/master/Portal")
 </pre>
 
 
@@ -42,6 +51,29 @@ being plotted. It can be either &quot;SNP&quot; or &quot;Gene&quot;</p>
 <td>
 <p>the top number of similarity edges to be plotted</p>
 </td></tr>
+<tr valign="top"><td><code>colormap</code></td>
+<td>
+<p>short name for the colormap. It can be one of &quot;jet&quot;
+(jet colormap), &quot;bwr&quot; (blue-white-red colormap), &quot;gbr&quot; (green-black-red
+colormap), &quot;wyr&quot; (white-yellow-red colormap), &quot;br&quot; (black-red
+colormap), &quot;yr&quot; (yellow-red colormap), &quot;wb&quot; (white-black colormap), and
+&quot;rainbow&quot; (rainbow colormap, that is,
+red-yellow-green-cyan-blue-magenta). Alternatively, any
+hyphen-separated HTML color names, e.g. &quot;lightyellow-orange&quot; (by
+default), &quot;blue-black-yellow&quot;, &quot;royalblue-white-sandybrown&quot;,
+&quot;darkgreen-white-darkviolet&quot;. A list of standard color names can be
+found in <a href="http://html-color-codes.info/color-names">http://html-color-codes.info/color-names</a></p>
+</td></tr>
+<tr valign="top"><td><code>rescale</code></td>
+<td>
+<p>logical to indicate whether the edge values are rescaled
+to the range [0,1]. By default, it sets to true</p>
+</td></tr>
+<tr valign="top"><td><code>nodes.query</code></td>
+<td>
+<p>nodes in query for which edges attached to them will
+be displayed. By default, it sets to NULL meaning no such restriction</p>
+</td></tr>
 <tr valign="top"><td><code>ideogram</code></td>
 <td>
 <p>logical to indicate whether chromosome banding is
@@ -58,6 +90,49 @@ is excluded</p>
 <td>
 <p>the font size of genes/SNPs labels. Default is
 0.8</p>
+</td></tr>
+<tr valign="top"><td><code>entity.label.side</code></td>
+<td>
+<p>the position of genes/SNPs labels relative to
+chromosome ideogram. It can be &quot;out&quot; (by default) or &quot;in&quot;</p>
+</td></tr>
+<tr valign="top"><td><code>entity.label.track</code></td>
+<td>
+<p>an integer specifying the plot track for
+genes/SNPs labels. Default is 1</p>
+</td></tr>
+<tr valign="top"><td><code>entity.label.query</code></td>
+<td>
+<p>which genes/SNPs labels in query will be
+displayed. By default, it sets to NULL meaning all will be displayed.
+If labes in query can not be found, then all will be displayed</p>
+</td></tr>
+<tr valign="top"><td><code>GR.SNP</code></td>
+<td>
+<p>the genomic regions of SNPs. By default, it is
+'dbSNP_GWAS', that is, SNPs from dbSNP (version 146) restricted to GWAS
+SNPs and their LD SNPs (hg19). It can be 'dbSNP_Common', that is,
+Common SNPs from dbSNP (version 146) plus GWAS SNPs and their LD SNPs
+(hg19). Alternatively, the user can specify the customised input. To do
+so, first save your RData file (containing an GR object) into your
+local computer, and make sure the GR object content names refer to
+dbSNP IDs. Then, tell &quot;GR.SNP&quot; with your RData file name (with or
+without extension), plus specify your file RData path in
+&quot;RData.location&quot;</p>
+</td></tr>
+<tr valign="top"><td><code>GR.Gene</code></td>
+<td>
+<p>the genomic regions of genes. By default, it is
+'UCSC_knownGene', that is, UCSC known genes (together with genomic
+locations) based on human genome assembly hg19. It can be
+'UCSC_knownCanonical', that is, UCSC known canonical genes (together
+with genomic locations) based on human genome assembly hg19.
+Alternatively, the user can specify the customised input. To do so,
+first save your RData file (containing an GR object) into your local
+computer, and make sure the GR object content names refer to Gene
+Symbols. Then, tell &quot;GR.Gene&quot; with your RData file name (with or
+without extension), plus specify your file RData path in
+&quot;RData.location&quot;</p>
 </td></tr>
 <tr valign="top"><td><code>verbose</code></td>
 <td>
@@ -97,9 +172,8 @@ the colour of the links
 ## Not run: 
 # Load the library
 library(XGR)
-library(igraph)
 library(RCircos)
-library(GenomicRanges)
+RData.location="~/Sites/SVN/github/RDataCentre/Portal"
 
 # provide genes and SNPs reported in AS GWAS studies
 ImmunoBase &lt;- xRDataLoader(RData.customised='ImmunoBase')
@@ -107,21 +181,27 @@ ImmunoBase &lt;- xRDataLoader(RData.customised='ImmunoBase')
 # 1) SNP-based similarity analysis using GWAS Catalog traits (mapped to EF)
 ## Get lead SNPs reported in AS GWAS
 example.snps &lt;- names(ImmunoBase$AS$variants)
-SNP.g &lt;- xSocialiserSNPs(example.snps, include.LD=NA)
+SNP.g &lt;- xSocialiserSNPs(example.snps, include.LD=NA,
+RData.location=RData.location)
 # Circos plot of the EF-based SNP similarity network
 #out.file &lt;- "SNP_Circos.pdf"
 #pdf(file=out.file, height=12, width=12, compress=TRUE)
-xCircos(g=SNP.g, entity="SNP")
+xCircos(g=SNP.g, entity="SNP", RData.location=RData.location)
 #dev.off()
+# Circos plot involving nodes 'rs6871626'
+xCircos(g=SNP.g, entity="SNP", nodes.query="rs6871626",
+RData.location=RData.location)
 
 # 2) Gene-based similarity analysis using Disease Ontology (DO)
 ## Get genes within 10kb away from AS GWAS lead SNPs
 example.genes &lt;- names(which(ImmunoBase$AS$genes_variants&lt;=10000))
-gene.g &lt;- xSocialiserGenes(example.genes, ontology=c("DO")
+gene.g &lt;- xSocialiserGenes(example.genes, ontology="DO",
+RData.location=RData.location)
 # Circos plot of the DO-based gene similarity network
 #out.file &lt;- "Gene_Circos.pdf"
 #pdf(file=out.file, height=12, width=12, compress=TRUE)
-xCircos(g=gene.g, entity="Gene", chr.exclude="chrY")
+xCircos(g=gene.g, entity="Gene", chr.exclude="chrY",
+RData.location=RData.location)
 #dev.off()
 
 ## End(Not run)

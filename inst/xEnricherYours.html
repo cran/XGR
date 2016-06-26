@@ -129,6 +129,9 @@ information, where nTerm is the number of terms, and the 4 columns are
 term storing its annotations. Always, terms are identified by &quot;id&quot;
 </p>
 </li>
+<li><p><code>g</code>: an igraph object to represent DAG
+</p>
+</li>
 <li><p><code>data</code>: a vector containing input data in consideration. It
 is not always the same as the input data as only those mappable are
 retained
@@ -144,6 +147,9 @@ snps overlapped between a snp/gene set and the given input data (i.e.
 the snps of interest). Always, gene sets are identified by &quot;id&quot;
 </p>
 </li>
+<li><p><code>fc</code>: a vector containing fold changes
+</p>
+</li>
 <li><p><code>zscore</code>: a vector containing z-scores
 </p>
 </li>
@@ -152,6 +158,11 @@ the snps of interest). Always, gene sets are identified by &quot;id&quot;
 </li>
 <li><p><code>adjp</code>: a vector containing adjusted p-values. It is the p
 value but after being adjusted for multiple comparisons
+</p>
+</li>
+<li><p><code>cross</code>: a matrix of nTerm X nTerm, with an on-diagnal cell
+for the overlapped-members observed in an individaul term, and
+off-diagnal cell for the overlapped-members shared betwene two terms
 </p>
 </li>
 <li><p><code>call</code>: the call that produced this result
@@ -181,7 +192,7 @@ library(XGR)
 library(igraph)
 
 # Enrichment analysis using your own data
-# a) provide your own data (eg ImmunoBase SNPs and associations/annotations with disease traits)
+# a) provide your own data (eg InterPro domains and their annotations by GO terms)
 ## All InterPro domains
 input.file &lt;-
 "http://dcgor.r-forge.r-project.org/data/InterPro/InterPro.txt"
@@ -206,6 +217,10 @@ sortBy="adjp", details=TRUE)
 utils::write.table(output, file="Yours_enrichments.txt", sep="\t",
 row.names=FALSE)
 
+# e) barplot of significant enrichment results
+bp &lt;- xEnrichBarplot(eTerm, top_num="auto", displayBy="adjp")
+print(bp)
+
 ## End(Not run)
 
 # Using ImmunoBase SNPs and associations/annotations with disease traits
@@ -227,6 +242,9 @@ eTerm &lt;- xEnricherYours(data.file=data.file,
 annotation.file=annotation.file)
 # view enrichment results for the top significant terms
 xEnrichViewer(eTerm)
+# barplot of significant enrichment results
+bp &lt;- xEnrichBarplot(eTerm, top_num="auto", displayBy="adjp")
+print(bp)
 </pre>
 
 

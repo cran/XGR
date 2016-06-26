@@ -14,7 +14,7 @@ ontology.algorithm = c("none", "pc", "elim", "lea"), elim.pvalue =
 lea.depth = 2, path.mode = c("all_paths", "shortest_paths",
 "all_shortest_paths"), true.path.rule = T, verbose = T,
 RData.location =
-"https://github.com/hfang-bristol/RDataCentre/blob/master/XGR/1.0.0")
+"https://github.com/hfang-bristol/RDataCentre/blob/master/Portal")
 }
 \arguments{
 \item{data}{an input vector. It contains a list of SNPs of interest}
@@ -123,6 +123,7 @@ information, where nTerm is the number of terms, and the 4 columns are
 "distance"}
 \item{\code{annotation}: a list of terms containing annotations, each
 term storing its annotations. Always, terms are identified by "id"}
+\item{\code{g}: an igraph object to represent DAG}
 \item{\code{data}: a vector containing input data in consideration. It
 is not always the same as the input data as only those mappable are
 retained}
@@ -132,10 +133,14 @@ retained}
 \item{\code{overlap}: a list of overlapped snp/gene sets, each storing
 snps overlapped between a snp/gene set and the given input data (i.e.
 the snps of interest). Always, gene sets are identified by "id"}
+\item{\code{fc}: a vector containing fold changes}
 \item{\code{zscore}: a vector containing z-scores}
 \item{\code{pvalue}: a vector containing p-values}
 \item{\code{adjp}: a vector containing adjusted p-values. It is the p
 value but after being adjusted for multiple comparisons}
+\item{\code{cross}: a matrix of nTerm X nTerm, with an on-diagnal cell
+for the overlapped-members observed in an individaul term, and
+off-diagnal cell for the overlapped-members shared betwene two terms}
 \item{\code{call}: the call that produced this result}
 }
 }
@@ -178,7 +183,6 @@ maximum of both p-values in these two calculations.}
 \dontrun{
 # Load the library
 library(XGR)
-library(igraph)
 
 # SNP-based enrichment analysis using GWAS Catalog traits (mapped to EF)
 # a) provide the input SNPs of interest (eg 'EFO:0002690' for 'systemic lupus erythematosus')
@@ -209,21 +213,17 @@ output <- data.frame(term=rownames(res), res)
 utils::write.table(output, file="EF_enrichments.txt", sep="\\t",
 row.names=FALSE)
 
-# e) visualise the top 10 significant terms in the ontology hierarchy
-## load ig.EF (an object of class "igraph" storing as a directed graph)
-g <- xRDataLoader('ig.EF')
-g
-nodes_query <- names(sort(eTerm$adjp)[1:10])
-nodes.highlight <- rep("red", length(nodes_query))
-names(nodes.highlight) <- nodes_query
-subg <- dnet::dDAGinduce(g, nodes_query)
+# e) barplot of significant enrichment results
+bp <- xEnrichBarplot(eTerm, top_num="auto", displayBy="adjp")
+print(bp)
+
+# f) visualise the top 10 significant terms in the ontology hierarchy
 # color-code terms according to the adjust p-values (taking the form of 10-based negative logarithm)
-dnet::visDAG(g=subg, data=-1*log10(eTerm$adjp[V(subg)$name]),
-node.info="both", zlim=c(0,2), node.attrs=list(color=nodes.highlight))
+xEnrichDAGplot(eTerm, top_num=10, displayBy="adjp",
+node.info=c("full_term_name"))
 # color-code terms according to the z-scores
-dnet::visDAG(g=subg, data=eTerm$zscore[V(subg)$name], node.info="both",
-colormap="darkblue-white-darkorange",
-node.attrs=list(color=nodes.highlight))
+xEnrichDAGplot(eTerm, top_num=10, displayBy="zscore",
+node.info=c("full_term_name"))
 }
 }
 \seealso{
