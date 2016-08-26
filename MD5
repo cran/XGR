@@ -1,4 +1,4 @@
-456b6f8579dcbb47bdb185eec4b26bf2 *DESCRIPTION
+9e097a12608f0f00d9ae04e35de4f9b6 *DESCRIPTION
 81d64d64732fe94b8423ffad48e69c40 *NAMESPACE
 490dc1f0f4b390c97afdb3869c30210b *R/xCircos.r
 89a0e5c625d71d13a7a02843d07d6edc *R/xConverter.r
@@ -18,10 +18,10 @@ ba90f64ce9b3230ef7ca2438a56407ba *R/xEnricherSNPs.r
 a047dd84bb96ee07a9299dc418c9ff9d *R/xFunArgs.r
 2c9d54e4429836c9e4c460b76499c3be *R/xGRsampling.r
 99ee8d218e888d452055782f878f83eb *R/xGRviaGeneAnno.r
-d7810bbb328c4bd0dca9d1631f4bedb8 *R/xGRviaGenomicAnno.r
-290eb0e11c50c110f33f29b40d2ce1f4 *R/xGRviaGenomicAnnoAdv.r
+81f92563ac4e055b676fa7861e2fd2b9 *R/xGRviaGenomicAnno.r
+d76766d5cef8ceac235d5ac441a6ebbf *R/xGRviaGenomicAnnoAdv.r
 22c0e1305ed69185b714f71adf8c08ec *R/xLiftOver.r
-d40e2cc5722d1580d907391244f06a6c *R/xRDataLoader.r
+a1942931739e906693053f0d32b18291 *R/xRDataLoader.r
 ce7e7e7561e53432d752ff2d435ba739 *R/xRd2HTML.r
 3c49fee701fa563ec35f43f237710c71 *R/xRdWrap.r
 b28397d7087eee60080bf62189f7f322 *R/xSNP2GeneScores.r
@@ -39,11 +39,12 @@ cf47e296f004b47b0574dfc813740b8c *R/xSubneterSNPs.r
 e4c766dda28bb4d98307e5a89fdd7d52 *R/xVisKernels.r
 2f8cc510c9238c6dfa0a03f0de345bb4 *R/xVisNet.r
 0f8ea6091705e0d73413bd5b650bc983 *data/ImmunoBase.RData
-49d7968864efa7b123169550fff29bf8 *data/JKscience_TS2A.RData
+b60a6d0e741e5d8f40b8040a8d9518cc *data/JKscience_TS2A.RData
 b403a2dca5b4e548812ddf4d4751e763 *data/datalist
+5ecf1d183cfab535dffb1aa5b07525c9 *inst/CITATION
 1217d557858a9f1e808dee49f645ea1b *inst/ImmunoBase.html
 b383b6f71dbac727d4851e2a7e00dd68 *inst/JKscience_TS2A.html
-084d063d99b7d787cb0ea4838d77cb53 *inst/NEWS
+2eb1be8b145865bde3a98e7c45b6e136 *inst/NEWS
 845a9ad8803a7a9d09a69787cc0937af *inst/XGR.icon.png
 f0b45b2e7db634e4506b708e0a76ee14 *inst/XGR.logo.png
 99ca42111598d641999cf52fd750266a *inst/xCircos.html
@@ -64,8 +65,8 @@ e54b9c646ad9ed00c3b5856c2fcedd03 *inst/xEnricherSNPs.html
 d7167c216c05bec50fa82d98e1ec75d7 *inst/xFunArgs.html
 5de5c19feae27f045e581f7c1cfb3aae *inst/xGRsampling.html
 955de7f2c101b3ab3e4e24427e3bcc3f *inst/xGRviaGeneAnno.html
-191fd0970fa98ae4fa73248ede3fa3a8 *inst/xGRviaGenomicAnno.html
-925f44b41bd441c88a2b00775a501554 *inst/xGRviaGenomicAnnoAdv.html
+99fc3d9f12bfc83374cd6bd965748145 *inst/xGRviaGenomicAnno.html
+7f13f39f7dcec9de786078d032c2ce8e *inst/xGRviaGenomicAnnoAdv.html
 c0b628fe2c85e0abdfbfe4272a11eeb9 *inst/xLiftOver.html
 d14d1e99c97373440d957297a1883309 *inst/xRDataLoader.html
 7855ff3ba40aed850995abc29b9a1de0 *inst/xRd2HTML.html
@@ -104,8 +105,8 @@ c08994552f5ae6693bec404977a71bd8 *man/xEnricherGenes.Rd
 5fd68b477fae3f36cd67f26d729821f8 *man/xFunArgs.Rd
 c0832973f425e0952b29c7cce0b057db *man/xGRsampling.Rd
 134ca037f07c8e6b9fc03ba43f4f7b86 *man/xGRviaGeneAnno.Rd
-0e4ee9473b9d37a020b8777ad4953ff7 *man/xGRviaGenomicAnno.Rd
-87d4fc3ac441e0d6593b1490eac3f78b *man/xGRviaGenomicAnnoAdv.Rd
+e703d0ddc3f56c368a932f59a508d63b *man/xGRviaGenomicAnno.Rd
+d4d317cae0e17489962ad379c9a2ed78 *man/xGRviaGenomicAnnoAdv.Rd
 0622baeb977869024a7a593114fa5f59 *man/xLiftOver.Rd
 84af9cb97c2193b109443880a741b1e9 *man/xRDataLoader.Rd
 c2490d01452dc03471dcb14f8ce5010f *man/xRd2HTML.Rd
