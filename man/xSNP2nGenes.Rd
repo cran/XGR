@@ -6,11 +6,9 @@
 \usage{
 xSNP2nGenes(data, distance.max = 2e+05, decay.kernel = c("rapid",
 "slow",
-"linear"), decay.exponent = 2, GR.SNP = c("dbSNP_GWAS",
-"dbSNP_Common"),
-GR.Gene = c("UCSC_knownGene", "UCSC_knownCanonical"), verbose = T,
-RData.location =
-"https://github.com/hfang-bristol/RDataCentre/blob/master/Portal")
+"linear", "constant"), decay.exponent = 2, GR.SNP = c("dbSNP_GWAS",
+"dbSNP_Common"), GR.Gene = c("UCSC_knownGene", "UCSC_knownCanonical"),
+verbose = T, RData.location = "http://galahad.well.ox.ac.uk/bigdata")
 }
 \arguments{
 \item{data}{a input vector containing SNPs. SNPs should be provided as
@@ -25,7 +23,8 @@ calculated for nearby SNPs per gene}
 
 \item{decay.kernel}{a character specifying a decay kernel function. It
 can be one of 'slow' for slow decay, 'linear' for linear decay, and
-'rapid' for rapid decay}
+'rapid' for rapid decay. If no distance weight is used, please select
+'constant'}
 
 \item{decay.exponent}{a numeric specifying a decay exponent. By
 default, it sets to 2}
@@ -81,13 +80,14 @@ For details on the decay kernels, please refer to
 }
 \examples{
 \dontrun{
-# Load the library
+# Load the XGR package and specify the location of built-in data
 library(XGR)
-RData.location="~/Sites/SVN/github/RDataCentre/Portal"
+RData.location <- "http://galahad.well.ox.ac.uk/bigdata_dev"
 
 # a) provide the seed SNPs with the significance info
 ## load ImmunoBase
-ImmunoBase <- xRDataLoader(RData.customised='ImmunoBase')
+ImmunoBase <- xRDataLoader(RData.customised='ImmunoBase',
+RData.location=RData.location)
 ## get lead SNPs reported in AS GWAS and their significance info (p-values)
 gr <- ImmunoBase$AS$variant
 data <- names(gr)

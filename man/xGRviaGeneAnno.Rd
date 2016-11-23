@@ -23,8 +23,7 @@ ontology.algorithm = c("none", "pc", "elim", "lea"), elim.pvalue =
 0.01,
 lea.depth = 2, path.mode = c("all_paths", "shortest_paths",
 "all_shortest_paths"), true.path.rule = F, verbose = T,
-RData.location =
-"https://github.com/hfang-bristol/RDataCentre/blob/master/Portal")
+RData.location = "http://galahad.well.ox.ac.uk/bigdata")
 }
 \arguments{
 \item{data.file}{an input data file, containing a list of genomic
@@ -57,7 +56,7 @@ provided.}
 
 \item{build.conversion}{the conversion from one genome build to
 another. The conversions supported are "hg38.to.hg19" and
-"hg18.to.hg19". By default it is NA (no need to do so).}
+"hg18.to.hg19". By default it is NA (no need to do so)}
 
 \item{gap.max}{the maximum distance to nearby genes. Only those genes
 no far way from this distance will be considered as nearby genes. By
@@ -105,7 +104,7 @@ default) will be processed}
 ontology root (if any) is used to restrict terms in consideration. By
 default, it sets to 'NULL' to consider all distances}
 
-\item{test}{the statistic test used. It can be "fisher" for using
+\item{test}{the test statistic used. It can be "fisher" for using
 fisher's exact test, "hypergeo" for using hypergeometric test, or
 "binomial" for using binomial test. Fisher's exact test is to test the
 independence between gene group (genes belonging to a group or not) and
@@ -117,9 +116,9 @@ genes, and thus compare sampling to background. Unlike hypergeometric
 test, binomial test is to sample at random (with replacement) from the
 background with the constant probability. In terms of the ease of
 finding the significance, they are in order: hypergeometric test >
-binomial test > fisher's exact test. In other words, in terms of the
-calculated p-value, hypergeometric test < binomial test < fisher's
-exact test}
+fisher's exact test > binomial test. In other words, in terms of the
+calculated p-value, hypergeometric test < fisher's exact test <
+binomial test}
 
 \item{p.adjust.method}{the method used to adjust p-values. It can be
 one of "BH", "BY", "bonferroni", "holm", "hochberg" and "hommel". The
@@ -227,30 +226,29 @@ maximum of both p-values in these two calculations.}
 }
 \examples{
 \dontrun{
-# Load the library
+# Load the XGR package and specify the location of built-in data
 library(XGR)
-RData.location="~/Sites/SVN/github/bigdata"
+RData.location <- "http://galahad.well.ox.ac.uk/bigdata_dev"
 
 # Enrichment analysis for GWAS SNPs from ImmunoBase
-# a) provide input data
+## a) provide input data
 data.file <- "http://galahad.well.ox.ac.uk/bigdata/ImmunoBase_GWAS.bed"
-data.file <- "~/Sites/SVN/github/bigdata/ImmunoBase_GWAS.bed"
 
-# b) perform DO enrichment analysis for nearby genes (with GWAS SNPs)
+## b) perform DO enrichment analysis for nearby genes (with GWAS SNPs)
 eTerm <- xGRviaGeneAnno(data.file=data.file, format.file="bed",
 gap.max=0, ontology="DO", RData.location=RData.location)
 
-# c) view enrichment results for the top significant terms
+## c) view enrichment results for the top significant terms
 xEnrichViewer(eTerm)
 
-# d) save enrichment results to the file called 'Regions2genes_enrichments.txt'
+## d) save enrichment results to the file called 'Regions2genes_enrichments.txt'
 output <- xEnrichViewer(eTerm, top_num=length(eTerm$adjp),
 sortBy="adjp", details=TRUE)
 utils::write.table(output, file="Regions2genes_enrichments.txt",
 sep="\\t", row.names=FALSE)
 
-# e) barplot of significant enrichment results
-bp <- xEnrichBarplot(eTerm, top_num="auto", displayBy="adjp")
+## e) barplot of significant enrichment results
+bp <- xEnrichBarplot(eTerm, top_num=10, displayBy="fc")
 print(bp)
 }
 }

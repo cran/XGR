@@ -8,7 +8,7 @@
 #' @param LD.r2 the LD r2 value. By default, it is 0.8, meaning that SNPs in LD (r2>=0.8) with input SNPs will be considered as LD SNPs. It can be any value from 0.8 to 1
 #' @param significance.threshold the given significance threshold. By default, it is set to NULL, meaning there is no constraint on the significance level when transforming the significance level of SNPs into scores. If given, those SNPs below this are considered significant and thus scored positively. Instead, those above this are considered insigificant and thus receive no score
 #' @param distance.max the maximum distance between genes and SNPs. Only those genes no far way from this distance will be considered as seed genes. This parameter will influence the distance-component weights calculated for nearby SNPs per gene
-#' @param decay.kernel a character specifying a decay kernel function. It can be one of 'slow' for slow decay, 'linear' for linear decay, and 'rapid' for rapid decay
+#' @param decay.kernel a character specifying a decay kernel function. It can be one of 'slow' for slow decay, 'linear' for linear decay, and 'rapid' for rapid decay. If no distance weight is used, please select 'constant'
 #' @param decay.exponent a numeric specifying a decay exponent. By default, it sets to 2
 #' @param GR.SNP the genomic regions of SNPs. By default, it is 'dbSNP_GWAS', that is, SNPs from dbSNP (version 146) restricted to GWAS SNPs and their LD SNPs (hg19). It can be 'dbSNP_Common', that is, Common SNPs from dbSNP (version 146) plus GWAS SNPs and their LD SNPs (hg19). Alternatively, the user can specify the customised input. To do so, first save your RData file (containing an GR object) into your local computer, and make sure the GR object content names refer to dbSNP IDs. Then, tell "GR.SNP" with your RData file name (with or without extension), plus specify your file RData path in "RData.location". Note: you can also load your customised GR object directly
 #' @param GR.Gene the genomic regions of genes. By default, it is 'UCSC_knownGene', that is, UCSC known genes (together with genomic locations) based on human genome assembly hg19. It can be 'UCSC_knownCanonical', that is, UCSC known canonical genes (together with genomic locations) based on human genome assembly hg19. Alternatively, the user can specify the customised input. To do so, first save your RData file (containing an GR object) into your local computer, and make sure the GR object content names refer to Gene Symbols. Then, tell "GR.Gene" with your RData file name (with or without extension), plus specify your file RData path in "RData.location". Note: you can also load your customised GR object directly
@@ -18,7 +18,7 @@
 #' @return
 #' an object of class "mSeed", a list with following components:
 #' \itemize{
-#'  \item{\code{SNP}: a matrix of nSNP X 3 containing SNP information, where nSNP is the number of SNPs, and the 3 columns are "SNP" (Lead and/or LD SNPs), "Score" (the scores for SNPs calculated based on p-values taking into account the given threshold of the significant level), "Pval" (the input p-values for Lead SNPs or R2-adjusted p-values for LD SNPs), "Flag" (indicating  as Lead or LD SNPs)}
+#'  \item{\code{SNP}: a matrix of nSNP X 4 containing SNP information, where nSNP is the number of SNPs, and the 3 columns are "SNP" (Lead and/or LD SNPs), "Score" (the scores for SNPs calculated based on p-values taking into account the given threshold of the significant level), "Pval" (the input p-values for Lead SNPs or R2-adjusted p-values for LD SNPs), "Flag" (indicating  as Lead or LD SNPs)}
 #'  \item{\code{Gene}: a matrix of nGene X 3 containing Gene information, where nGene is the number of seed genes, and the 3 columns are "Gene" (gene symbol), "Score" (the scores for seed genes), "Pval" (pvalue-like significance level transformed from gene scores)}
 #'  \item{\code{call}: the call that produced this result}
 #' }
@@ -28,13 +28,13 @@
 #' @include xSNP2GeneScores.r
 #' @examples
 #' \dontrun{
-#' # Load the library
+#' # Load the XGR package and specify the location of built-in data
 #' library(XGR)
-#' RData.location="~/Sites/SVN/github/RDataCentre/Portal"
+#' RData.location <- "http://galahad.well.ox.ac.uk/bigdata_dev"
 #'
 #' # a) provide the seed SNPs with the significance info
 #' ## load ImmunoBase
-#' ImmunoBase <- xRDataLoader(RData.customised='ImmunoBase')
+#' ImmunoBase <- xRDataLoader(RData.customised='ImmunoBase', RData.location=RData.location)
 #' ## get lead SNPs reported in AS GWAS and their significance info (p-values)
 #' gr <- ImmunoBase$AS$variant
 #' data <- GenomicRanges::mcols(gr)[,c(1,3)]
@@ -49,7 +49,7 @@
 #' head(mSeed$Gene)
 #' }
 
-xSNP2GeneScores <- function(data, include.LD=NA, LD.customised=NULL, LD.r2=0.8, significance.threshold=5e-5, distance.max=50000, decay.kernel=c("slow","linear","rapid"), decay.exponent=2, GR.SNP=c("dbSNP_GWAS","dbSNP_Common"), GR.Gene=c("UCSC_knownGene","UCSC_knownCanonical"), scoring.scheme=c("max","sum","sequential"), verbose=T, RData.location="https://github.com/hfang-bristol/RDataCentre/blob/master/Portal")
+xSNP2GeneScores <- function(data, include.LD=NA, LD.customised=NULL, LD.r2=0.8, significance.threshold=5e-5, distance.max=50000, decay.kernel=c("slow","linear","rapid","constant"), decay.exponent=2, GR.SNP=c("dbSNP_GWAS","dbSNP_Common"), GR.Gene=c("UCSC_knownGene","UCSC_knownCanonical"), scoring.scheme=c("max","sum","sequential"), verbose=T, RData.location="http://galahad.well.ox.ac.uk/bigdata")
 {
 
     ## match.arg matches arg against a table of candidate values as specified by choices, where NULL means to take the first one
@@ -94,7 +94,7 @@ xSNP2GeneScores <- function(data, include.LD=NA, LD.customised=NULL, LD.r2=0.8, 
     
     ####################################################################################
     
-    ## df_SNP df_eGenes
+    ## df_SNP df_nGenes
     allGenes <- sort(df_nGenes$Gene)
     allSNPs <- sort(df_SNP$SNP)
     
@@ -103,7 +103,7 @@ xSNP2GeneScores <- function(data, include.LD=NA, LD.customised=NULL, LD.r2=0.8, 
     G2S <- G2S_n
     
     ## consider SNP scores
-    ind <- match(df_SNP$SNP, colnames(G2S))
+    ind <- match(colnames(G2S), df_SNP$SNP)
     ########
     df_SNP <- df_SNP[ind,]
     ########
@@ -117,13 +117,24 @@ xSNP2GeneScores <- function(data, include.LD=NA, LD.customised=NULL, LD.r2=0.8, 
     
     ## calculate genetic influence score under a set of SNPs for each seed gene
     if(scoring.scheme=='max'){
-    	seeds.genes <- apply(G2S_score, 1, function(x) {
-            base::max(x)
-        })
+		if(1){
+			mat <- as.matrix(G2S_score)
+			seeds.genes <- do.call(base::pmax, lapply(1:ncol(mat), function(j) mat[,j]))
+		}else{
+			seeds.genes <- apply(G2S_score, 1, function(x) {
+				base::max(x)
+			})
+		}
+		
     }else if(scoring.scheme=='sum'){
-    	seeds.genes <- apply(G2S_score, 1, function(x) {
-            base::sum(x)
-        })
+		if(1){
+			seeds.genes <- base::rowSums(as.matrix(G2S_score))
+		}else{
+			seeds.genes <- apply(G2S_score, 1, function(x) {
+				base::sum(x)
+			})
+		}
+		
     }else if(scoring.scheme=='sequential'){
         seeds.genes <- apply(G2S_score, 1, function(x) {
         	base::sum(base::sort(x, decreasing=T) / (1:length(x)))
@@ -139,12 +150,15 @@ xSNP2GeneScores <- function(data, include.LD=NA, LD.customised=NULL, LD.r2=0.8, 
 	#############
 	## for output
 	df_Gene <- data.frame(Gene=names(seeds.genes), Score=seeds.genes, Pval=pval, row.names=NULL, stringsAsFactors=F)
+	df_Gene <- df_Gene[order(df_Gene$Score,decreasing=TRUE),]
 	#############
 	
 	if(verbose){
 		now <- Sys.time()
-		message(sprintf("%d Genes are defined as seeds and scored using '%s' scoring scheme", length(seeds.genes), scoring.scheme, as.character(now)), appendLF=T)
+		message(sprintf("In summary, %d Genes are defined as seeds and scored using '%s' scoring scheme", length(seeds.genes), scoring.scheme, as.character(now)), appendLF=T)
 	}
+	
+	df_SNP <- df_SNP[order(df_SNP$Flag,df_SNP$Score,df_SNP$SNP,decreasing=TRUE),]
     
     mSeed <- list(SNP = df_SNP,
                   Gene = df_Gene,

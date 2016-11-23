@@ -22,8 +22,7 @@ xRDataLoader(RData = c(NA, "GWAS2EF", "GWAS_LD", "IlluminaHumanHT",
 "org.Hs.egPfam", "org.Hs.string", "org.Hs.PCommons_DN",
 "org.Hs.PCommons_UN"),
 RData.customised = NULL, verbose = T,
-RData.location =
-"https://github.com/hfang-bristol/RDataCentre/blob/master/Portal")
+RData.location = "http://galahad.well.ox.ac.uk/bigdata")
 }
 \arguments{
 \item{RData}{which built-in RData to load. It can be one of "GWAS2EF",
@@ -54,14 +53,14 @@ displayed in the screen. By default, it sets to TRUE for display}
 
 \item{RData.location}{the characters to tell the location of built-in
 RData files. By default, it remotely locates at
-\url{https://github.com/hfang-bristol/RDataCentre/blob/master/Portal}
-and \url{http://galahad.well.ox.ac.uk/bigdata}. For the user equipped
-with fast internet connection, this option can be just left as default.
-But it is always advisable to download these files locally. Especially
-when the user needs to run this function many times, there is no need
-to ask the function to remotely download every time (also it will
-unnecessarily increase the runtime). For examples, these files (as a
-whole or part of them) can be first downloaded into your current
+\url{http://galahad.well.ox.ac.uk/bigdata}; the development version
+locates at \url{http://galahad.well.ox.ac.uk/bigdata_dev}. For the user
+equipped with fast internet connection, this option can be just left as
+default. But it is always advisable to download these files locally.
+Especially when the user needs to run this function many times, there
+is no need to ask the function to remotely download every time (also it
+will unnecessarily increase the runtime). For examples, these files (as
+a whole or part of them) can be first downloaded into your current
 working directory, and then set this option as:
 \eqn{RData.location="."}. Surely, the location can be anywhere as long
 as the user provides the correct path pointing to (otherwise, the
@@ -81,8 +80,8 @@ of the assigement sign '<-', then no RData will be loaded onto the
 working environment.
 }
 \examples{
-ImmunoBase <- xRDataLoader(RData.customised='ImmunoBase')
 \dontrun{
+ImmunoBase <- xRDataLoader(RData.customised='ImmunoBase')
 org.Hs.eg <- xRDataLoader(RData='org.Hs.eg')
 ig.HPPA <- xRDataLoader(RData='ig.HPPA')
 org.Hs.egHPPA <- xRDataLoader(RData='org.Hs.egHPPA')

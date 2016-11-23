@@ -6,7 +6,7 @@
 \usage{
 xEnrichBarplot(eTerm, top_num = 10, displayBy = c("fc", "adjp", "fdr",
 "zscore", "pvalue"), FDR.cutoff = 0.05, bar.label = TRUE,
-bar.label.size = 3, wrap.width = NULL)
+bar.label.size = 3, wrap.width = NULL, signature = TRUE)
 }
 \arguments{
 \item{eTerm}{an object of class "eTerm"}
@@ -31,6 +31,10 @@ FDR. By default, it sets to true for bar labelling}
 size. By default, it sets to 3}
 
 \item{wrap.width}{a positive integer specifying wrap width of name}
+
+\item{signature}{a logical to indicate whether the signature is
+assigned to the plot caption. By default, it sets TRUE showing which
+function is used to draw this graph}
 }
 \value{
 an object of class "ggplot"
@@ -44,9 +48,9 @@ none
 }
 \examples{
 \dontrun{
-# Load the library
+# Load the XGR package and specify the location of built-in data
 library(XGR)
-RData.location="~/Sites/SVN/github/bigdata"
+RData.location <- "http://galahad.well.ox.ac.uk/bigdata_dev/"
 
 # 1) load eQTL mapping results: cis-eQTLs significantly induced by IFN
 cis <- xRDataLoader(RData.customised='JKscience_TS2A',
@@ -65,10 +69,6 @@ bp <- xEnrichBarplot(eTerm, top_num="auto", displayBy="fc")
 #pdf(file="enrichment_barplot.pdf", height=6, width=12, compress=TRUE)
 print(bp)
 #dev.off()
-## modify y axis text
-bp + theme(axis.text.y=element_text(size=10,color="blue"))
-## modify x axis title
-bp + theme(axis.title.x=element_text(color="blue"))
 }
 }
 \seealso{

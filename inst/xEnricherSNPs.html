@@ -32,8 +32,7 @@ ontology.algorithm = c("none", "pc", "elim", "lea"), elim.pvalue =
 0.01,
 lea.depth = 2, path.mode = c("all_paths", "shortest_paths",
 "all_shortest_paths"), true.path.rule = T, verbose = T,
-RData.location =
-"https://github.com/hfang-bristol/RDataCentre/blob/master/Portal")
+RData.location = "http://galahad.well.ox.ac.uk/bigdata")
 </pre>
 
 
@@ -99,7 +98,7 @@ default, it sets to 'NULL' to consider all distances</p>
 </td></tr>
 <tr valign="top"><td><code>test</code></td>
 <td>
-<p>the statistic test used. It can be &quot;fisher&quot; for using
+<p>the test statistic used. It can be &quot;fisher&quot; for using
 fisher's exact test, &quot;hypergeo&quot; for using hypergeometric test, or
 &quot;binomial&quot; for using binomial test. Fisher's exact test is to test the
 independence between gene group (genes belonging to a group or not) and
@@ -111,9 +110,9 @@ genes, and thus compare sampling to background. Unlike hypergeometric
 test, binomial test is to sample at random (with replacement) from the
 background with the constant probability. In terms of the ease of
 finding the significance, they are in order: hypergeometric test &gt;
-binomial test &gt; fisher's exact test. In other words, in terms of the
-calculated p-value, hypergeometric test &lt; binomial test &lt; fisher's
-exact test</p>
+fisher's exact test &gt; binomial test. In other words, in terms of the
+calculated p-value, hypergeometric test &lt; fisher's exact test &lt;
+binomial test</p>
 </td></tr>
 <tr valign="top"><td><code>p.adjust.method</code></td>
 <td>

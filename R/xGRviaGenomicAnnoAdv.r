@@ -47,9 +47,9 @@
 #' }
 #' 3. ENCODE Histone Modification ChIP-seq data from different sources
 #' \itemize{
-#'  \item{\code{Broad_Histone}: a list (156 combinations of cell types and histone modifications) of GenomicRanges objects; each is an GR object containing identified peaks per cell type and per histone modification.}
-#'  \item{\code{SYDH_Histone}: a list (29 combinations of cell types and histone modifications) of GenomicRanges objects; each is an GR object containing identified peaks per cell type and per histone modification.}
-#'  \item{\code{UW_Histone}: a list (172 combinations of cell types and histone modifications) of GenomicRanges objects; each is an GR object containing identified peaks per cell type and per histone modification.}
+#'  \item{\code{Broad_Histone}: a list (156 combinations of cell types and histone modifications) of GenomicRanges objects; each is an GR object containing identified peaks per cell type and per histone modification. This dataset was generated from ENCODE/Broad Institute.}
+#'  \item{\code{SYDH_Histone}: a list (29 combinations of cell types and histone modifications) of GenomicRanges objects; each is an GR object containing identified peaks per cell type and per histone modification. This dataset was generated from ENCODE/Stanford/Yale/Davis/Harvard.}
+#'  \item{\code{UW_Histone}: a list (172 combinations of cell types and histone modifications) of GenomicRanges objects; each is an GR object containing identified peaks per cell type and per histone modification. This dataset was generated from ENCODE/University of Washington.}
 #' }
 #' 4. FANTOM5 expressed enhancer atlas
 #' \itemize{
@@ -86,31 +86,23 @@
 #'  \item{\code{ReMap_PublicAndEncode_mergedTFBS}: a list (237 transcription factors under GSE studies and ENCODE) of GenomicRanges objects; each is an GR object containing merged peaks per transcripton factor.}
 #'  \item{\code{ReMap_Encode_TFBS}: a list (155 transcription factors under ENCODE) of GenomicRanges objects; each is an GR object containing identified peaks per transcripton factor.}
 #' }
-#' 10. Blueprint Histone Modification ChIP-seq data from bone marrow
+#' 10. Blueprint Histone Modification ChIP-seq data
 #' \itemize{
-#'  \item{\code{Blueprint_BoneMarrow_Histone}: a list (132 combinations of histone modifications and samples) of GenomicRanges objects; each is an GR object containing identified peaks per histone per sample.}
-#' }
-#' 11. Blueprint Histone Modification ChIP-seq data from cell lines
-#' \itemize{
+#'  \item{\code{Blueprint_BoneMarrow_Histone}: a list (132 combinations of histone modifications and samples) of GenomicRanges objects; each is an GR object containing identified peaks per histone per sample (from bone marrow).}
 #'  \item{\code{Blueprint_CellLine_Histone}: a list (38 combinations of histone modifications and cell lines) of GenomicRanges objects; each is an GR object containing identified peaks per histone per cell line.}
+#'  \item{\code{Blueprint_CordBlood_Histone}: a list (126 combinations of histone modifications and samples) of GenomicRanges objects; each is an GR object containing identified peaks per histone per sample (from cord blood).}
+#'  \item{\code{Blueprint_Thymus_Histone}: a list (5 combinations of histone modifications and samples) of GenomicRanges objects; each is an GR object containing identified peaks per histone per sample (from thymus).}
+#'  \item{\code{Blueprint_VenousBlood_Histone}: a list (296 combinations of histone modifications and samples) of GenomicRanges objects; each is an GR object containing identified peaks per histone per sample (from venous blood).}
 #' }
-#' 12. Blueprint Histone Modification ChIP-seq data from cord blood
-#' \itemize{
-#'  \item{\code{Blueprint_CordBlood_Histone}: a list (126 combinations of histone modifications and samples) of GenomicRanges objects; each is an GR object containing identified peaks per histone per sample.}
-#' }
-#' 13. Blueprint Histone Modification ChIP-seq data from thymus
-#' \itemize{
-#'  \item{\code{Blueprint_Thymus_Histone}: a list (5 combinations of histone modifications and samples) of GenomicRanges objects; each is an GR object containing identified peaks per histone per sample.}
-#' }
-#' 14. Blueprint Histone Modification ChIP-seq data from venous blood
-#' \itemize{
-#'  \item{\code{Blueprint_VenousBlood_Histone}: a list (296 combinations of histone modifications and samples) of GenomicRanges objects; each is an GR object containing identified peaks per histone per sample.}
-#' }
-#' 15. Blueprint DNaseI Hypersensitivity site data
+#' 11. BLUEPRINT DNaseI Hypersensitivity site data
 #' \itemize{
 #'  \item{\code{Blueprint_DNaseI}: a list (36 samples) of GenomicRanges objects; each is an GR object containing identified peaks per sample.}
 #' }
-#' 16. Roadmap Epigenomics Core 15-state Genome Segmentation data for primary cells (blood and T cells)
+#' 12. BLUEPRINT DNA Methylation data
+#'  \item{\code{Blueprint_Methylation_hyper}: a list (206 samples) of GenomicRanges objects; each is an GR object containing hyper-methylated CpG regions per sample.}
+#'  \item{\code{Blueprint_Methylation_hypo}: a list (206 samples) of GenomicRanges objects; each is an GR object containing hypo-methylated CpG regions per sample.}
+#' }
+#' 13. Roadmap Epigenomics Core 15-state Genome Segmentation data for primary cells (blood and T cells)
 #' \itemize{
 #' \item{\code{EpigenomeAtlas_15Segments_E033}: a list (15 categories of segments) of GenomicRanges objects; each is an GR object containing segments per category in the reference epigenome E033 (Primary T cells from cord blood).}
 #' \item{\code{EpigenomeAtlas_15Segments_E034}: a list (15 categories of segments) of GenomicRanges objects; each is an GR object containing segments per category in the reference epigenome E034 (Primary T cells from peripheral blood).}
@@ -127,7 +119,7 @@
 #' \item{\code{EpigenomeAtlas_15Segments_E048}: a list (15 categories of segments) of GenomicRanges objects; each is an GR object containing segments per category in the reference epigenome E048 (Primary T killer memory cells from peripheral blood).}
 #' \item{\code{EpigenomeAtlas_15Segments_E062}: a list (15 categories of segments) of GenomicRanges objects; each is an GR object containing segments per category in the reference epigenome E062 (Primary mononuclear cells from peripheral blood).}
 #' }
-#' 17. Roadmap Epigenomics Core 15-state Genome Segmentation data for primary cells (HSC and B cells)
+#' 14. Roadmap Epigenomics Core 15-state Genome Segmentation data for primary cells (HSC and B cells)
 #' \itemize{
 #' \item{\code{EpigenomeAtlas_15Segments_E029}: a list (15 categories of segments) of GenomicRanges objects; each is an GR object containing segments per category in the reference epigenome E029 (Primary monocytes from peripheral blood).}
 #' \item{\code{EpigenomeAtlas_15Segments_E030}: a list (15 categories of segments) of GenomicRanges objects; each is an GR object containing segments per category in the reference epigenome E030 (Primary neutrophils from peripheral blood).}
@@ -144,29 +136,30 @@
 #' @include xGRviaGenomicAnnoAdv.r
 #' @examples
 #' \dontrun{
-#' # Load the library
+#' # Load the XGR package and specify the location of built-in data
 #' library(XGR)
+#' RData.location <- "http://galahad.well.ox.ac.uk/bigdata_dev"
 #' 
 #' # Enrichment analysis for GWAS SNPs from ImmunoBase
-#' # a) provide input data
+#' ## a) provide input data
 #' data.file <- "http://galahad.well.ox.ac.uk/bigdata/ImmunoBase_GWAS.bed"
 #' 
-#' # b) perform enrichment analysis using FANTOM expressed enhancers
-#' eTerm1 <- xGRviaGenomicAnnoAdv(data.file=data.file, format.file="bed", GR.annotation="FANTOM5_Enhancer_Cell", num.samples=1000, gap.max=50000)
+#' ## b) perform enrichment analysis using FANTOM expressed enhancers
+#' eTerm <- xGRviaGenomicAnnoAdv(data.file=data.file, format.file="bed", GR.annotation="FANTOM5_Enhancer_Cell", num.samples=1000, gap.max=50000, RData.location=RData.location)
 #'
-#' # c) view enrichment results for the top significant terms
+#' ## c) view enrichment results for the top significant terms
 #' xEnrichViewer(eTerm)
 #'
-#' # d) barplot of enriched terms
+#' ## d) barplot of enriched terms
 #' bp <- xEnrichBarplot(eTerm, top_num='auto', displayBy="fdr")
 #' bp
 #'
-#' # e) save enrichment results to the file called 'Regions_enrichments.txt'
+#' ## e) save enrichment results to the file called 'Regions_enrichments.txt'
 #' output <- xEnrichViewer(eTerm, top_num=length(eTerm$adjp), sortBy="adjp", details=TRUE)
 #' utils::write.table(output, file="Regions_enrichments.txt", sep="\t", row.names=FALSE)
 #' }
 
-xGRviaGenomicAnnoAdv <- function(data.file, annotation.file=NULL, background.file=NULL, format.file=c("data.frame", "bed", "chr:start-end", "GRanges"), build.conversion=c(NA,"hg38.to.hg19","hg18.to.hg19"), background.annotatable.only=F, num.samples=1000, gap.max=50000, max.distance=NULL, p.adjust.method=c("BH", "BY", "bonferroni", "holm", "hochberg", "hommel"), GR.annotation=c(NA,"Uniform_TFBS","ENCODE_TFBS_ClusteredV3","ENCODE_TFBS_ClusteredV3_CellTypes", "Uniform_DNaseI_HS","ENCODE_DNaseI_ClusteredV3","ENCODE_DNaseI_ClusteredV3_CellTypes", "Broad_Histone","SYDH_Histone","UW_Histone","FANTOM5_Enhancer_Cell","FANTOM5_Enhancer_Tissue","FANTOM5_Enhancer_Extensive","FANTOM5_Enhancer","Segment_Combined_Gm12878","Segment_Combined_H1hesc","Segment_Combined_Helas3","Segment_Combined_Hepg2","Segment_Combined_Huvec","Segment_Combined_K562","TFBS_Conserved","TS_miRNA","TCGA", "ReMap_Public_TFBS","ReMap_Public_mergedTFBS","ReMap_PublicAndEncode_mergedTFBS","ReMap_Encode_TFBS", "Blueprint_BoneMarrow_Histone","Blueprint_CellLine_Histone","Blueprint_CordBlood_Histone","Blueprint_Thymus_Histone","Blueprint_VenousBlood_Histone","Blueprint_DNaseI","EpigenomeAtlas_15Segments_E029", "EpigenomeAtlas_15Segments_E030", "EpigenomeAtlas_15Segments_E031", "EpigenomeAtlas_15Segments_E032", "EpigenomeAtlas_15Segments_E033", "EpigenomeAtlas_15Segments_E034", "EpigenomeAtlas_15Segments_E035", "EpigenomeAtlas_15Segments_E036", "EpigenomeAtlas_15Segments_E037", "EpigenomeAtlas_15Segments_E038", "EpigenomeAtlas_15Segments_E039", "EpigenomeAtlas_15Segments_E040", "EpigenomeAtlas_15Segments_E041", "EpigenomeAtlas_15Segments_E042", "EpigenomeAtlas_15Segments_E043", "EpigenomeAtlas_15Segments_E044", "EpigenomeAtlas_15Segments_E045", "EpigenomeAtlas_15Segments_E046", "EpigenomeAtlas_15Segments_E047", "EpigenomeAtlas_15Segments_E048", "EpigenomeAtlas_15Segments_E050", "EpigenomeAtlas_15Segments_E051", "EpigenomeAtlas_15Segments_E062"), parallel=TRUE, multicores=NULL, verbose=T, RData.location="https://github.com/hfang-bristol/RDataCentre/blob/master/Portal")
+xGRviaGenomicAnnoAdv <- function(data.file, annotation.file=NULL, background.file=NULL, format.file=c("data.frame", "bed", "chr:start-end", "GRanges"), build.conversion=c(NA,"hg38.to.hg19","hg18.to.hg19"), background.annotatable.only=F, num.samples=1000, gap.max=50000, max.distance=NULL, p.adjust.method=c("BH", "BY", "bonferroni", "holm", "hochberg", "hommel"), GR.annotation=c(NA,"Uniform_TFBS","ENCODE_TFBS_ClusteredV3","ENCODE_TFBS_ClusteredV3_CellTypes", "Uniform_DNaseI_HS","ENCODE_DNaseI_ClusteredV3","ENCODE_DNaseI_ClusteredV3_CellTypes", "Broad_Histone","SYDH_Histone","UW_Histone","FANTOM5_Enhancer_Cell","FANTOM5_Enhancer_Tissue","FANTOM5_Enhancer_Extensive","FANTOM5_Enhancer","Segment_Combined_Gm12878","Segment_Combined_H1hesc","Segment_Combined_Helas3","Segment_Combined_Hepg2","Segment_Combined_Huvec","Segment_Combined_K562","TFBS_Conserved","TS_miRNA","TCGA", "ReMap_Public_TFBS","ReMap_Public_mergedTFBS","ReMap_PublicAndEncode_mergedTFBS","ReMap_Encode_TFBS", "Blueprint_BoneMarrow_Histone","Blueprint_CellLine_Histone","Blueprint_CordBlood_Histone","Blueprint_Thymus_Histone","Blueprint_VenousBlood_Histone","Blueprint_DNaseI","Blueprint_Methylation_hyper","Blueprint_Methylation_hypo","EpigenomeAtlas_15Segments_E029", "EpigenomeAtlas_15Segments_E030", "EpigenomeAtlas_15Segments_E031", "EpigenomeAtlas_15Segments_E032", "EpigenomeAtlas_15Segments_E033", "EpigenomeAtlas_15Segments_E034", "EpigenomeAtlas_15Segments_E035", "EpigenomeAtlas_15Segments_E036", "EpigenomeAtlas_15Segments_E037", "EpigenomeAtlas_15Segments_E038", "EpigenomeAtlas_15Segments_E039", "EpigenomeAtlas_15Segments_E040", "EpigenomeAtlas_15Segments_E041", "EpigenomeAtlas_15Segments_E042", "EpigenomeAtlas_15Segments_E043", "EpigenomeAtlas_15Segments_E044", "EpigenomeAtlas_15Segments_E045", "EpigenomeAtlas_15Segments_E046", "EpigenomeAtlas_15Segments_E047", "EpigenomeAtlas_15Segments_E048", "EpigenomeAtlas_15Segments_E050", "EpigenomeAtlas_15Segments_E051", "EpigenomeAtlas_15Segments_E062"), parallel=TRUE, multicores=NULL, verbose=T, RData.location="http://galahad.well.ox.ac.uk/bigdata")
 {
     startT <- Sys.time()
     message(paste(c("Start at ",as.character(startT)), collapse=""), appendLF=T)
@@ -191,8 +184,13 @@ xGRviaGenomicAnnoAdv <- function(data.file, annotation.file=NULL, background.fil
     ## import data file
     if(is.matrix(data.file) | is.data.frame(data.file) | class(data.file)=="GRanges"){
         data <- data.file
-    }else if(!is.null(data.file) & !is.na(data.file)){
-		data <- utils::read.delim(file=data.file, header=F, row.names=NULL, stringsAsFactors=F)
+    }else if(!is.null(data.file) & any(!is.na(data.file))){
+    	if(length(data.file)==1){
+			data <- utils::read.delim(file=data.file, header=F, row.names=NULL, stringsAsFactors=F)
+			data <- unique(data[,1])
+		}else{
+			data <- data.file
+		}
     }else{
     	stop("The file 'data.file' must be provided!\n")
     }
@@ -219,7 +217,12 @@ xGRviaGenomicAnnoAdv <- function(data.file, annotation.file=NULL, background.fil
     if(is.matrix(background.file) | is.data.frame(background.file) | class(background.file)=="GRanges"){
         background <- background.file
     }else if(!is.null(background.file)){
-		background <- utils::read.delim(file=background.file, header=F, row.names=NULL, stringsAsFactors=F)
+    	if(length(background.file)==1){
+			background <- utils::read.delim(file=background.file, header=F, row.names=NULL, stringsAsFactors=F)
+			background <- unique(background[,1])
+		}else{
+			background <- background.file
+		}
     }else{
     	background <- NULL
     }
@@ -325,7 +328,7 @@ xGRviaGenomicAnnoAdv <- function(data.file, annotation.file=NULL, background.fil
 		data <- data[ind,]
 		dGR <- GenomicRanges::GRanges(
 			seqnames=S4Vectors::Rle(data[,1]),
-			ranges = IRanges::IRanges(start=as.numeric(data[,2]+1), end=as.numeric(data[,3])),
+			ranges = IRanges::IRanges(start=as.numeric(data[,2]), end=as.numeric(data[,3])),
 			strand = S4Vectors::Rle(rep('*',nrow(data)))
 		)
 		
@@ -346,7 +349,7 @@ xGRviaGenomicAnnoAdv <- function(data.file, annotation.file=NULL, background.fil
 				x <- x[ind,]
 				gr <- GenomicRanges::GRanges(
 					seqnames=S4Vectors::Rle(x[,1]),
-					ranges = IRanges::IRanges(start=as.numeric(x[,2]+1), end=as.numeric(x[,3])),
+					ranges = IRanges::IRanges(start=as.numeric(x[,2]), end=as.numeric(x[,3])),
 					strand = S4Vectors::Rle(rep('*',nrow(x)))
 				)
 			})

@@ -7,12 +7,11 @@
 xSNP2GeneScores(data, include.LD = NA, LD.customised = NULL, LD.r2 =
 0.8,
 significance.threshold = 5e-05, distance.max = 50000,
-decay.kernel = c("slow", "linear", "rapid"), decay.exponent = 2,
-GR.SNP = c("dbSNP_GWAS", "dbSNP_Common"), GR.Gene = c("UCSC_knownGene",
-"UCSC_knownCanonical"), scoring.scheme = c("max", "sum", "sequential"),
-verbose = T,
-RData.location =
-"https://github.com/hfang-bristol/RDataCentre/blob/master/Portal")
+decay.kernel = c("slow", "linear", "rapid", "constant"),
+decay.exponent = 2, GR.SNP = c("dbSNP_GWAS", "dbSNP_Common"),
+GR.Gene = c("UCSC_knownGene", "UCSC_knownCanonical"),
+scoring.scheme = c("max", "sum", "sequential"), verbose = T,
+RData.location = "http://galahad.well.ox.ac.uk/bigdata")
 }
 \arguments{
 \item{data}{a named input vector containing the sinificance level for
@@ -57,7 +56,8 @@ calculated for nearby SNPs per gene}
 
 \item{decay.kernel}{a character specifying a decay kernel function. It
 can be one of 'slow' for slow decay, 'linear' for linear decay, and
-'rapid' for rapid decay}
+'rapid' for rapid decay. If no distance weight is used, please select
+'constant'}
 
 \item{decay.exponent}{a numeric specifying a decay exponent. By
 default, it sets to 2}
@@ -102,7 +102,7 @@ RData files. See \code{\link{xRDataLoader}} for details}
 \value{
 an object of class "mSeed", a list with following components:
 \itemize{
-\item{\code{SNP}: a matrix of nSNP X 3 containing SNP information,
+\item{\code{SNP}: a matrix of nSNP X 4 containing SNP information,
 where nSNP is the number of SNPs, and the 3 columns are "SNP" (Lead
 and/or LD SNPs), "Score" (the scores for SNPs calculated based on
 p-values taking into account the given threshold of the significant
@@ -129,13 +129,14 @@ located within distance window of input and/or LD SNPs.
 }
 \examples{
 \dontrun{
-# Load the library
+# Load the XGR package and specify the location of built-in data
 library(XGR)
-RData.location="~/Sites/SVN/github/RDataCentre/Portal"
+RData.location <- "http://galahad.well.ox.ac.uk/bigdata_dev"
 
 # a) provide the seed SNPs with the significance info
 ## load ImmunoBase
-ImmunoBase <- xRDataLoader(RData.customised='ImmunoBase')
+ImmunoBase <- xRDataLoader(RData.customised='ImmunoBase',
+RData.location=RData.location)
 ## get lead SNPs reported in AS GWAS and their significance info (p-values)
 gr <- ImmunoBase$AS$variant
 data <- GenomicRanges::mcols(gr)[,c(1,3)]
