@@ -4,6 +4,7 @@
 #'
 #' @param data a named input vector containing the sinificance level for genomic regions (GR). For this named vector, the element names are GR, in the format of 'chrN:start-end', where N is either 1-22 or X, start (or end) is genomic positional number; for example, 'chr1:13-20'. The element values for the significance level (measured as p-value or fdr). Alternatively, it can be a matrix or data frame with two columns: 1st column for GR, 2nd column for the significance level. 
 #' @param significance.threshold the given significance threshold. By default, it is set to NULL, meaning there is no constraint on the significance level when transforming the significance level of GR into scores. If given, those GR below this are considered significant and thus scored positively. Instead, those above this are considered insigificant and thus receive no score
+#' @param score.cap the maximum score being capped. By default, it is set to 10. If NULL, no capping is applied
 #' @param verbose logical to indicate whether the messages will be displayed in the screen. By default, it sets to true for display
 #' @param RData.location the characters to tell the location of built-in RData files. See \code{\link{xRDataLoader}} for details
 #' @return
@@ -40,7 +41,7 @@
 #' df_GR <- xGRscores(data=data, significance.threshold=5e-5, RData.location=RData.location)
 #' }
 
-xGRscores <- function(data, significance.threshold=5e-2, verbose=T, RData.location="http://galahad.well.ox.ac.uk/bigdata")
+xGRscores <- function(data, significance.threshold=5e-2, score.cap=10, verbose=T, RData.location="http://galahad.well.ox.ac.uk/bigdata")
 {
 
     if(is.null(data)){
@@ -119,7 +120,24 @@ xGRscores <- function(data, significance.threshold=5e-2, verbose=T, RData.locati
     #########
     
     df_GR <- data.frame(GR=names(pval), Score=seeds.snps, Pval=pval, row.names=NULL, stringsAsFactors=F)
-    df_GR <- df_GR[order(df_GR$Score,df_GR$GR,decreasing=TRUE),]
+    
+    
+    ##############################
+    ## cap the maximum score
+    if(!is.null(score.cap)){
+    	score.cap <- as.numeric(score.cap)
+    	if(score.cap <= max(df_GR$Score)){
+    		df_GR$Score[df_GR$Score>=score.cap] <- score.cap
+    		
+			if(verbose){
+				now <- Sys.time()
+				message(sprintf("GR score capped to the maximum score %d.", score.cap), appendLF=T)
+			}
+    	}
+    }
+    ##############################
+    
+    df_GR <- df_GR[order(df_GR$Score,-df_GR$Pval,df_GR$GR,decreasing=TRUE),]
     #########
     
     invisible(df_GR)
