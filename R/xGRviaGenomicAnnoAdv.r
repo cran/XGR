@@ -30,7 +30,7 @@
 #'  \item{\code{nData}: the number of bases covered by input regions}
 #'  \item{\code{nBG}: the number of bases covered by background regions}
 #' }
-#' @note The genomic annotation data are described below according to the data sources and data types.
+#' @note The genomic annotation data are described below according to the data sources and data types.\cr
 #' 1. ENCODE Transcription Factor ChIP-seq data
 #' \itemize{
 #'  \item{\code{Uniform_TFBS}: a list (690 combinations of cell types and transcription factors) of GenomicRanges objects; each is an GR object containing uniformly identified peaks per cell type per transcription factor.}
@@ -691,7 +691,7 @@ xGRviaGenomicAnnoAdv <- function(data.file, annotation.file=NULL, background.fil
     ###### parallel computing
     flag_parallel <- F
     if(parallel==TRUE){
-        flag_parallel <- dnet::dCheckParallel(multicores=multicores, verbose=verbose)
+        flag_parallel <- xCheckParallel(multicores=multicores, verbose=verbose)
         if(flag_parallel){
             i <- 1
             b2f <- foreach::`%dopar%` (foreach::foreach(i=1:length(sGR_list), .inorder=T, .combine=rbind), {

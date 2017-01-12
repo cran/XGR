@@ -26,7 +26,7 @@
 #'  \item{\code{expProb}: the probability of expecting bases overlapped between background regions and annotation regions}
 #'  \item{\code{obsProb}: the probability of observing regions overlapped between input regions and annotation regions}
 #' }
-#' @note The genomic annotation data are described below according to the data sources and data types.
+#' @note The genomic annotation data are described below according to the data sources and data types.\cr
 #' 1. ENCODE Transcription Factor ChIP-seq data
 #' \itemize{
 #'  \item{\code{Uniform_TFBS}: a list (690 combinations of cell types and transcription factors) of GenomicRanges objects; each is an GR object containing uniformly identified peaks per cell type per transcription factor.}
@@ -508,6 +508,8 @@ xGRviaGenomicAnno <- function(data.file, annotation.file=NULL, background.file=N
         # K: num of sampling
         # M: num of success in background
         # N: num in background
+        
+        N <- max(N, M)
         p.value <- ifelse(K==0 || M==0 || N==0, 1, stats::pbinom(X,K,M/N, lower.tail=F, log.p=F))
         return(p.value)
     }
@@ -659,7 +661,7 @@ xGRviaGenomicAnno <- function(data.file, annotation.file=NULL, background.file=N
 		K <- data_nBases
 		M <- as.numeric(annotation_nBases[i])
 		N <- background_nBases
-
+		
         p.value <- doBinomialTest(X, K, M, N)
  
         ## Z-score based on theoretical calculation
@@ -673,6 +675,10 @@ xGRviaGenomicAnno <- function(data.file, annotation.file=NULL, background.file=N
 			}else{
 				z.score <- 0
 			}
+		}
+		
+		if(is.na(z.score)){
+			z.score <- 0
 		}
 		
 		## output
