@@ -35,6 +35,6 @@ xCheckParallel()
 }
 \seealso{
 \code{\link{xDAGsim}}, \code{\link{xSocialiser}},
+\code{\link{xSocialiserGenes}}, \code{\link{xSocialiserSNPs}},
 \code{\link{xGRviaGenomicAnnoAdv}}
 }
-

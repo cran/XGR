@@ -2,9 +2,10 @@
 #'
 #' \code{xEnricherGenes} is supposed to conduct enrichment analysis given the input data and the ontology in query. It returns an object of class "eTerm". Enrichment analysis is based on either Fisher's exact test or Hypergeometric test. The test can respect the hierarchy of the ontology. Now it supports enrichment analysis using a wide variety of ontologies such as Gene Ontology and Phenotype Ontologies.
 #'
-#' @param data an input vector. It contains a list of Gene Symbols of interest
-#' @param background a background vector. It contains a list of Gene Symbols as the test background. If NULL, by default all annotatable are used as background
-#' @param ontology the ontology supported currently. It can be "GOBP" for Gene Ontology Biological Process, "GOMF" for Gene Ontology Molecular Function, "GOCC" for Gene Ontology Cellular Component, "PS" for phylostratific age information, "PS2" for the collapsed PS version (inferred ancestors being collapsed into one with the known taxonomy information), "SF" for SCOP domain superfamilies, "Pfam" for Pfam domain families, "DO" for Disease Ontology, "HPPA" for Human Phenotype Phenotypic Abnormality, "HPMI" for Human Phenotype Mode of Inheritance, "HPCM" for Human Phenotype Clinical Modifier, "HPMA" for Human Phenotype Mortality Aging, "MP" for Mammalian Phenotype, Drug-Gene Interaction database ("DGIdb") for drugable categories, tissue-specific eQTL-containing genes from GTEx ("GTExV4" and "GTExV6"), and the molecular signatures database (Msigdb, including "MsigdbH", "MsigdbC1", "MsigdbC2CGP", "MsigdbC2CPall", "MsigdbC2CP", "MsigdbC2KEGG", "MsigdbC2REACTOME", "MsigdbC2BIOCARTA", "MsigdbC3TFT", "MsigdbC3MIR", "MsigdbC4CGN", "MsigdbC4CM", "MsigdbC5BP", "MsigdbC5MF", "MsigdbC5CC", "MsigdbC6", "MsigdbC7")
+#' @param data an input vector containing gene symbols
+#' @param background a background vector containing gene symbols as the test background. If NULL, by default all annotatable are used as background
+#' @param check.symbol.identity logical to indicate whether to match the input data/background via Synonyms for those unmatchable by official gene symbols. By default, it sets to false
+#' @param ontology the ontology supported currently. It can be "GOBP" for Gene Ontology Biological Process, "GOMF" for Gene Ontology Molecular Function, "GOCC" for Gene Ontology Cellular Component, "PS" for phylostratific age information, "PS2" for the collapsed PS version (inferred ancestors being collapsed into one with the known taxonomy information), "SF" for SCOP domain superfamilies, "Pfam" for Pfam domain families, "DO" for Disease Ontology, "HPPA" for Human Phenotype Phenotypic Abnormality, "HPMI" for Human Phenotype Mode of Inheritance, "HPCM" for Human Phenotype Clinical Modifier, "HPMA" for Human Phenotype Mortality Aging, "MP" for Mammalian Phenotype, Drug-Gene Interaction database ("DGIdb") for drugable categories, tissue-specific eQTL-containing genes from GTEx ("GTExV4" and "GTExV6"), crowd extracted expression of differential signatures from CREEDS ("CreedsDisease", "CreedsDiseaseUP", "CreedsDiseaseDN", "CreedsDrug", "CreedsDrugUP", "CreedsDrugDN", "CreedsGene", "CreedsGeneUP" and "CreedsGeneDN"), and the molecular signatures database (Msigdb, including "MsigdbH", "MsigdbC1", "MsigdbC2CGP", "MsigdbC2CPall", "MsigdbC2CP", "MsigdbC2KEGG", "MsigdbC2REACTOME", "MsigdbC2BIOCARTA", "MsigdbC3TFT", "MsigdbC3MIR", "MsigdbC4CGN", "MsigdbC4CM", "MsigdbC5BP", "MsigdbC5MF", "MsigdbC5CC", "MsigdbC6", "MsigdbC7")
 #' @param size.range the minimum and maximum size of members of each term in consideration. By default, it sets to a minimum of 10 but no more than 2000
 #' @param min.overlap the minimum number of overlaps. Only those terms with members that overlap with input data at least min.overlap (3 by default) will be processed
 #' @param which.distance which terms with the distance away from the ontology root (if any) is used to restrict terms in consideration. By default, it sets to 'NULL' to consider all distances
@@ -81,7 +82,7 @@
 #' xEnrichDAGplot(eTerm, top_num=10, displayBy="zscore", node.info=c("full_term_name"))
 #' }
 
-xEnricherGenes <- function(data, background=NULL, ontology=c("GOBP","GOMF","GOCC","PS","PS2","SF","Pfam","DO","HPPA","HPMI","HPCM","HPMA","MP", "MsigdbH", "MsigdbC1", "MsigdbC2CGP", "MsigdbC2CPall", "MsigdbC2CP", "MsigdbC2KEGG", "MsigdbC2REACTOME", "MsigdbC2BIOCARTA", "MsigdbC3TFT", "MsigdbC3MIR", "MsigdbC4CGN", "MsigdbC4CM", "MsigdbC5BP", "MsigdbC5MF", "MsigdbC5CC", "MsigdbC6", "MsigdbC7", "DGIdb", "GTExV4", "GTExV6"), size.range=c(10,2000), min.overlap=3, which.distance=NULL, test=c("hypergeo","fisher","binomial"), p.adjust.method=c("BH", "BY", "bonferroni", "holm", "hochberg", "hommel"), ontology.algorithm=c("none","pc","elim","lea"), elim.pvalue=1e-2, lea.depth=2, path.mode=c("all_paths","shortest_paths","all_shortest_paths"), true.path.rule=F, verbose=T, RData.location="http://galahad.well.ox.ac.uk/bigdata")
+xEnricherGenes <- function(data, background=NULL, check.symbol.identity=F, ontology=c("GOBP","GOMF","GOCC","PS","PS2","SF","Pfam","DO","HPPA","HPMI","HPCM","HPMA","MP", "MsigdbH", "MsigdbC1", "MsigdbC2CGP", "MsigdbC2CPall", "MsigdbC2CP", "MsigdbC2KEGG", "MsigdbC2REACTOME", "MsigdbC2BIOCARTA", "MsigdbC3TFT", "MsigdbC3MIR", "MsigdbC4CGN", "MsigdbC4CM", "MsigdbC5BP", "MsigdbC5MF", "MsigdbC5CC", "MsigdbC6", "MsigdbC7", "DGIdb", "GTExV4", "GTExV6", "CreedsDisease", "CreedsDiseaseUP", "CreedsDiseaseDN", "CreedsDrug", "CreedsDrugUP", "CreedsDrugDN", "CreedsGene", "CreedsGeneUP", "CreedsGeneDN"), size.range=c(10,2000), min.overlap=3, which.distance=NULL, test=c("hypergeo","fisher","binomial"), p.adjust.method=c("BH", "BY", "bonferroni", "holm", "hochberg", "hommel"), ontology.algorithm=c("none","pc","elim","lea"), elim.pvalue=1e-2, lea.depth=2, path.mode=c("all_paths","shortest_paths","all_shortest_paths"), true.path.rule=F, verbose=T, RData.location="http://galahad.well.ox.ac.uk/bigdata")
 {
     startT <- Sys.time()
     message(paste(c("Start at ",as.character(startT)), collapse=""), appendLF=T)
@@ -169,97 +170,16 @@ xEnricherGenes <- function(data, background=NULL, ontology=c("GOBP","GOMF","GOCC
 		stop("There is no input for the ontology.\n")
 	}   
     
-    #############################################################################################
-    # A function converting from symbol to entrezgene
-    symbol2entrezgene <- function(Symbol, check.symbol.identity, allGeneID, allSymbol, allSynonyms, verbose){
-    
-        ## correct for those symbols being shown as DATE format
-        if(1){
-            ## for those starting with 'Mar' in a excel-input date format
-            a <- Symbol
-            flag <- grep("-Mar$", a, ignore.case=T, perl=T, value=F)
-            if(length(flag)>=1){
-                b <- a[flag]
-                c <- sub("-Mar$", "", b, ignore.case=T, perl=T)
-                d <- sub("^0", "", c, ignore.case=T, perl=T)
-                e <- sapply(d, function(x) paste(c("March",x), collapse=""))
-                a[flag] <- e
-                Symbol <- a
-            }
-
-            ## for those starting with 'Sep' in a excel-input date format
-            a <- Symbol
-            flag <- grep("-Sep$", a, ignore.case=T, perl=T, value=F)
-            if(length(flag)>=1){
-                b <- a[flag]
-                c <- sub("-Sep$", "", b, ignore.case=T, perl=T)
-                d <- sub("^0", "", c, ignore.case=T, perl=T)
-                e <- sapply(d, function(x) paste(c("Sept",x), collapse=""))
-                a[flag] <- e
-                Symbol <- a
-            }
-        }
-        
-        ## case-insensitive
-        match_flag <- match(tolower(Symbol),tolower(allSymbol))
-        
-        ## match vis Synonyms for those unmatchable by official gene symbols
-        if(check.symbol.identity){
-            ## match Synonyms (if not found via Symbol)
-            na_flag <- is.na(match_flag)
-            a <- Symbol[na_flag]
-
-            ###
-            tmp_flag <- is.na(match(tolower(allSymbol), tolower(Symbol)))
-            tmp_Synonyms <- allSynonyms[tmp_flag]
-            Orig.index <- seq(1,length(allSynonyms))
-            Orig.index <- Orig.index[tmp_flag]
-            ###
-
-            b <- sapply(1:length(a), function(x){
-                tmp_pattern1 <- paste("^",a[x],"\\|", sep="")
-                tmp_pattern2 <- paste("\\|",a[x],"\\|", sep="")
-                tmp_pattern3 <- paste("\\|",a[x],"$", sep="")
-                tmp_pattern <- paste(tmp_pattern1,"|",tmp_pattern2,"|",tmp_pattern3, sep="")
-                tmp_result <- grep(tmp_pattern, tmp_Synonyms, ignore.case=T, perl=T, value=F)
-                ifelse(length(tmp_result)==1, Orig.index[tmp_result[1]], NA)
-            })
-            match_flag[na_flag] <- b
-            
-            if(verbose){
-                now <- Sys.time()
-                message(sprintf("\tAmong %d symbols of input data, there are %d mappable via official gene symbols, %d mappable via gene alias but %d left unmappable", length(Symbol), (length(Symbol)-length(a)), sum(!is.na(b)), sum(is.na(b))), appendLF=T)
-            }
-        }else{
-            if(verbose){
-                now <- Sys.time()
-                message(sprintf("\tAmong %d symbols of input data, there are %d mappable via official gene symbols but %d left unmappable", length(Symbol), (sum(!is.na(match_flag))), (sum(is.na(match_flag)))), appendLF=T)
-            }
-        
-        }
-        
-        ## convert into GeneID
-        GeneID <- allGeneID[match_flag]
-        
-        return(GeneID)
-    }
-    #############################################################################################
-    
     ## convert gene symbol to entrz gene for both input data of interest and the input background (if given)
     if(verbose){
 		now <- Sys.time()
 		message(sprintf("Do gene mapping from Symbols to EntrezIDs (%s) ...", as.character(now)), appendLF=T)
 	}
-    
-    ## load Enterz Gene information
-	EG <- xRDataLoader(RData.customised=paste('org.Hs.eg', sep=''), RData.location=RData.location, verbose=verbose)	
-    
-	allGeneID <- EG$gene_info$GeneID
-	allSymbol <- as.vector(EG$gene_info$Symbol)
-	allSynonyms <- as.vector(EG$gene_info$Synonyms)
-    data <- symbol2entrezgene(Symbol=data, check.symbol.identity=F, allGeneID=allGeneID, allSymbol=allSymbol, allSynonyms=allSynonyms, verbose=verbose)
+    data <- xSymbol2GeneID(data, check.symbol.identity=check.symbol.identity, verbose=verbose, RData.location=RData.location)
+    data <- data[!is.na(data)]
     if(length(background)>0){
-        background <- symbol2entrezgene(Symbol=background, check.symbol.identity=F, allGeneID=allGeneID, allSymbol=allSymbol, allSynonyms=allSynonyms, verbose=verbose)
+        background <- xSymbol2GeneID(background, check.symbol.identity=check.symbol.identity, verbose=verbose, RData.location=RData.location)
+        background <- background[!is.na(background)]
     }
     
     #############################################################################################
@@ -274,6 +194,11 @@ xEnricherGenes <- function(data, background=NULL, ontology=c("GOBP","GOMF","GOCC
 	
 	# replace EntrezGenes with gene symbols	
 	if(1 & class(eTerm)=="eTerm"){
+		## load Enterz Gene information
+		EG <- xRDataLoader(RData.customised=paste('org.Hs.eg', sep=''), RData.location=RData.location, verbose=verbose)
+		allGeneID <- EG$gene_info$GeneID
+		allSymbol <- as.vector(EG$gene_info$Symbol)
+	
 		## overlap
 		overlap <- eTerm$overlap
 		overlap_symbols <- lapply(overlap,function(x){

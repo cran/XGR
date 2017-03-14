@@ -2,8 +2,8 @@ Package: XGR
 Type: Package
 Title: Exploring Genomic Relations for Enhanced Interpretation Through
         Enrichment, Similarity, Network and Annotation Analysis
-Version: 1.0.8
-Date: 2017-1-13
+Version: 1.0.9
+Date: 2017-3-13
 Author: Hai Fang, Bogdan Knezevic, Katie L Burnham, Julian C Knight
 Maintainer: Hai Fang <hfang@well.ox.ac.uk>
 Depends: R (>= 3.1.0), igraph, dnet, ggplot2
@@ -28,9 +28,10 @@ Collate: 'xRDataLoader.r' 'xRdWrap.r' 'xFunArgs.r' 'xRd2HTML.r'
         'xGRviaGenomicAnnoAdv.r' 'xGRsampling.r' 'xLiftOver.r'
         'xEnrichConciser.r' 'xColormap.r' 'xGR2nGenes.r' 'xGRscores.r'
         'xGR2GeneScores.r' 'xSubneterGR.r' 'xGR.r' 'xCheckParallel.r'
+        'xSymbol2GeneID.r' 'xDAGpropagate.r'
 License: GPL-2
 biocViews: Bioinformatics
 NeedsCompilation: no
-Packaged: 2017-01-13 14:50:07 UTC; hfang
+Packaged: 2017-03-13 15:23:44 UTC; hfang
 Repository: CRAN
-Date/Publication: 2017-01-14 01:11:46
+Date/Publication: 2017-03-14 17:39:03

@@ -4,19 +4,21 @@
 \alias{xSocialiserGenes}
 \title{Function to calculate pair-wise semantic similarity given a list of genes and the ontology in query}
 \usage{
-xSocialiserGenes(data, ontology = c("GOBP", "GOMF", "GOCC", "DO",
-"HPPA",
-"HPMI", "HPCM", "HPMA", "MP"), measure = c("BM.average", "BM.max",
-"BM.complete", "average", "max"), method.term = c("Resnik", "Lin",
-"Schlicker", "Jiang", "Pesquita"), rescale = TRUE, force = TRUE,
-fast = TRUE, parallel = TRUE, multicores = NULL,
-path.mode = c("all_paths", "shortest_paths", "all_shortest_paths"),
-true.path.rule = T, verbose = T,
+xSocialiserGenes(data, check.symbol.identity = F, ontology = c("GOBP",
+"GOMF", "GOCC", "DO", "HPPA", "HPMI", "HPCM", "HPMA", "MP"),
+measure = c("BM.average", "BM.max", "BM.complete", "average", "max"),
+method.term = c("Resnik", "Lin", "Schlicker", "Jiang", "Pesquita"),
+rescale = TRUE, force = TRUE, fast = TRUE, parallel = TRUE,
+multicores = NULL, path.mode = c("all_paths", "shortest_paths",
+"all_shortest_paths"), true.path.rule = T, verbose = T,
 RData.location = "http://galahad.well.ox.ac.uk/bigdata")
 }
 \arguments{
-\item{data}{an input vector. It contains a list of Gene Symbols of
-interest}
+\item{data}{an input vector containing gene symbols}
+
+\item{check.symbol.identity}{logical to indicate whether to match the
+input data via Synonyms for those unmatchable by official gene symbols.
+By default, it sets to false}
 
 \item{ontology}{the ontology supported currently. It can be "GOBP" for
 Gene Ontology Biological Process, "GOMF" for Gene Ontology Molecular
@@ -75,13 +77,11 @@ just used for understanding scripts}
 
 \item{parallel}{logical to indicate whether parallel computation with
 multicores is used. By default, it sets to true, but not necessarily
-does so. Partly because parallel backends available will be
-system-specific (now only Linux or Mac OS). Also, it will depend on
-whether these two packages "foreach" and "doMC" have been installed. It
-can be installed via:
+does so. It will depend on whether these two packages "foreach" and
+"doParallel" have been installed. It can be installed via:
 \code{source("http://bioconductor.org/biocLite.R");
-biocLite(c("foreach","doMC"))}. If not yet installed, this option will
-be disabled}
+biocLite(c("foreach","doParallel"))}. If not yet installed, this option
+will be disabled}
 
 \item{multicores}{an integer to specify how many cores will be
 registered as the multicore parallel backend to the 'foreach' package.
@@ -118,7 +118,7 @@ socialized genes. Now it supports enrichment analysis using a wide
 variety of ontologies such as Gene Ontology and Phenotype Ontologies.
 It first calculates semantic similarity between terms and then derives
 semantic similarity from term-term semantic similarity. Parallel
-computing is also supported for Linux or Mac operating systems.
+computing is also supported.
 }
 \note{
 For the mode "shortest_paths", the induced subgraph is the most
@@ -162,4 +162,3 @@ edge.label=x, edge.label.cex=0.7)
 \seealso{
 \code{\link{xSocialiser}}
 }
-
