@@ -60,7 +60,6 @@
 #' # e) barplot of significant enrichment results
 #' bp <- xEnrichBarplot(eTerm, top_num="auto", displayBy="adjp")
 #' print(bp)
-#' }
 #' 
 #' # Using ImmunoBase SNPs and associations/annotations with disease traits
 #' ## get ImmunoBase
@@ -81,6 +80,7 @@
 #' # barplot of significant enrichment results
 #' bp <- xEnrichBarplot(eTerm, top_num="auto", displayBy="adjp")
 #' print(bp)
+#' }
 
 xEnricherYours <- function(data.file, annotation.file, background.file=NULL, size.range=c(10,2000), min.overlap=3, test=c("hypergeo","fisher","binomial"), background.annotatable.only=T, p.adjust.method=c("BH", "BY", "bonferroni", "holm", "hochberg", "hommel"), verbose=T)
 {
@@ -93,14 +93,27 @@ xEnricherYours <- function(data.file, annotation.file, background.file=NULL, siz
     test <- match.arg(test)
     p.adjust.method <- match.arg(p.adjust.method)
     
+    ############
+    if(length(data.file)==0){
+    	return(FALSE)
+    }
+    ############
+        
     ###################
     ## import data file
     if(is.matrix(data.file) | is.data.frame(data.file)){
         data <- unique(data.file[,1])
     }else if(!is.null(data.file) & any(!is.na(data.file))){
     	if(length(data.file)==1){
-			data <- utils::read.delim(file=data.file, header=F, row.names=NULL, stringsAsFactors=F)
-			data <- unique(data[,1])
+    	
+        	if(class(suppressWarnings(try(data <- utils::read.delim(file=data.file, header=F, row.names=NULL, stringsAsFactors=F), T)))=="try-error"){
+        		data <- data.file
+        	}else{
+        		data <- unique(data[,1])
+        	}
+    	
+			#data <- utils::read.delim(file=data.file, header=F, row.names=NULL, stringsAsFactors=F)
+			#data <- unique(data[,1])
 		}else{
 			data <- data.file
 		}

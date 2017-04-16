@@ -2,36 +2,38 @@ Package: XGR
 Type: Package
 Title: Exploring Genomic Relations for Enhanced Interpretation Through
         Enrichment, Similarity, Network and Annotation Analysis
-Version: 1.0.9
-Date: 2017-3-13
+Version: 1.0.10
+Date: 2017-4-15
 Author: Hai Fang, Bogdan Knezevic, Katie L Burnham, Julian C Knight
 Maintainer: Hai Fang <hfang@well.ox.ac.uk>
 Depends: R (>= 3.1.0), igraph, dnet, ggplot2
 Imports: Matrix, RCircos, grDevices, graphics, GenomicRanges, IRanges,
-        S4Vectors, supraHex, rtracklayer, stats, BiocGenerics
-Suggests: foreach, doParallel
+        S4Vectors, supraHex, rtracklayer, stats, BiocGenerics, plot3D
+Suggests: foreach, doParallel, akima
 Description: The central goal of XGR is to provide a data interpretation system. It is designed to make a user-defined gene or SNP list (or genomic regions) more interpretable by comprehensively utilising ontology annotations and interaction networks to reveal relationships and enhance opportunities for biological discovery. XGR is unique in supporting a broad range of ontologies (including knowledge of biological and molecular functions, pathways, diseases and phenotypes - in both human and mouse) and different types of networks (including functional, physical and pathway interactions). There are two core functionalities of XGR. The first is to provide basic infrastructures for easy access to built-in ontologies and networks. The second is to support data interpretations via 1) enrichment analysis using either built-in or custom ontologies, 2) similarity analysis for calculating semantic similarity between genes (or SNPs) based on their ontology annotation profiles, 3) network analysis for identification of gene networks given a query list of (significant) genes, SNPs or genomic regions, and 4) annotation analysis for interpreting genomic regions using co-localised functional genomic annotations (such as open chromatin, epigenetic marks, TF binding sites and genomic segments) and using nearby gene annotations (by ontologies). Together with its web app, XGR aims to provide a user-friendly tool for exploring genomic relations at the gene, SNP and genomic region level.
 URL: http://XGR.r-forge.r-project.org,
         http://galahad.well.ox.ac.uk/XGR, http://rpubs.com/hfang/XGR
 BugReports: https://github.com/hfang-bristol/XGR/issues
-Collate: 'xRDataLoader.r' 'xRdWrap.r' 'xFunArgs.r' 'xRd2HTML.r'
-        'xDAGanno.r' 'xDAGsim.r' 'xConverter.r' 'xEnricher.r'
-        'xEnricherGenes.r' 'xEnricherSNPs.r' 'xEnricherYours.r'
-        'xEnrichViewer.r' 'xEnrichBarplot.r' 'xEnrichDAGplot.r'
-        'xEnrichNetplot.r' 'xEnrichCompare.r' 'xEnrichDAGplotAdv.r'
-        'xSocialiser.r' 'xSocialiserGenes.r' 'xSocialiserSNPs.r'
-        'xSocialiserDAGplot.r' 'xSocialiserDAGplotAdv.r'
-        'xSocialiserNetplot.r' 'xCircos.r' 'xSubneterGenes.r'
-        'xSubneterSNPs.r' 'xVisNet.r' 'xVisKernels.r' 'xSNPscores.r'
-        'xSNPlocations.r' 'xSNP2nGenes.r' 'xSparseMatrix.r' 'xSM2DF.r'
+Collate: 'ClassMethod-XGR.r' 'xRDataLoader.r' 'xRdWrap.r' 'xFunArgs.r'
+        'xRd2HTML.r' 'xDAGanno.r' 'xDAGsim.r' 'xConverter.r'
+        'xEnricher.r' 'xEnricherGenes.r' 'xEnricherSNPs.r'
+        'xEnricherYours.r' 'xEnrichViewer.r' 'xEnrichBarplot.r'
+        'xEnrichDAGplot.r' 'xEnrichNetplot.r' 'xEnrichCompare.r'
+        'xEnrichDAGplotAdv.r' 'xSocialiser.r' 'xSocialiserGenes.r'
+        'xSocialiserSNPs.r' 'xSocialiserDAGplot.r'
+        'xSocialiserDAGplotAdv.r' 'xSocialiserNetplot.r' 'xCircos.r'
+        'xSubneterGenes.r' 'xSubneterSNPs.r' 'xVisNet.r'
+        'xVisKernels.r' 'xSNPscores.r' 'xSNPlocations.r'
+        'xSNP2nGenes.r' 'xSparseMatrix.r' 'xSM2DF.r'
         'xSNP2GeneScores.r' 'xGRviaGeneAnno.r' 'xGRviaGenomicAnno.r'
         'xGRviaGenomicAnnoAdv.r' 'xGRsampling.r' 'xLiftOver.r'
         'xEnrichConciser.r' 'xColormap.r' 'xGR2nGenes.r' 'xGRscores.r'
         'xGR2GeneScores.r' 'xSubneterGR.r' 'xGR.r' 'xCheckParallel.r'
-        'xSymbol2GeneID.r' 'xDAGpropagate.r'
+        'xSymbol2GeneID.r' 'xDAGpropagate.r' 'xVisInterp.r'
+        'xDefineNet.r'
 License: GPL-2
 biocViews: Bioinformatics
 NeedsCompilation: no
-Packaged: 2017-03-13 15:23:44 UTC; hfang
+Packaged: 2017-04-15 19:03:12 UTC; hfang
 Repository: CRAN
-Date/Publication: 2017-03-14 17:39:03
+Date/Publication: 2017-04-16 10:23:44 UTC
