@@ -10,6 +10,7 @@
 #' @param min.overlap the minimum number of overlaps. Only those terms with members that overlap with input data at least min.overlap (3 by default) will be processed
 #' @param which.distance which terms with the distance away from the ontology root (if any) is used to restrict terms in consideration. By default, it sets to 'NULL' to consider all distances
 #' @param test the test statistic used. It can be "fisher" for using fisher's exact test, "hypergeo" for using hypergeometric test, or "binomial" for using binomial test. Fisher's exact test is to test the independence between gene group (genes belonging to a group or not) and gene annotation (genes annotated by a term or not), and thus compare sampling to the left part of background (after sampling without replacement). Hypergeometric test is to sample at random (without replacement) from the background containing annotated and non-annotated genes, and thus compare sampling to background. Unlike hypergeometric test, binomial test is to sample at random (with replacement) from the background with the constant probability. In terms of the ease of finding the significance, they are in order: hypergeometric test > fisher's exact test > binomial test. In other words, in terms of the calculated p-value, hypergeometric test < fisher's exact test < binomial test
+#' @param p.tail the tail used to calculate p-values. It can be either "two-tails" for the significance based on two-tails (ie both over- and under-overrepresentation)  or "one-tail" (by default) for the significance based on one tail (ie only over-representation)
 #' @param p.adjust.method the method used to adjust p-values. It can be one of "BH", "BY", "bonferroni", "holm", "hochberg" and "hommel". The first two methods "BH" (widely used) and "BY" control the false discovery rate (FDR: the expected proportion of false discoveries amongst the rejected hypotheses); the last four methods "bonferroni", "holm", "hochberg" and "hommel" are designed to give strong control of the family-wise error rate (FWER). Notes: FDR is a less stringent condition than FWER
 #' @param ontology.algorithm the algorithm used to account for the hierarchy of the ontology. It can be one of "none", "pc", "elim" and "lea". For details, please see 'Note' below
 #' @param elim.pvalue the parameter only used when "ontology.algorithm" is "elim". It is used to control how to declare a signficantly enriched term (and subsequently all genes in this term are eliminated from all its ancestors)
@@ -30,6 +31,9 @@
 #'  \item{\code{zscore}: a vector containing z-scores}
 #'  \item{\code{pvalue}: a vector containing p-values}
 #'  \item{\code{adjp}: a vector containing adjusted p-values. It is the p value but after being adjusted for multiple comparisons}
+#'  \item{\code{or}: a vector containing odds ratio}
+#'  \item{\code{CIl}: a vector containing lower bound confidence interval for the odds ratio}
+#'  \item{\code{CIu}: a vector containing upper bound confidence interval for the odds ratio}
 #'  \item{\code{cross}: a matrix of nTerm X nTerm, with an on-diagnal cell for the overlapped-members observed in an individaul term, and off-diagnal cell for the overlapped-members shared between two terms}
 #'  \item{\code{call}: the call that produced this result}
 #' }
@@ -83,7 +87,7 @@
 #' xEnrichDAGplot(eTerm, top_num=10, displayBy="zscore", node.info=c("full_term_name"))
 #' }
 
-xEnricher <- function(data, annotation, g, background=NULL, size.range=c(10,2000), min.overlap=3, which.distance=NULL, test=c("hypergeo","fisher","binomial"), p.adjust.method=c("BH", "BY", "bonferroni", "holm", "hochberg", "hommel"), ontology.algorithm=c("none","pc","elim","lea"), elim.pvalue=1e-2, lea.depth=2, path.mode=c("all_paths","shortest_paths","all_shortest_paths"), true.path.rule=TRUE, verbose=T)
+xEnricher <- function(data, annotation, g, background=NULL, size.range=c(10,2000), min.overlap=3, which.distance=NULL, test=c("hypergeo","fisher","binomial"), p.tail=c("one-tail","two-tails"), p.adjust.method=c("BH", "BY", "bonferroni", "holm", "hochberg", "hommel"), ontology.algorithm=c("none","pc","elim","lea"), elim.pvalue=1e-2, lea.depth=2, path.mode=c("all_paths","shortest_paths","all_shortest_paths"), true.path.rule=TRUE, verbose=T)
 {
 
     ####################################################################################
@@ -93,6 +97,7 @@ xEnricher <- function(data, annotation, g, background=NULL, size.range=c(10,2000
     p.adjust.method <- match.arg(p.adjust.method)
     ontology.algorithm <- match.arg(ontology.algorithm)
     path.mode <- match.arg(path.mode)
+    p.tail <- match.arg(p.tail)
     
     if (is.vector(data)){
         data <- unique(data)
@@ -181,7 +186,7 @@ xEnricher <- function(data, annotation, g, background=NULL, size.range=c(10,2000
     
     if(length(gs)==0){
         warnings("There are no terms being used.\n")
-        return(F)
+        return(NULL)
     }
 
     ##############################################################################################
@@ -198,12 +203,30 @@ xEnricher <- function(data, annotation, g, background=NULL, size.range=c(10,2000
         N <- length(genes.universe)
         ## Prepare a two-dimensional contingency table: #success in sampling, #success in background, #failure in sampling, and #failure in left part
         cTab <- matrix(c(X, K-X, M-X, N-M-K+X), nrow=2, dimnames=list(c("anno", "notAnno"), c("group", "notGroup")))
-        p.value <- ifelse(all(cTab==0), 1, stats::fisher.test(cTab, alternative="greater")$p.value)
+        
+        if(0){
+			p.value <- ifelse(all(cTab==0), 1, stats::fisher.test(cTab, alternative="greater")$p.value)
+        }else{
+			if(all(cTab==0)){
+				p.value <- 1
+			}else{
+				if(p.tail=='one-tail'){
+					p.value <- stats::fisher.test(cTab, alternative="greater")$p.value
+				}else{
+					if(X>=K*M/N){
+						p.value <- stats::fisher.test(cTab, alternative="greater")$p.value
+					}else{
+						p.value <- stats::fisher.test(cTab, alternative="less")$p.value
+					}
+				}
+			}
+        }
+        
         return(p.value)
     }
 
     ## Hypergeometric test: sampling at random from the background containing annotated and non-annotated genes (without replacement); thus compare sampling to background
-    doHypergeoTest <- function(genes.group, genes.term, genes.universe){
+    doHypergeoTest <- function(genes.group, genes.term, genes.universe, p.tail){
         genes.hit <- intersect(genes.group, genes.term)
         # num of success in sampling
         X <- length(genes.hit)
@@ -218,13 +241,30 @@ xEnricher <- function(data, annotation, g, background=NULL, size.range=c(10,2000
         m <- M
         n <- N-M # num of failure in background
         k <- K
-        p.value <- ifelse(m==0 || k==0, 1, stats::phyper(x,m,n,k, lower.tail=F, log.p=F))
+    	#########################
+    	if(m==0 || k==0){
+    		p.value <- 1
+    	}else{
+    		if(p.tail=='one-tail'){
+    			p.value <- stats::phyper(x,m,n,k, lower.tail=F, log.p=F)
+    		}else{
+    			if(X>=K*M/N){
+    				p.value <- stats::phyper(x,m,n,k, lower.tail=F, log.p=F)
+    			}else{
+    				p.value <- stats::phyper(x,m,n,k, lower.tail=T, log.p=F)
+    			}
+    		}
+    	}
+    	#########################
+        #p.value <- ifelse(m==0 || k==0, 1, stats::phyper(x,m,n,k, lower.tail=lower.tail, log.p=F))
+        
+        
         return(p.value)
     }
     
     
     ## Binomial test: sampling at random from the background with the constant probability of having annotated genes (with replacement)
-    doBinomialTest <- function(genes.group, genes.term, genes.universe){
+    doBinomialTest <- function(genes.group, genes.term, genes.universe, p.tail){
         genes.hit <- intersect(genes.group, genes.term)
         # num of success in sampling
         X <- length(genes.hit)
@@ -234,8 +274,24 @@ xEnricher <- function(data, annotation, g, background=NULL, size.range=c(10,2000
         M <- length(genes.term)
         # num in background
         N <- length(genes.universe)
-    
-        p.value <- ifelse(K==0 || M==0 || N==0, 1, stats::pbinom(X,K,M/N, lower.tail=F, log.p=F))
+    	
+    	#########################
+    	if(K==0 || M==0 || N==0){
+    		p.value <- 1
+    	}else{
+    		if(p.tail=='one-tail'){
+    			p.value <- stats::pbinom(X,K,M/N, lower.tail=F, log.p=F)
+    		}else{
+    			if(X>=K*M/N){
+    				p.value <- stats::pbinom(X,K,M/N, lower.tail=F, log.p=F)
+    			}else{
+    				p.value <- stats::pbinom(X,K,M/N, lower.tail=T, log.p=F)
+    			}
+    		}
+    	}
+    	#########################
+        #p.value <- ifelse(K==0 || M==0 || N==0, 1, stats::pbinom(X,K,M/N, lower.tail=F, log.p=F))
+        
         return(p.value)
     }
     
@@ -305,7 +361,7 @@ xEnricher <- function(data, annotation, g, background=NULL, size.range=c(10,2000
         return(z)
     }
     
-    ## fold change calcualted from hypergeometric distribution
+    ## fold change calculated from hypergeometric distribution
     fcHyper <- function(genes.group, genes.term, genes.universe){
         genes.hit <- intersect(genes.group, genes.term)
         # num of success in sampling
@@ -322,6 +378,27 @@ xEnricher <- function(data, annotation, g, background=NULL, size.range=c(10,2000
 
         return(fc)
     }
+    
+    ## odds ratio calculated from Fisher's exact test
+    ### OR is a measure of association between a risk factor and a disease outcome. The OR represents the odds that the disease outcome will occur given the risk factor, compared to the odds of the outcome occurring in the absence of that risk factor. Used to determine whether a factor is risky for the outcome, and to compare the magnitude of various risk factors for that outcome.
+    ### The 95% confidence interval (CI) is used to estimate the precision of the OR; the higher CI is the lower the precision is. Does not report a statistical significance
+    ### Confounding: a confounding variable influences/explains a non-casual association between a factor and the outcome. A confounding variable is causally associated with the outcome, and non-causally or causally associated with the disease, but is not an intermediate variable in the causal pathway between exposure and outcome. Stratification and multiple regression techniques are two methods used to address confounding, and produce adjusted ORs.
+    orFisher <- function(genes.group, genes.term, genes.universe){
+        genes.hit <- intersect(genes.group, genes.term)
+        # num of success in sampling
+        X <- length(genes.hit)
+        # num of sampling
+        K <- length(genes.group)
+        # num of success in background
+        M <- length(genes.term)
+        # num in background
+        N <- length(genes.universe)
+        ## Prepare a two-dimensional contingency table: #success in sampling, #success in background, #failure in sampling, and #failure in left part
+        cTab <- matrix(c(X, K-X, M-X, N-M-K+X), nrow=2, dimnames=list(c("anno", "notAnno"), c("group", "notGroup")))
+        res <- stats::fisher.test(cTab)
+        
+        return(c(as.vector(res$estimate), as.vector(res$conf.int)))
+    }
     ##############################################################################################
 
     if(verbose){
@@ -336,7 +413,7 @@ xEnricher <- function(data, annotation, g, background=NULL, size.range=c(10,2000
     if(length(genes.group)==0){
         #stop("There is no gene being used.\n")
         warnings("There is no gene being used.\n")
-        return(F)
+        return(NULL)
     }else{    
 		if(verbose){
 			now <- Sys.time()
@@ -346,7 +423,7 @@ xEnricher <- function(data, annotation, g, background=NULL, size.range=c(10,2000
 
     ## generate a subgraph of a direct acyclic graph (DAG) induced by terms
     subg <- dnet::dDAGinduce(g=subg, nodes_query=terms, path.mode=path.mode)
-	set_info <- data.frame(id=V(subg)$term_id, name=V(subg)$term_name, distance=V(subg)$term_distance, row.names=V(subg)$name)
+	set_info <- data.frame(id=V(subg)$term_id, name=V(subg)$term_name, distance=V(subg)$term_distance, namespace=V(subg)$term_namespace, row.names=V(subg)$name, stringsAsFactors=F)
     
     if(ontology.algorithm=="none"){
     
@@ -364,8 +441,8 @@ xEnricher <- function(data, annotation, g, background=NULL, size.range=c(10,2000
             genes.term <- unique(unlist(gs[term]))
             p.value <- switch(test,
                 fisher =  doFisherTest(genes.group, genes.term, genes.universe),
-                hypergeo = doHypergeoTest(genes.group, genes.term, genes.universe),
-                binomial = doBinomialTest(genes.group, genes.term, genes.universe)
+                hypergeo = doHypergeoTest(genes.group, genes.term, genes.universe, p.tail=p.tail),
+                binomial = doBinomialTest(genes.group, genes.term, genes.universe, p.tail=p.tail)
             )
         })
         
@@ -378,6 +455,15 @@ xEnricher <- function(data, annotation, g, background=NULL, size.range=c(10,2000
             genes.term <- unique(unlist(gs[term]))
             fcHyper(genes.group, genes.term, genes.universe)
         })
+        
+        ls_or <- lapply(terms, function(term){
+            genes.term <- unique(unlist(gs[term]))
+            orFisher(genes.group, genes.term, genes.universe)
+        })
+        df_or <- do.call(rbind, ls_or)
+        ors <- df_or[,1]
+        CIl <- df_or[,2]
+        CIu <- df_or[,3]        
         
     }else if(ontology.algorithm=="pc" || ontology.algorithm=="elim" || ontology.algorithm=="lea"){
 
@@ -408,6 +494,13 @@ xEnricher <- function(data, annotation, g, background=NULL, size.range=c(10,2000
         ## node2fc.Hash: key (node), value (fc)
         node2fc.Hash <- new.env(hash=T, parent=emptyenv())    
         
+        ## node2or.Hash: key (node), value (or)
+        node2or.Hash <- new.env(hash=T, parent=emptyenv())
+        ## node2CIl.Hash: key (node), value (CIl)
+        node2CIl.Hash <- new.env(hash=T, parent=emptyenv())
+        ## node2CIu.Hash: key (node), value (CIu)
+        node2CIu.Hash <- new.env(hash=T, parent=emptyenv())
+                        
         if(ontology.algorithm=="pc"){
         
             for(i in nLevels:2) {
@@ -419,11 +512,16 @@ xEnricher <- function(data, annotation, g, background=NULL, size.range=c(10,2000
                     ## do test based on the whole genes as background
                     pvalue_whole <- switch(test,
                         fisher =  doFisherTest(genes.group, genes.term, genes.universe),
-                        hypergeo = doHypergeoTest(genes.group, genes.term, genes.universe),
-                        binomial = doBinomialTest(genes.group, genes.term, genes.universe)
+                        hypergeo = doHypergeoTest(genes.group, genes.term, genes.universe, p.tail=p.tail),
+                        binomial = doBinomialTest(genes.group, genes.term, genes.universe, p.tail=p.tail)
                     )
                     zscore_whole <- zscoreHyper(genes.group, genes.term, genes.universe)
                     fc_whole <- fcHyper(genes.group, genes.term, genes.universe)
+                    
+                    vec_whole <- orFisher(genes.group, genes.term, genes.universe)
+                    or_whole <- vec_whole[1]
+                    CIl_whole <- vec_whole[2]
+                    CIu_whole <- vec_whole[3]
             
                     ## get the incoming neighbors/parents (including self) that are reachable
                     neighs.in <- igraph::neighborhood(subg, order=1, nodes=currNode, mode="in")
@@ -439,26 +537,45 @@ xEnricher <- function(data, annotation, g, background=NULL, size.range=c(10,2000
                     ## do test based on the genes in parents as background
                     pvalue_relative <- switch(test,
                         fisher =  doFisherTest(genes.group.parent, genes.term.parent, genes.parent),
-                        hypergeo = doHypergeoTest(genes.group.parent, genes.term.parent, genes.parent),
-                        binomial = doBinomialTest(genes.group.parent, genes.term.parent, genes.parent)
+                        hypergeo = doHypergeoTest(genes.group.parent, genes.term.parent, genes.parent, p.tail=p.tail),
+                        binomial = doBinomialTest(genes.group.parent, genes.term.parent, genes.parent, p.tail=p.tail)
                     )
                     zscore_relative <- zscoreHyper(genes.group.parent, genes.term.parent, genes.parent)
                     fc_relative <- fcHyper(genes.group.parent, genes.term.parent, genes.parent)
+                
+                    vec_relative <- orFisher(genes.group.parent, genes.term.parent, genes.parent)
+                    or_relative <- vec_relative[1]
+                    CIl_relative <- vec_relative[2]
+                    CIu_relative <- vec_relative[3]
                 
                     ## take the maximum value of pvalue_whole and pvalue_relative
                     pvalue <- max(pvalue_whole, pvalue_relative)
                     ## store the result (the p-value)
                     assign(currNode, pvalue, envir=node2pval.Hash)
                     
-                    ## take the miminum value of zscore_whole and zscore_relative
+                    ## zscore
                     zscore <- ifelse(pvalue_whole>pvalue_relative, zscore_whole, zscore_relative)
                     ## store the result (the z-score)
                     assign(currNode, zscore, envir=node2zscore.Hash)
                     
-                    ## take the miminum value of fc_whole and fc_relative
+                    ## fc
                     fc <- ifelse(pvalue_whole>pvalue_relative, fc_whole, fc_relative)
                     ## store the result (the fc)
                     assign(currNode, fc, envir=node2fc.Hash)
+                    
+                    ## or
+                    or <- ifelse(pvalue_whole>pvalue_relative, or_whole, or_relative)
+                    ## store the result (the or)
+                    assign(currNode, or, envir=node2or.Hash)
+                    ## CIl
+                    CIl <- ifelse(pvalue_whole>pvalue_relative, CIl_whole, CIl_relative)
+                    ## stCIle the result (the CIl)
+                    assign(currNode, CIl, envir=node2CIl.Hash)
+                    ## CIu
+                    CIu <- ifelse(pvalue_whole>pvalue_relative, CIu_whole, CIu_relative)
+                    ## stCIue the result (the CIu)
+                    assign(currNode, CIu, envir=node2CIu.Hash)                    
+                    
                 }
                 
                 if(verbose){
@@ -503,11 +620,16 @@ xEnricher <- function(data, annotation, g, background=NULL, size.range=c(10,2000
                     ## do test
                     pvalue <- switch(test,
                         fisher =  doFisherTest(genes.group, genes.term, genes.universe),
-                        hypergeo = doHypergeoTest(genes.group, genes.term, genes.universe),
-                        binomial = doBinomialTest(genes.group, genes.term, genes.universe)
+                        hypergeo = doHypergeoTest(genes.group, genes.term, genes.universe, p.tail=p.tail),
+                        binomial = doBinomialTest(genes.group, genes.term, genes.universe, p.tail=p.tail)
                     )
                     zscore <- zscoreHyper(genes.group, genes.term, genes.universe)
                     fc <- fcHyper(genes.group, genes.term, genes.universe)
+
+                    vec <- orFisher(genes.group, genes.term, genes.universe)
+                    or <- vec[1]
+                    CIl <- vec[2]
+                    CIu <- vec[3]
                     
                     ## store the result (the p-value)
                     assign(currNode, pvalue, envir=node2pval.Hash)
@@ -516,6 +638,13 @@ xEnricher <- function(data, annotation, g, background=NULL, size.range=c(10,2000
                     ## store the result (the fc)
                     assign(currNode, fc, envir=node2fc.Hash)
                     
+                    ## store the result (the or)
+                    assign(currNode, or, envir=node2or.Hash)
+                    ## store the result (the CIl)
+                    assign(currNode, CIl, envir=node2CIl.Hash)
+                    ## store the result (the CIu)
+                    assign(currNode, CIu, envir=node2CIu.Hash)
+                                                            
                     ## condition to update "ancNode2gene.Hash"
                     if(pvalue < pval.cutoff) {
                         ## mark the significant node
@@ -580,12 +709,17 @@ xEnricher <- function(data, annotation, g, background=NULL, size.range=c(10,2000
                     ## do test
                     pvalue.old <- switch(test,
                         fisher =  doFisherTest(genes.group, genes.term, genes.universe),
-                        hypergeo = doHypergeoTest(genes.group, genes.term, genes.universe),
-                        binomial = doBinomialTest(genes.group, genes.term, genes.universe)
+                        hypergeo = doHypergeoTest(genes.group, genes.term, genes.universe, p.tail=p.tail),
+                        binomial = doBinomialTest(genes.group, genes.term, genes.universe, p.tail=p.tail)
                     )
                     zscore.old <- zscoreHyper(genes.group, genes.term, genes.universe)
                     fc.old <- fcHyper(genes.group, genes.term, genes.universe)
-                    
+
+                    vec.old <- orFisher(genes.group, genes.term, genes.universe)
+                    or.old <- vec.old[1]
+                    CIl.old <- vec.old[2]
+                    CIu.old <- vec.old[3]
+                                        
                     ## store the result (old pvalue)
                     assign(currNode, pvalue.old, envir=node2pvalo.Hash)
                     
@@ -623,41 +757,69 @@ xEnricher <- function(data, annotation, g, background=NULL, size.range=c(10,2000
                             ## recalculate the significance
                             pvalue.new <- switch(test,
                                 fisher =  doFisherTest(genes.group, genes.term.new, genes.universe),
-                                hypergeo = doHypergeoTest(genes.group, genes.term.new, genes.universe),
-                                binomial = doBinomialTest(genes.group, genes.term.new, genes.universe)
+                                hypergeo = doHypergeoTest(genes.group, genes.term.new, genes.universe, p.tail=p.tail),
+                                binomial = doBinomialTest(genes.group, genes.term.new, genes.universe, p.tail=p.tail)
                             )
                             zscore.new <- zscoreHyper(genes.group, genes.term.new, genes.universe)
                             fc.new <- fcHyper(genes.group, genes.term.new, genes.universe)
                             
+                            vec.new <- orFisher(genes.group, genes.term.new, genes.universe)
+							or.new <- vec.new[1]
+							CIl.new <- vec.new[2]
+							CIu.new <- vec.new[3]
+                                                        
                             ## take the maximum value of pvalue_new and the original pvalue
                             pvalue <- max(pvalue.new, pvalue.old)
                             
-                            ## take the minimum value of zscore_new and the original zscore
+                            ## zscore
                             zscore <- ifelse(pvalue.new>pvalue.old, zscore.new, zscore.old)
                             
-                            ## take the minimum value of fc_new and the original zscore
+                            ## fc
                             fc <- ifelse(pvalue.new>pvalue.old, fc.new, fc.old)
+                            
+                            ## or
+                            or <- ifelse(pvalue.new>pvalue.old, or.new, or.old)
+                            ## CIl
+                            CIl <- ifelse(pvalue.new>pvalue.old, CIl.new, CIl.old)
+                            ## CIu
+                            CIu <- ifelse(pvalue.new>pvalue.old, CIu.new, CIu.old)
                             
                         }else{
                             pvalue <- pvalue.old
                             zscore <- zscore.old
                             fc <- fc.old
+                            
+                            or <- or.old
+                            CIl <- CIl.old
+                            CIu <- CIu.old
                         }
                         
                     }else{
                         pvalue <- pvalue.old
                         zscore <- zscore.old
                         fc <- fc.old
+                        
+                        or <- or.old
+                        CIl <- CIl.old
+                        CIu <- CIu.old
                     }
                     
                     ## store the result (recalculated pvalue if have to)
                     assign(currNode, pvalue, envir=node2pval.Hash)
                     
-                    ## store the result (recalculated zscore if have to)
+                    ## zscore
                     assign(currNode, zscore, envir=node2zscore.Hash)
                     
-                    ## store the result (recalculated zscore if have to)
+                    ## fc
                     assign(currNode, fc, envir=node2fc.Hash)
+                    
+                    ## or
+                    assign(currNode, or, envir=node2or.Hash)
+                    ## CIl
+                    assign(currNode, CIl, envir=node2CIl.Hash)
+                    ## CIu
+                    assign(currNode, CIu, envir=node2CIu.Hash)
+                    
                 }
     
                 if(verbose){
@@ -670,6 +832,10 @@ xEnricher <- function(data, annotation, g, background=NULL, size.range=c(10,2000
         pvals <- unlist(as.list(node2pval.Hash))
         zscores <- unlist(as.list(node2zscore.Hash))
         fcs <- unlist(as.list(node2fc.Hash))
+        
+        ors <- unlist(as.list(node2or.Hash))
+        CIl <- unlist(as.list(node2CIl.Hash))
+        CIu <- unlist(as.list(node2CIu.Hash))
     
     }
 	
@@ -688,7 +854,7 @@ xEnricher <- function(data, annotation, g, background=NULL, size.range=c(10,2000
     if(sum(flag_filter)==0){
         #stop("It seems there are no terms meeting the specified 'size.range' and 'min.overlap'.\n")
         warnings("It seems there are no terms meeting the specified 'size.range' and 'min.overlap'.\n")
-        return(F)
+        return(NULL)
     }
     gs <- gs[flag_filter]
     overlaps <- overlaps[flag_filter]
@@ -704,6 +870,9 @@ xEnricher <- function(data, annotation, g, background=NULL, size.range=c(10,2000
     zscores <- zscores[ind_zscores[!is.na(ind_zscores)]]
     fcs <- fcs[ind_zscores[!is.na(ind_zscores)]]
     pvals <- pvals[ind_zscores[!is.na(ind_zscores)]]
+    ors <- ors[ind_zscores[!is.na(ind_zscores)]]
+    CIl <- CIl[ind_zscores[!is.na(ind_zscores)]]
+    CIu <- CIu[ind_zscores[!is.na(ind_zscores)]]
     
     ## remove those with zscores=NA
     flag <- !is.na(zscores)
@@ -712,10 +881,13 @@ xEnricher <- function(data, annotation, g, background=NULL, size.range=c(10,2000
     zscores <- zscores[flag]
     fcs <- fcs[flag]
     pvals <- pvals[flag]
+    ors <- ors[flag]
+    CIl <- CIl[flag]
+    CIu <- CIu[flag]
     
     if(length(pvals)==0){
-        warnings("There are no pvals being calcualted.\n")
-        return(F)
+        warnings("There are no pvals being calculated.\n")
+        return(NULL)
     }
     
     ## update set_info
@@ -725,6 +897,9 @@ xEnricher <- function(data, annotation, g, background=NULL, size.range=c(10,2000
     zscores <- signif(zscores, digits=3)
     fcs <- signif(fcs, digits=3)
     pvals <- sapply(pvals, function(x) min(x,1))
+    ors <- signif(ors, digits=3)
+    CIl <- signif(CIl, digits=3)
+    CIu <- signif(CIu, digits=3)
     
     if(verbose){
         now <- Sys.time()
@@ -789,7 +964,9 @@ xEnricher <- function(data, annotation, g, background=NULL, size.range=c(10,2000
                   zscore   = zscores,
                   pvalue   = pvals,
                   adjp     = adjpvals,
-                  cross	   = cross,
+                  or       = ors,
+                  CIl      = CIl,
+                  CIu	   = CIu,
                   call     = match.call()
                  )
     class(eTerm) <- "eTerm"

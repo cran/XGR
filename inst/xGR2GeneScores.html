@@ -10,10 +10,10 @@
 <h3>Description</h3>
 
 <p><code>xGR2GeneScores</code> is supposed to identify likely modulated seed
-genes from a list of SNPs together with the significance level
-(measured as p-values or fdr). To do so, it defines seed genes and
-their scores that take into account the distance to and the
-significance of input SNPs. It returns an object of class &quot;mSeed&quot;.
+genes from a list of genomic regions (GR) together with the
+significance level (measured as p-values or fdr). To do so, it defines
+seed genes and their scores that take into account the distance to and
+the significance of input SNPs. It returns an object of class &quot;mSeed&quot;.
 </p>
 
 
@@ -49,7 +49,7 @@ default, it is set to NULL, meaning there is no constraint on the
 significance level when transforming the significance level of GR into
 scores. If given, those GR below this are considered significant and
 thus scored positively. Instead, those above this are considered
-insigificant and thus receive no score</p>
+insignificant and thus receive no score</p>
 </td></tr>
 <tr valign="top"><td><code>score.cap</code></td>
 <td>
@@ -181,12 +181,6 @@ data &lt;- cbind(GR=GR, Sig=sig)
 
 # b) define and score seed geens
 mSeed &lt;- xGR2GeneScores(data=data, RData.location=RData.location)
-
-# c) extract GR info
-head(mSeed$GR)
-
-# d) extract gene info
-head(mSeed$Gene)
 
 ## End(Not run)
 </pre>

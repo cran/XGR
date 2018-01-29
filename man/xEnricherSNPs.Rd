@@ -7,13 +7,15 @@
 xEnricherSNPs(data, background = NULL, ontology = c("EF", "EF_disease",
 "EF_phenotype", "EF_bp"), include.LD = NA, LD.r2 = 0.8,
 size.range = c(10, 2000), min.overlap = 3, which.distance = NULL,
-test = c("hypergeo", "fisher", "binomial"), p.adjust.method = c("BH",
-"BY", "bonferroni", "holm", "hochberg", "hommel"),
-ontology.algorithm = c("none", "pc", "elim", "lea"), elim.pvalue =
-0.01,
-lea.depth = 2, path.mode = c("all_paths", "shortest_paths",
-"all_shortest_paths"), true.path.rule = T, verbose = T,
-RData.location = "http://galahad.well.ox.ac.uk/bigdata")
+test = c("hypergeo", "fisher", "binomial"), p.tail = c("one-tail",
+"two-tails"), p.adjust.method = c("BH", "BY", "bonferroni", "holm",
+"hochberg", "hommel"), ontology.algorithm = c("none", "pc", "elim",
+"lea"),
+elim.pvalue = 0.01, lea.depth = 2, path.mode = c("all_paths",
+"shortest_paths", "all_shortest_paths"), true.path.rule = T, verbose =
+T,
+silent = FALSE, RData.location =
+"http://galahad.well.ox.ac.uk/bigdata")
 }
 \arguments{
 \item{data}{an input vector. It contains a list of SNPs of interest}
@@ -73,6 +75,11 @@ fisher's exact test > binomial test. In other words, in terms of the
 calculated p-value, hypergeometric test < fisher's exact test <
 binomial test}
 
+\item{p.tail}{the tail used to calculate p-values. It can be either
+"two-tails" for the significance based on two-tails (ie both over- and
+under-overrepresentation) or "one-tail" (by default) for the
+significance based on one tail (ie only over-representation)}
+
 \item{p.adjust.method}{the method used to adjust p-values. It can be
 one of "BH", "BY", "bonferroni", "holm", "hochberg" and "hommel". The
 first two methods "BH" (widely used) and "BY" control the false
@@ -110,6 +117,10 @@ true}
 \item{verbose}{logical to indicate whether the messages will be
 displayed in the screen. By default, it sets to false for no display}
 
+\item{silent}{logical to indicate whether the messages will be silent
+completely. By default, it sets to false. If true, verbose will be
+forced to be false}
+
 \item{RData.location}{the characters to tell the location of built-in
 RData files. See \code{\link{xRDataLoader}} for details}
 }
@@ -137,6 +148,11 @@ the snps of interest). Always, gene sets are identified by "id"}
 \item{\code{pvalue}: a vector containing p-values}
 \item{\code{adjp}: a vector containing adjusted p-values. It is the p
 value but after being adjusted for multiple comparisons}
+\item{\code{or}: a vector containing odds ratio}
+\item{\code{CIl}: a vector containing lower bound confidence interval
+for the odds ratio}
+\item{\code{CIu}: a vector containing upper bound confidence interval
+for the odds ratio}
 \item{\code{cross}: a matrix of nTerm X nTerm, with an on-diagnal cell
 for the overlapped-members observed in an individaul term, and
 off-diagnal cell for the overlapped-members shared betwene two terms}
@@ -182,13 +198,14 @@ maximum of both p-values in these two calculations.}
 \dontrun{
 # Load the library
 library(XGR)
+RData.location <- "http://galahad.well.ox.ac.uk/bigdata_dev/"
 
 # SNP-based enrichment analysis using GWAS Catalog traits (mapped to EF)
 # a) provide the input SNPs of interest (eg 'EFO:0002690' for 'systemic lupus erythematosus')
 ## load GWAS SNPs annotated by EF (an object of class "dgCMatrix" storing a spare matrix)
-anno <- xRDataLoader(RData='GWAS2EF')
+anno <- xRDataLoader(RData='GWAS2EF', RData.location=RData.location)
 ind <- which(colnames(anno)=='EFO:0002690')
-data <- rownames(anno)[anno[,ind]==1]
+data <- rownames(anno)[anno[,ind]!=0]
 data
 
 # optionally, provide the test background (if not provided, all annotatable SNPs)
@@ -196,11 +213,11 @@ data
 
 # b) perform enrichment analysis
 eTerm <- xEnricherSNPs(data=data, ontology="EF",
-path.mode=c("all_paths"))
+path.mode=c("all_paths"), RData.location=RData.location)
 
 # b') optionally, enrichment analysis for input SNPs plus their LD SNPs
 ## LD based on European population (EUR) with r2>=0.8
-#eTerm <- xEnricherSNPs(data=data, include.LD="EUR", LD.r2=0.8)
+#eTerm <- xEnricherSNPs(data=data, include.LD="EUR", LD.r2=0.8, RData.location=RData.location)
 
 # c) view enrichment results for the top significant terms
 xEnrichViewer(eTerm)

@@ -6,7 +6,8 @@
 \usage{
 xEnrichBarplot(eTerm, top_num = 10, displayBy = c("fc", "adjp", "fdr",
 "zscore", "pvalue"), FDR.cutoff = 0.05, bar.label = TRUE,
-bar.label.size = 3, wrap.width = NULL, signature = TRUE)
+bar.label.size = 3, bar.color = "lightyellow-orange", bar.width = 0.8,
+wrap.width = NULL, font.family = "sans", signature = TRUE)
 }
 \arguments{
 \item{eTerm}{an object of class "eTerm"}
@@ -30,7 +31,15 @@ FDR. By default, it sets to true for bar labelling}
 \item{bar.label.size}{an integer specifying the bar labelling text
 size. By default, it sets to 3}
 
+\item{bar.color}{either NULL or fill color names ('lightyellow-orange'
+by default)}
+
+\item{bar.width}{bar width. By default, 80% of the resolution of the
+data}
+
 \item{wrap.width}{a positive integer specifying wrap width of name}
+
+\item{font.family}{the font family for texts}
 
 \item{signature}{logical to indicate whether the signature is assigned
 to the plot caption. By default, it sets TRUE showing which function is
@@ -69,6 +78,23 @@ bp <- xEnrichBarplot(eTerm, top_num="auto", displayBy="fc")
 #pdf(file="enrichment_barplot.pdf", height=6, width=12, compress=TRUE)
 print(bp)
 #dev.off()
+}
+
+# 4) use font family (Arial)
+\dontrun{
+source("http://bioconductor.org/biocLite.R"); biocLite("extrafont")
+library(extrafont)
+font_import()
+fonttable()
+## creating PDF files with fonts
+library(extrafont)
+loadfonts()
+bp <- xEnrichBarplot(eTerm, top_num="auto", displayBy="fc",
+font.family="Arial Black")
+pdf(file="enrichment_barplot_fonts.pdf", height=6, width=12,
+family="Arial Black")
+print(bp)
+dev.off()
 }
 }
 \seealso{

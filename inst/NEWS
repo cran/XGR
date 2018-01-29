@@ -1,3 +1,53 @@
+CHANGES IN VERSION 1.1.1
+-----------------------
+
+NEW FEATURES
+
+    o Modify functions ('xEnricher', 'xEnricherGenes', 'xEnricherSNPs', 'xEnricherYours', 'xGRviaGenomicAnno') enabling two-side p-value calculation and inclusion of odds ratio (confidence intervals)
+
+    o Add a new function 'xEnricherGenesAdv' for conducting enrichment analysis given a list of gene sets and a list of ontologies
+    
+    o Add a new function 'xGRviaGeneAnnoAdv' for conducting enrichment analysis given a list of genomic region sets and a list of ontologies
+    
+    o Add a new function 'xEnrichForest' for visualising enrichment results in a forest plot
+
+    o Add a new function 'xVisInterpAnimate' for animating irregular data interpolation and visualisation
+    
+    o Modify 'xDAGpropagate' allowing for keeping all children
+    
+    o Modify 'xSNP2nGenes' and 'xSNP2GeneScores' allowing for inclusion of a TAD dataset to pre-filter SNP-nGene pairs
+    
+    o Modify 'xEnrichBarplot', 'xEnrichCompare', 'xVisNet', 'xVisInterp', 'xVisInterpAnimate' and 'xVisEvidence' allowing for inclusion of font family
+    
+    o Populate the primary source KEGG into 'xEnricherGenes', 'xGRviaGeneAnno', 'xDefineNet', 'xSubneterGenes', 'xSubneterSNPs' and 'xSubneterGR'
+    
+    o Add a new function 'xCombineNet' for combining networks
+
+    o Modify 'xGR2nGenes' allowing for user-defined 'GR.Gene' (a GR object)
+    
+    o Modify 'xEnrichDAGplot' only visualising nodes within a user-defined graph (an igraph object)
+    
+    o Populate annotations (KEGG and REACTOME)
+
+    o Add a new function 'xGraphML' for creating a graphml file
+
+    o Add a new function 'xVolcano' for drawing a volcano plot
+
+    o Add a new function 'xAddCoords' for adding coordinates into a graph by a node attribute
+
+    o Add a new function 'xGraphSplit' for splitting a graph by a node attribute
+    
+    o Add a new function 'xRegress' for regressing out data by principle components
+    
+    o Add functions ('xGGnetwork' and 'xOBOcode') enabling ggplot-like visualisation
+    
+    o Add functions ('xGScore' and 'xGScoreAdv') enabling extraction of genomic scores  
+
+    o Add functions ('xBigraph' and 'xBiheatmap') supporting bigraph analysis
+
+    o Add functions ('xGR2xGenes', 'xGR2xGeneScores' and 'xGR2xNet') supporing genomic region analysis using the crosslink info
+    
+	
 CHANGES IN VERSION 1.0.10
 -----------------------
 

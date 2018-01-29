@@ -7,9 +7,9 @@
 xEnricherYours(data.file, annotation.file, background.file = NULL,
 size.range = c(10, 2000), min.overlap = 3, test = c("hypergeo",
 "fisher", "binomial"), background.annotatable.only = T,
-p.adjust.method = c("BH", "BY", "bonferroni", "holm", "hochberg",
-"hommel"),
-verbose = T)
+p.tail = c("one-tail", "two-tails"), p.adjust.method = c("BH", "BY",
+"bonferroni", "holm", "hochberg", "hommel"), verbose = T, silent =
+FALSE)
 }
 \arguments{
 \item{data.file}{an input data file, containing a list of entities
@@ -71,6 +71,11 @@ background genes are those after being overlapped with annotatable
 genes. Notably, if only one annotation is provided in
 'annotation.file', it should be false}
 
+\item{p.tail}{the tail used to calculate p-values. It can be either
+"two-tails" for the significance based on two-tails (ie both over- and
+under-overrepresentation) or "one-tail" (by default) for the
+significance based on one tail (ie only over-representation)}
+
 \item{p.adjust.method}{the method used to adjust p-values. It can be
 one of "BH", "BY", "bonferroni", "holm", "hochberg" and "hommel". The
 first two methods "BH" (widely used) and "BY" control the false
@@ -82,6 +87,10 @@ condition than FWER}
 
 \item{verbose}{logical to indicate whether the messages will be
 displayed in the screen. By default, it sets to false for no display}
+
+\item{silent}{logical to indicate whether the messages will be silent
+completely. By default, it sets to false. If true, verbose will be
+forced to be false}
 }
 \value{
 an object of class "eTerm", a list with following components:
@@ -107,6 +116,11 @@ the snps of interest). Always, gene sets are identified by "id"}
 \item{\code{pvalue}: a vector containing p-values}
 \item{\code{adjp}: a vector containing adjusted p-values. It is the p
 value but after being adjusted for multiple comparisons}
+\item{\code{or}: a vector containing odds ratio}
+\item{\code{CIl}: a vector containing lower bound confidence interval
+for the odds ratio}
+\item{\code{CIu}: a vector containing upper bound confidence interval
+for the odds ratio}
 \item{\code{cross}: a matrix of nTerm X nTerm, with an on-diagnal cell
 for the overlapped-members observed in an individaul term, and
 off-diagnal cell for the overlapped-members shared betwene two terms}
@@ -160,7 +174,9 @@ print(bp)
 
 # Using ImmunoBase SNPs and associations/annotations with disease traits
 ## get ImmunoBase
-ImmunoBase <- xRDataLoader(RData.customised='ImmunoBase')
+RData.location <- "http://galahad.well.ox.ac.uk/bigdata_dev/"
+ImmunoBase <- xRDataLoader(RData.customised='ImmunoBase',
+RData.location=RData.location)
 ## get disease associated variants/SNPs
 variants_list <- lapply(ImmunoBase, function(x)
 cbind(SNP=names(x$variants),
@@ -170,7 +186,8 @@ annotation.file <- do.call(rbind, variants_list)
 head(annotation.file)
 ## provide the input SNPs of interest
 ## for example, cis-eQTLs induced by interferon gamma
-cis <- xRDataLoader(RData.customised='JKscience_TS2A')
+cis <- xRDataLoader(RData.customised='JKscience_TS2A',
+RData.location=RData.location)
 data.file <- matrix(cis[which(cis$IFN_t>0),c('variant')], ncol=1)
 # perform enrichment analysis
 eTerm <- xEnricherYours(data.file=data.file,

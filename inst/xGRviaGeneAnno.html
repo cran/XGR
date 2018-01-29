@@ -39,14 +39,18 @@ c("GOBP",
 "GTExV6", "CreedsDisease", "CreedsDiseaseUP", "CreedsDiseaseDN",
 "CreedsDrug",
 "CreedsDrugUP", "CreedsDrugDN", "CreedsGene", "CreedsGeneUP",
-"CreedsGeneDN"), size.range = c(10, 2000), min.overlap = 3,
-which.distance = NULL, test = c("hypergeo", "fisher", "binomial"),
-p.adjust.method = c("BH", "BY", "bonferroni", "holm", "hochberg",
-"hommel"),
-ontology.algorithm = c("none", "pc", "elim", "lea"), elim.pvalue =
-0.01,
-lea.depth = 2, path.mode = c("all_paths", "shortest_paths",
-"all_shortest_paths"), true.path.rule = F, verbose = T,
+"CreedsGeneDN", "KEGG", "KEGGmetabolism", "KEGGgenetic",
+"KEGGenvironmental",
+"KEGGcellular", "KEGGorganismal", "KEGGdisease", "REACTOME",
+"REACTOME_ImmuneSystem", "REACTOME_SignalTransduction", "CGL"),
+size.range = c(10, 2000), min.overlap = 3, which.distance = NULL,
+test = c("hypergeo", "fisher", "binomial"), p.tail = c("one-tail",
+"two-tails"), p.adjust.method = c("BH", "BY", "bonferroni", "holm",
+"hochberg", "hommel"), ontology.algorithm = c("none", "pc", "elim",
+"lea"),
+elim.pvalue = 0.01, lea.depth = 2, path.mode = c("all_paths",
+"shortest_paths", "all_shortest_paths"), true.path.rule = F, verbose =
+T,
 RData.location = "http://galahad.well.ox.ac.uk/bigdata")
 </pre>
 
@@ -81,7 +85,7 @@ genomic regions as the test background. The file format is the same as
 non-redundant bases covered by 'annotation.file') are used as
 background. However, if only one annotation (eg only a transcription
 factor) is provided in 'annotation.file', the background must be
-provided.</p>
+provided</p>
 </td></tr>
 <tr valign="top"><td><code>format.file</code></td>
 <td>
@@ -128,13 +132,29 @@ Phenotypic Abnormality, &quot;HPMI&quot; for Human Phenotype Mode of Inheritance
 &quot;HPCM&quot; for Human Phenotype Clinical Modifier, &quot;HPMA&quot; for Human
 Phenotype Mortality Aging, &quot;MP&quot; for Mammalian Phenotype, &quot;EF&quot; for
 Experimental Factor Ontology (used to annotate GWAS Catalog genes),
-Drug-Gene Interaction database (&quot;DGIdb&quot;) for drugable categories,
-tissue-specific eQTL-containing genes from GTEx (&quot;GTExV4&quot; and
-&quot;GTExV6&quot;), crowd extracted expression of differential signatures from
-CREEDS (&quot;CreedsDisease&quot;, &quot;CreedsDiseaseUP&quot;, &quot;CreedsDiseaseDN&quot;,
+Drug-Gene Interaction database (&quot;DGIdb&quot;) for druggable categories,
+tissue-specific eQTL-containing genes from GTEx (&quot;GTExV4&quot;, &quot;GTExV6p&quot;
+and &quot;GTExV7&quot;), crowd extracted expression of differential signatures
+from CREEDS (&quot;CreedsDisease&quot;, &quot;CreedsDiseaseUP&quot;, &quot;CreedsDiseaseDN&quot;,
 &quot;CreedsDrug&quot;, &quot;CreedsDrugUP&quot;, &quot;CreedsDrugDN&quot;, &quot;CreedsGene&quot;,
-&quot;CreedsGeneUP&quot; and &quot;CreedsGeneDN&quot;), and the molecular signatures
-database (Msigdb, including &quot;MsigdbH&quot;, &quot;MsigdbC1&quot;, &quot;MsigdbC2CGP&quot;,
+&quot;CreedsGeneUP&quot; and &quot;CreedsGeneDN&quot;), KEGG pathways (including 'KEGG' for
+all, 'KEGGmetabolism' for 'Metabolism' pathways, 'KEGGgenetic' for
+'Genetic Information Processing' pathways, 'KEGGenvironmental' for
+'Environmental Information Processing' pathways, 'KEGGcellular' for
+'Cellular Processes' pathways, 'KEGGorganismal' for 'Organismal
+Systems' pathways, and 'KEGGdisease' for 'Human Diseases' pathways),
+'REACTOME' for REACTOME pathways or 'REACTOME_x' for its sub-ontologies
+(where x can be 'CellCellCommunication', 'CellCycle',
+'CellularResponsesToExternalStimuli', 'ChromatinOrganization',
+'CircadianClock', 'DevelopmentalBiology', 'DigestionAndAbsorption',
+'Disease', 'DNARepair', 'DNAReplication',
+'ExtracellularMatrixOrganization', 'GeneExpression(Transcription)',
+'Hemostasis', 'ImmuneSystem', 'Metabolism', 'MetabolismOfProteins',
+'MetabolismOfRNA', 'Mitophagy', 'MuscleContraction', 'NeuronalSystem',
+'OrganelleBiogenesisAndMaintenance', 'ProgrammedCellDeath',
+'Reproduction', 'SignalTransduction', 'TransportOfSmallMolecules',
+'VesicleMediatedTransport'), and the molecular signatures database
+(Msigdb, including &quot;MsigdbH&quot;, &quot;MsigdbC1&quot;, &quot;MsigdbC2CGP&quot;,
 &quot;MsigdbC2CPall&quot;, &quot;MsigdbC2CP&quot;, &quot;MsigdbC2KEGG&quot;, &quot;MsigdbC2REACTOME&quot;,
 &quot;MsigdbC2BIOCARTA&quot;, &quot;MsigdbC3TFT&quot;, &quot;MsigdbC3MIR&quot;, &quot;MsigdbC4CGN&quot;,
 &quot;MsigdbC4CM&quot;, &quot;MsigdbC5BP&quot;, &quot;MsigdbC5MF&quot;, &quot;MsigdbC5CC&quot;, &quot;MsigdbC6&quot;,
@@ -175,6 +195,13 @@ finding the significance, they are in order: hypergeometric test &gt;
 fisher's exact test &gt; binomial test. In other words, in terms of the
 calculated p-value, hypergeometric test &lt; fisher's exact test &lt;
 binomial test</p>
+</td></tr>
+<tr valign="top"><td><code>p.tail</code></td>
+<td>
+<p>the tail used to calculate p-values. It can be either
+&quot;two-tails&quot; for the significance based on two-tails (ie both over- and
+under-overrepresentation) or &quot;one-tail&quot; (by default) for the
+significance based on one tail (ie only over-representation)</p>
 </td></tr>
 <tr valign="top"><td><code>p.adjust.method</code></td>
 <td>
@@ -280,6 +307,17 @@ the snps of interest). Always, gene sets are identified by &quot;id&quot;
 </li>
 <li><p><code>adjp</code>: a vector containing adjusted p-values. It is the p
 value but after being adjusted for multiple comparisons
+</p>
+</li>
+<li><p><code>or</code>: a vector containing odds ratio
+</p>
+</li>
+<li><p><code>CIl</code>: a vector containing lower bound confidence interval
+for the odds ratio
+</p>
+</li>
+<li><p><code>CIu</code>: a vector containing upper bound confidence interval
+for the odds ratio
 </p>
 </li>
 <li><p><code>cross</code>: a matrix of nTerm X nTerm, with an on-diagnal cell

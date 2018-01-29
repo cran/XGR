@@ -22,9 +22,9 @@ Hypergeometric test.
 xEnricherYours(data.file, annotation.file, background.file = NULL,
 size.range = c(10, 2000), min.overlap = 3, test = c("hypergeo",
 "fisher", "binomial"), background.annotatable.only = T,
-p.adjust.method = c("BH", "BY", "bonferroni", "holm", "hochberg",
-"hommel"),
-verbose = T)
+p.tail = c("one-tail", "two-tails"), p.adjust.method = c("BH", "BY",
+"bonferroni", "holm", "hochberg", "hommel"), verbose = T, silent =
+FALSE)
 </pre>
 
 
@@ -104,6 +104,13 @@ background genes are those after being overlapped with annotatable
 genes. Notably, if only one annotation is provided in
 'annotation.file', it should be false</p>
 </td></tr>
+<tr valign="top"><td><code>p.tail</code></td>
+<td>
+<p>the tail used to calculate p-values. It can be either
+&quot;two-tails&quot; for the significance based on two-tails (ie both over- and
+under-overrepresentation) or &quot;one-tail&quot; (by default) for the
+significance based on one tail (ie only over-representation)</p>
+</td></tr>
 <tr valign="top"><td><code>p.adjust.method</code></td>
 <td>
 <p>the method used to adjust p-values. It can be
@@ -119,6 +126,12 @@ condition than FWER</p>
 <td>
 <p>logical to indicate whether the messages will be
 displayed in the screen. By default, it sets to false for no display</p>
+</td></tr>
+<tr valign="top"><td><code>silent</code></td>
+<td>
+<p>logical to indicate whether the messages will be silent
+completely. By default, it sets to false. If true, verbose will be
+forced to be false</p>
 </td></tr>
 </table>
 
@@ -168,6 +181,17 @@ the snps of interest). Always, gene sets are identified by &quot;id&quot;
 </li>
 <li><p><code>adjp</code>: a vector containing adjusted p-values. It is the p
 value but after being adjusted for multiple comparisons
+</p>
+</li>
+<li><p><code>or</code>: a vector containing odds ratio
+</p>
+</li>
+<li><p><code>CIl</code>: a vector containing lower bound confidence interval
+for the odds ratio
+</p>
+</li>
+<li><p><code>CIu</code>: a vector containing upper bound confidence interval
+for the odds ratio
 </p>
 </li>
 <li><p><code>cross</code>: a matrix of nTerm X nTerm, with an on-diagnal cell
@@ -233,7 +257,9 @@ print(bp)
 
 # Using ImmunoBase SNPs and associations/annotations with disease traits
 ## get ImmunoBase
-ImmunoBase &lt;- xRDataLoader(RData.customised='ImmunoBase')
+RData.location &lt;- "http://galahad.well.ox.ac.uk/bigdata_dev/"
+ImmunoBase &lt;- xRDataLoader(RData.customised='ImmunoBase',
+RData.location=RData.location)
 ## get disease associated variants/SNPs
 variants_list &lt;- lapply(ImmunoBase, function(x)
 cbind(SNP=names(x$variants),
@@ -243,7 +269,8 @@ annotation.file &lt;- do.call(rbind, variants_list)
 head(annotation.file)
 ## provide the input SNPs of interest
 ## for example, cis-eQTLs induced by interferon gamma
-cis &lt;- xRDataLoader(RData.customised='JKscience_TS2A')
+cis &lt;- xRDataLoader(RData.customised='JKscience_TS2A',
+RData.location=RData.location)
 data.file &lt;- matrix(cis[which(cis$IFN_t&gt;0),c('variant')], ncol=1)
 # perform enrichment analysis
 eTerm &lt;- xEnricherYours(data.file=data.file,

@@ -130,6 +130,14 @@
 #' \item{\code{EpigenomeAtlas_15Segments_E050}: a list (15 categories of segments) of GenomicRanges objects; each is an GR object containing segments per category in the reference epigenome E050 (Primary hematopoietic stem cells G-CSF-mobilized Female).}
 #' \item{\code{EpigenomeAtlas_15Segments_E051}: a list (15 categories of segments) of GenomicRanges objects; each is an GR object containing segments per category in the reference epigenome E051 (Primary hematopoietic stem cells G-CSF-mobilized Male).}
 #' }
+#' 15. CpG annotation
+#' \itemize{
+#'  \item{\code{CpG_anno}: a list (4 categories) of GenomicRanges objects; each is an GR object. They are exclusive, including (in order) "CpG_islands", "CpG_shores" (2Kb upstream/downstream from the ends of the CpG islands), "CpG_shelves" (2Kb upstream/downstream of the farthest upstream/downstream limits of the CpG shores), and "CpG_inter" (the remaining inter-CGI genomic regions 'open sea'). }
+#' }
+#' 16. Genic annotation
+#' \itemize{
+#'  \item{\code{Genic_anno}: a list (12 categories) of GenomicRanges objects; each is an GR object. They are not exclusively, including "Genic_1to5kb" (1-5Kb upstream of TSS), "Genic_promoters" (1Kb upstream of TSS), "Genic_5UTRs", "Genic_firstexons" (first exons), "Genic_exons", "Genic_exonintronboundaries", "Genic_introns", "Genic_intronexonboundaries", "Genic_cds", "Genic_3UTRs", "Genic_intergenic" (the intergenic regions exclude the previous list of annotations), and "Genic_lncRNA" (GENCODE long non-coding RNA (lncRNA) transcripts). }
+#' }
 #' @export
 #' @seealso \code{\link{xEnrichViewer}}
 #' @include xGRviaGenomicAnnoAdv.r
@@ -158,7 +166,7 @@
 #' utils::write.table(output, file="Regions_enrichments.txt", sep="\t", row.names=FALSE)
 #' }
 
-xGRviaGenomicAnnoAdv <- function(data.file, annotation.file=NULL, background.file=NULL, format.file=c("data.frame", "bed", "chr:start-end", "GRanges"), build.conversion=c(NA,"hg38.to.hg19","hg18.to.hg19"), background.annotatable.only=F, num.samples=1000, gap.max=50000, max.distance=NULL, p.adjust.method=c("BH", "BY", "bonferroni", "holm", "hochberg", "hommel"), GR.annotation=c(NA,"Uniform_TFBS","ENCODE_TFBS_ClusteredV3","ENCODE_TFBS_ClusteredV3_CellTypes", "Uniform_DNaseI_HS","ENCODE_DNaseI_ClusteredV3","ENCODE_DNaseI_ClusteredV3_CellTypes", "Broad_Histone","SYDH_Histone","UW_Histone","FANTOM5_Enhancer_Cell","FANTOM5_Enhancer_Tissue","FANTOM5_Enhancer_Extensive","FANTOM5_Enhancer","Segment_Combined_Gm12878","Segment_Combined_H1hesc","Segment_Combined_Helas3","Segment_Combined_Hepg2","Segment_Combined_Huvec","Segment_Combined_K562","TFBS_Conserved","TS_miRNA","TCGA", "ReMap_Public_TFBS","ReMap_Public_mergedTFBS","ReMap_PublicAndEncode_mergedTFBS","ReMap_Encode_TFBS", "Blueprint_BoneMarrow_Histone","Blueprint_CellLine_Histone","Blueprint_CordBlood_Histone","Blueprint_Thymus_Histone","Blueprint_VenousBlood_Histone","Blueprint_DNaseI","Blueprint_Methylation_hyper","Blueprint_Methylation_hypo","EpigenomeAtlas_15Segments_E029", "EpigenomeAtlas_15Segments_E030", "EpigenomeAtlas_15Segments_E031", "EpigenomeAtlas_15Segments_E032", "EpigenomeAtlas_15Segments_E033", "EpigenomeAtlas_15Segments_E034", "EpigenomeAtlas_15Segments_E035", "EpigenomeAtlas_15Segments_E036", "EpigenomeAtlas_15Segments_E037", "EpigenomeAtlas_15Segments_E038", "EpigenomeAtlas_15Segments_E039", "EpigenomeAtlas_15Segments_E040", "EpigenomeAtlas_15Segments_E041", "EpigenomeAtlas_15Segments_E042", "EpigenomeAtlas_15Segments_E043", "EpigenomeAtlas_15Segments_E044", "EpigenomeAtlas_15Segments_E045", "EpigenomeAtlas_15Segments_E046", "EpigenomeAtlas_15Segments_E047", "EpigenomeAtlas_15Segments_E048", "EpigenomeAtlas_15Segments_E050", "EpigenomeAtlas_15Segments_E051", "EpigenomeAtlas_15Segments_E062"), parallel=TRUE, multicores=NULL, verbose=T, RData.location="http://galahad.well.ox.ac.uk/bigdata")
+xGRviaGenomicAnnoAdv <- function(data.file, annotation.file=NULL, background.file=NULL, format.file=c("data.frame", "bed", "chr:start-end", "GRanges"), build.conversion=c(NA,"hg38.to.hg19","hg18.to.hg19"), background.annotatable.only=F, num.samples=1000, gap.max=50000, max.distance=NULL, p.adjust.method=c("BH", "BY", "bonferroni", "holm", "hochberg", "hommel"), GR.annotation=c(NA,"Uniform_TFBS","ENCODE_TFBS_ClusteredV3","ENCODE_TFBS_ClusteredV3_CellTypes", "Uniform_DNaseI_HS","ENCODE_DNaseI_ClusteredV3","ENCODE_DNaseI_ClusteredV3_CellTypes", "Broad_Histone","SYDH_Histone","UW_Histone","FANTOM5_Enhancer_Cell","FANTOM5_Enhancer_Tissue","FANTOM5_Enhancer_Extensive","FANTOM5_Enhancer","Segment_Combined_Gm12878","Segment_Combined_H1hesc","Segment_Combined_Helas3","Segment_Combined_Hepg2","Segment_Combined_Huvec","Segment_Combined_K562","TFBS_Conserved","TS_miRNA","TCGA", "ReMap_Public_TFBS","ReMap_Public_mergedTFBS","ReMap_PublicAndEncode_mergedTFBS","ReMap_Encode_TFBS", "Blueprint_BoneMarrow_Histone","Blueprint_CellLine_Histone","Blueprint_CordBlood_Histone","Blueprint_Thymus_Histone","Blueprint_VenousBlood_Histone","Blueprint_DNaseI","Blueprint_Methylation_hyper","Blueprint_Methylation_hypo","EpigenomeAtlas_15Segments_E029", "EpigenomeAtlas_15Segments_E030", "EpigenomeAtlas_15Segments_E031", "EpigenomeAtlas_15Segments_E032", "EpigenomeAtlas_15Segments_E033", "EpigenomeAtlas_15Segments_E034", "EpigenomeAtlas_15Segments_E035", "EpigenomeAtlas_15Segments_E036", "EpigenomeAtlas_15Segments_E037", "EpigenomeAtlas_15Segments_E038", "EpigenomeAtlas_15Segments_E039", "EpigenomeAtlas_15Segments_E040", "EpigenomeAtlas_15Segments_E041", "EpigenomeAtlas_15Segments_E042", "EpigenomeAtlas_15Segments_E043", "EpigenomeAtlas_15Segments_E044", "EpigenomeAtlas_15Segments_E045", "EpigenomeAtlas_15Segments_E046", "EpigenomeAtlas_15Segments_E047", "EpigenomeAtlas_15Segments_E048", "EpigenomeAtlas_15Segments_E050", "EpigenomeAtlas_15Segments_E051", "EpigenomeAtlas_15Segments_E062", "CpG_anno","Genic_anno"), parallel=TRUE, multicores=NULL, verbose=T, RData.location="http://galahad.well.ox.ac.uk/bigdata")
 {
     startT <- Sys.time()
     message(paste(c("Start at ",as.character(startT)), collapse=""), appendLF=T)
@@ -269,7 +277,7 @@ xGRviaGenomicAnnoAdv <- function(data.file, annotation.file=NULL, background.fil
 				)
 			})
 		}else{
-			if(class(GR.annotation) == "GRanges"){
+			if(class(GR.annotation) == "list"){
 				###################################
 				## now GR.annotation can be directly provided as a GR object
 				###################################
@@ -353,7 +361,7 @@ xGRviaGenomicAnnoAdv <- function(data.file, annotation.file=NULL, background.fil
 				)
 			})
 		}else{
-			if(class(GR.annotation) == "GRanges"){
+			if(class(GR.annotation) == "list"){
 				###################################
 				## now GR.annotation can be directly provided as a GR object
 				###################################
@@ -421,7 +429,7 @@ xGRviaGenomicAnnoAdv <- function(data.file, annotation.file=NULL, background.fil
 				)
 			})
 		}else{
-			if(class(GR.annotation) == "GRanges"){
+			if(class(GR.annotation) == "list"){
 				###################################
 				## now GR.annotation can be directly provided as a GR object
 				###################################
@@ -464,7 +472,7 @@ xGRviaGenomicAnnoAdv <- function(data.file, annotation.file=NULL, background.fil
 			## construct annotation GR
 			aGR <- annotation
 		}else{
-			if(class(GR.annotation) == "GRanges"){
+			if(class(GR.annotation) == "list"){
 				###################################
 				## now GR.annotation can be directly provided as a GR object
 				###################################
@@ -496,7 +504,7 @@ xGRviaGenomicAnnoAdv <- function(data.file, annotation.file=NULL, background.fil
 	
 	#####################################
 	## A function to return an GR object storing overlapped regions (ie only overlapped regions!)
-	mergeOverlaps <- function(qGR, sGR, out.format=c("GR","counts"), maxgap=0L, minoverlap=1L){
+	mergeOverlaps <- function(qGR, sGR, out.format=c("GR","counts"), maxgap=-1L, minoverlap=0L){
 		out.format <- match.arg(out.format)
 		
 		hits <- as.matrix(as.data.frame(GenomicRanges::findOverlaps(query=qGR, subject=sGR, maxgap=maxgap, minoverlap=minoverlap, type="any", select="all", ignore.strand=T)))
@@ -511,7 +519,7 @@ xGRviaGenomicAnnoAdv <- function(data.file, annotation.file=NULL, background.fil
 	}
 	
 	## A function to return a list of GR objects storing overlapped regions (ie only overlapped regions!)
-	mergeOverlaps_GRL <- function(qGR, sGRL, maxgap=0L, minoverlap=1L, out.format=c("GR", "counts")){
+	mergeOverlaps_GRL <- function(qGR, sGRL, maxgap=-1L, minoverlap=0L, out.format=c("GR", "counts")){
 		out.format <- match.arg(out.format)
 		
 		hits_GRL <- as.matrix(as.data.frame(GenomicRanges::findOverlaps(query=qGR, subject=sGRL, maxgap=maxgap, minoverlap=minoverlap, type="any", select="all", ignore.strand=T)))
@@ -620,7 +628,7 @@ xGRviaGenomicAnnoAdv <- function(data.file, annotation.file=NULL, background.fil
 	
 		## update annotation GR after considering background
 		aGR_reduced <- base::lapply(aGR_reduced, function(gr){
-			mergeOverlaps(qGR=gr, sGR=bGR_reduced, maxgap=0L, minoverlap=1L)
+			mergeOverlaps(qGR=gr, sGR=bGR_reduced, maxgap=-1L, minoverlap=0L)
 		})
 	
 		## restrict to the annotatable only?
@@ -642,11 +650,11 @@ xGRviaGenomicAnnoAdv <- function(data.file, annotation.file=NULL, background.fil
 	}
 	
 	## update data GR after considering background
-	dGR_reduced <- mergeOverlaps(qGR=dGR_reduced, sGR=bGR_reduced, maxgap=0L, minoverlap=1L)
+	dGR_reduced <- mergeOverlaps(qGR=dGR_reduced, sGR=bGR_reduced, maxgap=-1L, minoverlap=0L)
 	
 	## find overlap GR between annotation GR and data GR
 	aGRL <- GenomicRanges::GRangesList(aGR_reduced)
-	oGR_reduced <- mergeOverlaps_GRL(qGR=dGR_reduced, sGRL=aGRL, maxgap=0L, minoverlap=1L)
+	oGR_reduced <- mergeOverlaps_GRL(qGR=dGR_reduced, sGRL=aGRL, maxgap=-1L, minoverlap=0L)
 	#######################################################
 	if(verbose){
 		now <- Sys.time()

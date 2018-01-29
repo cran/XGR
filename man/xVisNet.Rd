@@ -11,7 +11,7 @@ newpage = TRUE, signature = TRUE, glayout = layout_with_kk,
 vertex.frame.color = NA, vertex.size = NULL, vertex.color = NULL,
 vertex.shape = NULL, vertex.label = NULL, vertex.label.cex = NULL,
 vertex.label.dist = 0.3, vertex.label.color = "blue",
-edge.arrow.size = 0.3, ...)
+vertex.label.family = "sans", edge.arrow.size = 0.3, ...)
 }
 \arguments{
 \item{g}{an object of class "igraph"}
@@ -68,9 +68,9 @@ determine the actual coordinates. This function can be one of
 "layout_with_sugiyama" (previously "layout.kamada.kawai"),
 "layout_with_dh" (previously "layout.davidson.harel"),
 "layout_with_drl" (previously "layout.drl"), "layout_with_gem"
-(previously "layout.gem"), "layout_with_mds". A full explanation of
-these layouts can be found in
-\url{http://igraph.org/r/doc/layout_nicely.html}}
+(previously "layout.gem"), "layout_with_mds", and
+"layout_as_bipartite". A full explanation of these layouts can be found
+in \url{http://igraph.org/r/doc/layout_nicely.html}}
 
 \item{vertex.frame.color}{the color of the frame of the vertices. If it
 is NA, then there is no frame}
@@ -96,9 +96,11 @@ nodes}
 
 \item{vertex.label.dist}{the distance of the label from the center of
 the vertex. If it is 0 then the label is centered on the vertex. If it
-is 1 then the label is displayed beside the vertex.}
+is 1 then the label is displayed beside the vertex}
 
-\item{vertex.label.color}{the color of vertex labels.}
+\item{vertex.label.color}{the color of vertex labels}
+
+\item{vertex.label.family}{the font family of vertex labels}
 
 \item{edge.arrow.size}{the size of the arrows for the directed edge.
 The default value is 1.}
@@ -118,6 +120,7 @@ input pattern.
 none
 }
 \examples{
+\dontrun{
 # 1) generate a ring graph
 g <- make_ring(10, directed=TRUE)
 
@@ -135,6 +138,19 @@ xVisNet(g=g, vertex.shape="sphere")
 pattern <- runif(vcount(g))
 names(pattern) <- V(g)$name
 xVisNet(g=g, pattern=pattern, colormap="bwr", vertex.shape="sphere")
+
+# 5) use font family (Arial)
+source("http://bioconductor.org/biocLite.R"); biocLite("extrafont")
+library(extrafont)
+font_import()
+fonttable()
+## creating PDF files with fonts
+loadfonts()
+pdf("xVisNet_fonts.pdf", family="Arial Black")
+xVisNet(g=g, newpage=FALSE, vertex.label.family="Arial Black",
+signature=F)
+dev.off()
+}
 }
 \seealso{
 \code{\link{xSubneterGenes}}, \code{\link{xSubneterSNPs}}

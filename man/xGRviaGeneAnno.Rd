@@ -20,14 +20,18 @@ c("GOBP",
 "GTExV6", "CreedsDisease", "CreedsDiseaseUP", "CreedsDiseaseDN",
 "CreedsDrug",
 "CreedsDrugUP", "CreedsDrugDN", "CreedsGene", "CreedsGeneUP",
-"CreedsGeneDN"), size.range = c(10, 2000), min.overlap = 3,
-which.distance = NULL, test = c("hypergeo", "fisher", "binomial"),
-p.adjust.method = c("BH", "BY", "bonferroni", "holm", "hochberg",
-"hommel"),
-ontology.algorithm = c("none", "pc", "elim", "lea"), elim.pvalue =
-0.01,
-lea.depth = 2, path.mode = c("all_paths", "shortest_paths",
-"all_shortest_paths"), true.path.rule = F, verbose = T,
+"CreedsGeneDN", "KEGG", "KEGGmetabolism", "KEGGgenetic",
+"KEGGenvironmental",
+"KEGGcellular", "KEGGorganismal", "KEGGdisease", "REACTOME",
+"REACTOME_ImmuneSystem", "REACTOME_SignalTransduction", "CGL"),
+size.range = c(10, 2000), min.overlap = 3, which.distance = NULL,
+test = c("hypergeo", "fisher", "binomial"), p.tail = c("one-tail",
+"two-tails"), p.adjust.method = c("BH", "BY", "bonferroni", "holm",
+"hochberg", "hommel"), ontology.algorithm = c("none", "pc", "elim",
+"lea"),
+elim.pvalue = 0.01, lea.depth = 2, path.mode = c("all_paths",
+"shortest_paths", "all_shortest_paths"), true.path.rule = F, verbose =
+T,
 RData.location = "http://galahad.well.ox.ac.uk/bigdata")
 }
 \arguments{
@@ -54,7 +58,7 @@ genomic regions as the test background. The file format is the same as
 non-redundant bases covered by 'annotation.file') are used as
 background. However, if only one annotation (eg only a transcription
 factor) is provided in 'annotation.file', the background must be
-provided.}
+provided}
 
 \item{format.file}{the format for input files. It can be one of
 "data.frame", "chr:start-end", "bed" or "GRanges"}
@@ -91,13 +95,29 @@ Phenotypic Abnormality, "HPMI" for Human Phenotype Mode of Inheritance,
 "HPCM" for Human Phenotype Clinical Modifier, "HPMA" for Human
 Phenotype Mortality Aging, "MP" for Mammalian Phenotype, "EF" for
 Experimental Factor Ontology (used to annotate GWAS Catalog genes),
-Drug-Gene Interaction database ("DGIdb") for drugable categories,
-tissue-specific eQTL-containing genes from GTEx ("GTExV4" and
-"GTExV6"), crowd extracted expression of differential signatures from
-CREEDS ("CreedsDisease", "CreedsDiseaseUP", "CreedsDiseaseDN",
+Drug-Gene Interaction database ("DGIdb") for druggable categories,
+tissue-specific eQTL-containing genes from GTEx ("GTExV4", "GTExV6p"
+and "GTExV7"), crowd extracted expression of differential signatures
+from CREEDS ("CreedsDisease", "CreedsDiseaseUP", "CreedsDiseaseDN",
 "CreedsDrug", "CreedsDrugUP", "CreedsDrugDN", "CreedsGene",
-"CreedsGeneUP" and "CreedsGeneDN"), and the molecular signatures
-database (Msigdb, including "MsigdbH", "MsigdbC1", "MsigdbC2CGP",
+"CreedsGeneUP" and "CreedsGeneDN"), KEGG pathways (including 'KEGG' for
+all, 'KEGGmetabolism' for 'Metabolism' pathways, 'KEGGgenetic' for
+'Genetic Information Processing' pathways, 'KEGGenvironmental' for
+'Environmental Information Processing' pathways, 'KEGGcellular' for
+'Cellular Processes' pathways, 'KEGGorganismal' for 'Organismal
+Systems' pathways, and 'KEGGdisease' for 'Human Diseases' pathways),
+'REACTOME' for REACTOME pathways or 'REACTOME_x' for its sub-ontologies
+(where x can be 'CellCellCommunication', 'CellCycle',
+'CellularResponsesToExternalStimuli', 'ChromatinOrganization',
+'CircadianClock', 'DevelopmentalBiology', 'DigestionAndAbsorption',
+'Disease', 'DNARepair', 'DNAReplication',
+'ExtracellularMatrixOrganization', 'GeneExpression(Transcription)',
+'Hemostasis', 'ImmuneSystem', 'Metabolism', 'MetabolismOfProteins',
+'MetabolismOfRNA', 'Mitophagy', 'MuscleContraction', 'NeuronalSystem',
+'OrganelleBiogenesisAndMaintenance', 'ProgrammedCellDeath',
+'Reproduction', 'SignalTransduction', 'TransportOfSmallMolecules',
+'VesicleMediatedTransport'), and the molecular signatures database
+(Msigdb, including "MsigdbH", "MsigdbC1", "MsigdbC2CGP",
 "MsigdbC2CPall", "MsigdbC2CP", "MsigdbC2KEGG", "MsigdbC2REACTOME",
 "MsigdbC2BIOCARTA", "MsigdbC3TFT", "MsigdbC3MIR", "MsigdbC4CGN",
 "MsigdbC4CM", "MsigdbC5BP", "MsigdbC5MF", "MsigdbC5CC", "MsigdbC6",
@@ -130,6 +150,11 @@ finding the significance, they are in order: hypergeometric test >
 fisher's exact test > binomial test. In other words, in terms of the
 calculated p-value, hypergeometric test < fisher's exact test <
 binomial test}
+
+\item{p.tail}{the tail used to calculate p-values. It can be either
+"two-tails" for the significance based on two-tails (ie both over- and
+under-overrepresentation) or "one-tail" (by default) for the
+significance based on one tail (ie only over-representation)}
 
 \item{p.adjust.method}{the method used to adjust p-values. It can be
 one of "BH", "BY", "bonferroni", "holm", "hochberg" and "hommel". The
@@ -195,6 +220,11 @@ the snps of interest). Always, gene sets are identified by "id"}
 \item{\code{pvalue}: a vector containing p-values}
 \item{\code{adjp}: a vector containing adjusted p-values. It is the p
 value but after being adjusted for multiple comparisons}
+\item{\code{or}: a vector containing odds ratio}
+\item{\code{CIl}: a vector containing lower bound confidence interval
+for the odds ratio}
+\item{\code{CIu}: a vector containing upper bound confidence interval
+for the odds ratio}
 \item{\code{cross}: a matrix of nTerm X nTerm, with an on-diagnal cell
 for the overlapped-members observed in an individaul term, and
 off-diagnal cell for the overlapped-members shared betwene two terms}

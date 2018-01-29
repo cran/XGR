@@ -18,8 +18,9 @@ side-by-side barplots. It returns an object of class &quot;ggplot&quot;.
 
 <pre>
 xEnrichCompare(list_eTerm, displayBy = c("fc", "adjp", "fdr", "zscore",
-"pvalue"), FDR.cutoff = 0.05, bar.label = TRUE, bar.label.size = 3,
-wrap.width = NULL, sharings = NULL, signature = TRUE)
+"pvalue"), FDR.cutoff = 0.05, bar.label = TRUE, bar.label.size = 2.5,
+wrap.width = NULL, sharings = NULL, font.family = "sans",
+facet = TRUE, signature = TRUE)
 </pre>
 
 
@@ -63,6 +64,15 @@ will be displayed. For example, when comparing three groups of
 enrichment results, it can be set into c(2,3) to display only shared
 terms by any two or all three. By default, it is NULL meaning no such
 restriction</p>
+</td></tr>
+<tr valign="top"><td><code>font.family</code></td>
+<td>
+<p>the font family for texts</p>
+</td></tr>
+<tr valign="top"><td><code>facet</code></td>
+<td>
+<p>logical to indicate whether to facet/wrap a 1d of panels
+into 2d. By default, it sets TRUE</p>
 </td></tr>
 <tr valign="top"><td><code>signature</code></td>
 <td>

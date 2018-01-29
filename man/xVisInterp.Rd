@@ -7,10 +7,14 @@
 xVisInterp(ls_xyz, interpolation = c("spline", "linear"), nx = 100,
 ny = 100, zlim = NULL, nD = c("auto", "2D", "3D"), colkey = TRUE,
 contour = FALSE, image = FALSE, clab = c("Value", ""), nlevels = 20,
-colormap = "terrain", theta.3D = 40, phi.3D = 20, verbose = TRUE)
+colormap = "terrain", label.pch = 17, label.text.cex = 0.8,
+label.text.adj = -0.4, label.text.adj.z = 0.01,
+label.font.family = "sans", xy.swap = FALSE, theta.3D = 40,
+phi.3D = 20, verbose = TRUE)
 }
 \arguments{
-\item{ls_xyz}{a list with three components (x, y and z)}
+\item{ls_xyz}{a list with 3 required components (x, y and z) and an
+optional component (label)}
 
 \item{interpolation}{the method for the interpolation. It can be
 "linear" or "spline" interpolation}
@@ -65,6 +69,25 @@ hyphen-separated HTML color names, e.g. "blue-black-yellow",
 standard color names can be found in
 \url{http://html-color-codes.info/color-names}}
 
+\item{label.pch}{a numeric value specifying the graphiics symbol (by
+default, 17 for upward triangle). This argument only works when the
+labelling is enabled}
+
+\item{label.text.cex}{a numeric value specifying the text size. This
+argument only works when the labelling is enabled}
+
+\item{label.text.adj}{a numeric value adjusting the text location in
+xy-plane. This argument only works when the labelling is enabled}
+
+\item{label.text.adj.z}{a numeric value adjusting the text locaion in
+z-axis. This argument only works when the labelling is enabled}
+
+\item{label.font.family}{the font family for texts. This argument only
+works when the labelling is enabled}
+
+\item{xy.swap}{logical to indicate whether to wrap x and y. By default,
+it sets to false}
+
 \item{theta.3D}{the azimuthal direction. By default, it is 40}
 
 \item{phi.3D}{the colatitude direction. By default, it is 20}
@@ -88,9 +111,10 @@ library(XGR)
 }
 RData.location <- "http://galahad.well.ox.ac.uk/bigdata_dev"
 \dontrun{
-g <- erdos.renyi.game(100, 1/10)
+g <- erdos.renyi.game(20, 1/10)
 glayout <- layout_with_kk(g)
-ls_xyz <- data.frame(x=glayout[,1], y=glayout[,2], z=degree(g))
+ls_xyz <- data.frame(x=glayout[,1], y=glayout[,2], z=degree(g),
+label=degree(g))
 
 # auto
 ls_xyz.smooth <- xVisInterp(ls_xyz, nD="auto")

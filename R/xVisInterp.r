@@ -2,7 +2,7 @@
 #'
 #' \code{xVisInterp} is supposed to visualise irregular data after bilinear or bicubic spline interpolation onto a grid. 
 #'
-#' @param ls_xyz a list with three components (x, y and z)
+#' @param ls_xyz a list with 3 required components (x, y and z) and an optional component (label)
 #' @param interpolation the method for the interpolation. It can be "linear" or "spline" interpolation
 #' @param nx the dimension of output grid in x direction
 #' @param ny the dimension of output grid in y direction
@@ -14,6 +14,12 @@
 #' @param clab a title for the colorbar. the label to be written on top of the color key; to lower it, 'clab' can be made a vector, with the first values empty strings.
 #' @param nlevels the number of levels to partition the input matrix values. The same level has the same color mapped to
 #' @param colormap short name for the colormap. It can be one of "jet" (jet colormap), "bwr" (blue-white-red colormap), "gbr" (green-black-red colormap), "wyr" (white-yellow-red colormap), "br" (black-red colormap), "yr" (yellow-red colormap), "wb" (white-black colormap), and "rainbow" (rainbow colormap, that is, red-yellow-green-cyan-blue-magenta). Alternatively, any hyphen-separated HTML color names, e.g. "blue-black-yellow", "royalblue-white-sandybrown", "darkgreen-white-darkviolet". A list of standard color names can be found in \url{http://html-color-codes.info/color-names}
+#' @param label.pch a numeric value specifying the graphiics symbol (by default, 17 for upward triangle). This argument only works when the labelling is enabled
+#' @param label.text.cex a numeric value specifying the text size. This argument only works when the labelling is enabled
+#' @param label.text.adj a numeric value adjusting the text location in xy-plane. This argument only works when the labelling is enabled
+#' @param label.text.adj.z a numeric value adjusting the text locaion in z-axis. This argument only works when the labelling is enabled
+#' @param label.font.family the font family for texts. This argument only works when the labelling is enabled
+#' @param xy.swap logical to indicate whether to wrap x and y. By default, it sets to false
 #' @param theta.3D the azimuthal direction. By default, it is 40
 #' @param phi.3D the colatitude direction. By default, it is 20
 #' @param verbose logical to indicate whether the messages will be displayed in the screen. By default, it sets to true for display
@@ -29,9 +35,9 @@
 #' }
 #' RData.location <- "http://galahad.well.ox.ac.uk/bigdata_dev"
 #' \dontrun{
-#' g <- erdos.renyi.game(100, 1/10)
+#' g <- erdos.renyi.game(20, 1/10)
 #' glayout <- layout_with_kk(g)
-#' ls_xyz <- data.frame(x=glayout[,1], y=glayout[,2], z=degree(g))
+#' ls_xyz <- data.frame(x=glayout[,1], y=glayout[,2], z=degree(g), label=degree(g))
 #' 
 #' # auto
 #' ls_xyz.smooth <- xVisInterp(ls_xyz, nD="auto")
@@ -45,8 +51,7 @@
 #' dev.off()
 #' }
 
-xVisInterp <-function(ls_xyz, interpolation=c("spline","linear"), nx=100, ny=100, zlim=NULL, nD=c("auto","2D","3D"), colkey=TRUE, contour=FALSE, image=FALSE, clab=c("Value",""), nlevels=20, colormap="terrain",
-theta.3D=40, phi.3D=20, verbose=TRUE)
+xVisInterp <-function(ls_xyz, interpolation=c("spline","linear"), nx=100, ny=100, zlim=NULL, nD=c("auto","2D","3D"), colkey=TRUE, contour=FALSE, image=FALSE, clab=c("Value",""), nlevels=20, colormap="terrain", label.pch=17, label.text.cex=0.8, label.text.adj=-0.4, label.text.adj.z=0.01, label.font.family="sans", xy.swap=FALSE, theta.3D=40, phi.3D=20, verbose=TRUE)
 {
 
     ## match.arg matches arg against a table of candidate values as specified by choices, where NULL means to take the first one
@@ -54,7 +59,7 @@ theta.3D=40, phi.3D=20, verbose=TRUE)
     nD <- match.arg(nD)
 	
 	if(class(ls_xyz)=='list'){
-		ind <- names(ls_xyz) %in% c("x","y","z")
+		ind <- names(ls_xyz) %in% c("x","y","z","label")
 		ls_xyz <- ls_xyz[ind]
 		if(length(ls_xyz)!=3){
 			return(NULL)
@@ -78,6 +83,12 @@ theta.3D=40, phi.3D=20, verbose=TRUE)
 		linear <- TRUE
 	}else{
 		linear <- FALSE
+	}
+	
+	if(xy.swap){
+		tmp <- ls_xyz$y
+		ls_xyz$y <- ls_xyz$x
+		ls_xyz$x <- tmp
 	}
 	
     ## increase smoothness (using finer grid)
@@ -109,19 +120,19 @@ theta.3D=40, phi.3D=20, verbose=TRUE)
 			}else{
 				graphics::contour(ls_xyz.smooth, labcex=1, levels=breaks, col=colors)
 			}
-			graphics::points(ls_xyz, pch=20, cex=1, col="black")
+			graphics::points(ls_xyz, pch=label.pch, cex=1, col="black")
 			
 		}else{
 			if(!image){
-				plot(y ~ x, data=ls_xyz, pch=20, col="blue", axes=FALSE, ann=FALSE)
+				plot(y ~ x, data=ls_xyz, pch=label.pch, col="blue", axes=FALSE, ann=FALSE)
 			}else{
-				graphics::points(ls_xyz, pch=20, cex=1)
+				graphics::points(ls_xyz, pch=label.pch, cex=1)
 			}
 			
 			if(is.null(ls_xyz$label)){
-				with(ls_xyz, graphics::text(x, y, formatC(z,dig=2), adj=-0.2, cex=0.6))
+				with(ls_xyz, graphics::text(x, y, formatC(z,dig=2), adj=-0.2, cex=label.text.cex, family=label.font.family))
 			}else{
-				with(ls_xyz, graphics::text(x, y, label, adj=-0.2, cex=0.6))
+				with(ls_xyz, graphics::text(x, y, label, adj=-0.2, cex=label.text.cex, family=label.font.family))
 			}
 			
 		}
@@ -171,7 +182,7 @@ theta.3D=40, phi.3D=20, verbose=TRUE)
 			}
 		
 			graphics::par(mar=c(0,0,0,0))
-			plot3D::persp3D(z=ls_xyz.smooth$z, axes=FALSE, box=FALSE, zlim=zlim, cex.axis=0.8, cex.lab=1.2, ticktype=c("simple","detailed")[1], col=col, colkey=colkey, clab=clab, bty="b", facets=TRUE, curtain=FALSE, plot=plot, lighting=TRUE, lphi=90, theta=theta.3D, phi=phi.3D, d=1)
+			plot3D::persp3D(z=ls_xyz.smooth$z, x=ls_xyz.smooth$x, y=ls_xyz.smooth$y, axes=FALSE, box=FALSE, zlim=zlim, cex.axis=0.8, cex.lab=1.2, ticktype=c("simple","detailed")[1], col=col, colkey=colkey, clab=clab, bty="b", facets=TRUE, curtain=FALSE, plot=plot, lighting=TRUE, lphi=90, theta=theta.3D, phi=phi.3D, d=1)
 		
 			if(image){
 				if(contour){
@@ -179,8 +190,24 @@ theta.3D=40, phi.3D=20, verbose=TRUE)
 				}else{
 					plot2 <- TRUE
 				}
-				plot3D::image3D(z=zlim[1], colvar=ls_xyz.smooth$z, col=col, box=FALSE, colkey=FALSE, add=TRUE, plot=plot2)
-		
+				
+				if(is.null(ls_xyz$label)){
+					plot3D::image3D(z=zlim[1], x=ls_xyz.smooth$x, y=ls_xyz.smooth$y, colvar=ls_xyz.smooth$z, col=col, box=FALSE, colkey=FALSE, add=TRUE, plot=plot2)
+					
+				}else{
+					plot3D::image3D(z=zlim[1], x=ls_xyz.smooth$x, y=ls_xyz.smooth$y, colvar=ls_xyz.smooth$z, col=col, box=FALSE, colkey=FALSE, add=TRUE, plot=FALSE)
+					
+					z_plane_point <- zlim[1]+(zlim[2]-zlim[1])*1.5*label.text.adj.z
+					z_plane_text <- zlim[1]+(zlim[2]-zlim[1])*label.text.adj.z
+					if(verbose){
+						now <- Sys.time()
+						message(sprintf("The points are at z=%.3f and texts at z=%.3f", z_plane_point, z_plane_text), appendLF=TRUE)
+					}
+					
+					plot3D::scatter3D(x=ls_xyz$x, y=ls_xyz$y, z=rep(z_plane_point,length(ls_xyz$z)), type="n", colkey=FALSE, pch=label.pch, cex=0.6, alpha=0.5, col="black", add=TRUE, plot=FALSE)
+					plot3D::text3D(x=ls_xyz$x, y=ls_xyz$y, z=rep(z_plane_text,length(ls_xyz$z)), label=ls_xyz$label, adj=label.text.adj, colkey=FALSE, cex=label.text.cex, col="black", srt=30, family=label.font.family, add=TRUE, plot=plot2)
+
+				}
 			}
 		
 			if(contour){

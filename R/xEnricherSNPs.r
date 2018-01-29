@@ -11,6 +11,7 @@
 #' @param min.overlap the minimum number of overlaps. Only those terms with members that overlap with input data at least min.overlap (3 by default) will be processed
 #' @param which.distance which terms with the distance away from the ontology root (if any) is used to restrict terms in consideration. By default, it sets to 'NULL' to consider all distances
 #' @param test the test statistic used. It can be "fisher" for using fisher's exact test, "hypergeo" for using hypergeometric test, or "binomial" for using binomial test. Fisher's exact test is to test the independence between gene group (genes belonging to a group or not) and gene annotation (genes annotated by a term or not), and thus compare sampling to the left part of background (after sampling without replacement). Hypergeometric test is to sample at random (without replacement) from the background containing annotated and non-annotated genes, and thus compare sampling to background. Unlike hypergeometric test, binomial test is to sample at random (with replacement) from the background with the constant probability. In terms of the ease of finding the significance, they are in order: hypergeometric test > fisher's exact test > binomial test. In other words, in terms of the calculated p-value, hypergeometric test < fisher's exact test < binomial test
+#' @param p.tail the tail used to calculate p-values. It can be either "two-tails" for the significance based on two-tails (ie both over- and under-overrepresentation)  or "one-tail" (by default) for the significance based on one tail (ie only over-representation)
 #' @param p.adjust.method the method used to adjust p-values. It can be one of "BH", "BY", "bonferroni", "holm", "hochberg" and "hommel". The first two methods "BH" (widely used) and "BY" control the false discovery rate (FDR: the expected proportion of false discoveries amongst the rejected hypotheses); the last four methods "bonferroni", "holm", "hochberg" and "hommel" are designed to give strong control of the family-wise error rate (FWER). Notes: FDR is a less stringent condition than FWER
 #' @param ontology.algorithm the algorithm used to account for the hierarchy of the ontology. It can be one of "none", "pc", "elim" and "lea". For details, please see 'Note' below
 #' @param elim.pvalue the parameter only used when "ontology.algorithm" is "elim". It is used to control how to declare a signficantly enriched term (and subsequently all genes in this term are eliminated from all its ancestors)
@@ -18,6 +19,7 @@
 #' @param path.mode the mode of paths induced by vertices/nodes with input annotation data. It can be "all_paths" for all possible paths to the root, "shortest_paths" for only one path to the root (for each node in query), "all_shortest_paths" for all shortest paths to the root (i.e. for each node, find all shortest paths with the equal lengths)
 #' @param true.path.rule logical to indicate whether the true-path rule should be applied to propagate annotations. By default, it sets to true
 #' @param verbose logical to indicate whether the messages will be displayed in the screen. By default, it sets to false for no display
+#' @param silent logical to indicate whether the messages will be silent completely. By default, it sets to false. If true, verbose will be forced to be false
 #' @param RData.location the characters to tell the location of built-in RData files. See \code{\link{xRDataLoader}} for details
 #' @return 
 #' an object of class "eTerm", a list with following components:
@@ -32,6 +34,9 @@
 #'  \item{\code{zscore}: a vector containing z-scores}
 #'  \item{\code{pvalue}: a vector containing p-values}
 #'  \item{\code{adjp}: a vector containing adjusted p-values. It is the p value but after being adjusted for multiple comparisons}
+#'  \item{\code{or}: a vector containing odds ratio}
+#'  \item{\code{CIl}: a vector containing lower bound confidence interval for the odds ratio}
+#'  \item{\code{CIu}: a vector containing upper bound confidence interval for the odds ratio}
 #'  \item{\code{cross}: a matrix of nTerm X nTerm, with an on-diagnal cell for the overlapped-members observed in an individaul term, and off-diagnal cell for the overlapped-members shared betwene two terms}
 #'  \item{\code{call}: the call that produced this result}
 #' }
@@ -51,24 +56,25 @@
 #' \dontrun{
 #' # Load the library
 #' library(XGR)
+#' RData.location <- "http://galahad.well.ox.ac.uk/bigdata_dev/"
 #' 
 #' # SNP-based enrichment analysis using GWAS Catalog traits (mapped to EF)
 #' # a) provide the input SNPs of interest (eg 'EFO:0002690' for 'systemic lupus erythematosus')
 #' ## load GWAS SNPs annotated by EF (an object of class "dgCMatrix" storing a spare matrix)
-#' anno <- xRDataLoader(RData='GWAS2EF')
+#' anno <- xRDataLoader(RData='GWAS2EF', RData.location=RData.location)
 #' ind <- which(colnames(anno)=='EFO:0002690')
-#' data <- rownames(anno)[anno[,ind]==1]
+#' data <- rownames(anno)[anno[,ind]!=0]
 #' data
 #'
 #' # optionally, provide the test background (if not provided, all annotatable SNPs)
 #' #background <- rownames(anno)
 #' 
 #' # b) perform enrichment analysis
-#' eTerm <- xEnricherSNPs(data=data, ontology="EF", path.mode=c("all_paths"))
+#' eTerm <- xEnricherSNPs(data=data, ontology="EF", path.mode=c("all_paths"), RData.location=RData.location)
 #'
 #' # b') optionally, enrichment analysis for input SNPs plus their LD SNPs
 #' ## LD based on European population (EUR) with r2>=0.8
-#' #eTerm <- xEnricherSNPs(data=data, include.LD="EUR", LD.r2=0.8)
+#' #eTerm <- xEnricherSNPs(data=data, include.LD="EUR", LD.r2=0.8, RData.location=RData.location)
 #' 
 #' # c) view enrichment results for the top significant terms
 #' xEnrichViewer(eTerm)
@@ -89,11 +95,15 @@
 #' xEnrichDAGplot(eTerm, top_num=10, displayBy="zscore", node.info=c("full_term_name"))
 #' }
 
-xEnricherSNPs <- function(data, background=NULL, ontology=c("EF","EF_disease","EF_phenotype", "EF_bp"), include.LD=NA, LD.r2=0.8, size.range=c(10,2000), min.overlap=3, which.distance=NULL, test=c("hypergeo","fisher","binomial"), p.adjust.method=c("BH", "BY", "bonferroni", "holm", "hochberg", "hommel"), ontology.algorithm=c("none","pc","elim","lea"), elim.pvalue=1e-2, lea.depth=2, path.mode=c("all_paths","shortest_paths","all_shortest_paths"), true.path.rule=T, verbose=T, RData.location="http://galahad.well.ox.ac.uk/bigdata")
+xEnricherSNPs <- function(data, background=NULL, ontology=c("EF","EF_disease","EF_phenotype", "EF_bp"), include.LD=NA, LD.r2=0.8, size.range=c(10,2000), min.overlap=3, which.distance=NULL, test=c("hypergeo","fisher","binomial"), p.tail=c("one-tail","two-tails"), p.adjust.method=c("BH", "BY", "bonferroni", "holm", "hochberg", "hommel"), ontology.algorithm=c("none","pc","elim","lea"), elim.pvalue=1e-2, lea.depth=2, path.mode=c("all_paths","shortest_paths","all_shortest_paths"), true.path.rule=T, verbose=T, silent=FALSE, RData.location="http://galahad.well.ox.ac.uk/bigdata")
 {
     startT <- Sys.time()
-    message(paste(c("Start at ",as.character(startT)), collapse=""), appendLF=T)
-    message("", appendLF=T)
+    if(!silent){
+    	message(paste(c("Start at ",as.character(startT)), collapse=""), appendLF=TRUE)
+    	message("", appendLF=TRUE)
+    }else{
+    	verbose <- FALSE
+    }
     ####################################################################################
     
     ## match.arg matches arg against a table of candidate values as specified by choices, where NULL means to take the first one
@@ -102,10 +112,11 @@ xEnricherSNPs <- function(data, background=NULL, ontology=c("EF","EF_disease","E
     p.adjust.method <- match.arg(p.adjust.method)
     ontology.algorithm <- match.arg(ontology.algorithm)
     path.mode <- match.arg(path.mode)
+    p.tail <- match.arg(p.tail)
     
     ############
     if(length(data)==0){
-    	return(FALSE)
+    	return(NULL)
     }
     ############
     
@@ -127,6 +138,7 @@ xEnricherSNPs <- function(data, background=NULL, ontology=c("EF","EF_disease","E
 		#########
 		## load ontology information
 		ig <- xRDataLoader(RData=paste('ig.EF', sep=''), RData.location=RData.location, verbose=verbose)
+		V(ig)$namespace <- ontology
 		
 		if(ontology != 'EF'){
 			if(ontology=='EF_disease'){
@@ -139,9 +151,17 @@ xEnricherSNPs <- function(data, background=NULL, ontology=c("EF","EF_disease","E
             neighs.out <- igraph::neighborhood(ig, order=vcount(ig), nodes=node, mode="out")
             nodeInduced <- V(ig)[unique(unlist(neighs.out))]$name
             g <- igraph::induced.subgraph(ig, vids=nodeInduced)
+            V(g)$namespace <- ontology
         }else{
         	g <- ig
         }
+        
+        ########################
+        # add a new node attribute 'term_namespace'
+        ########################
+		if(is.null(V(g)$term_namespace)){
+			V(g)$term_namespace <- ontology
+		}
         
 		#########
 		## load annotation information
@@ -187,7 +207,7 @@ xEnricherSNPs <- function(data, background=NULL, ontology=c("EF","EF_disease","E
         message(sprintf("'xEnricher' is being called (%s):", as.character(now)), appendLF=T)
         message(sprintf("#######################################################", appendLF=T))
     }
-    eTerm <- xEnricher(data=data, annotation=anno, g=g, background=background, size.range=size.range, min.overlap=min.overlap, which.distance=which.distance, test=test, p.adjust.method=p.adjust.method, ontology.algorithm=ontology.algorithm, elim.pvalue=elim.pvalue, lea.depth=lea.depth, path.mode=path.mode, true.path.rule=true.path.rule, verbose=verbose)
+    eTerm <- xEnricher(data=data, annotation=anno, g=g, background=background, size.range=size.range, min.overlap=min.overlap, which.distance=which.distance, test=test, p.tail=p.tail, p.adjust.method=p.adjust.method, ontology.algorithm=ontology.algorithm, elim.pvalue=elim.pvalue, lea.depth=lea.depth, path.mode=path.mode, true.path.rule=true.path.rule, verbose=verbose)
 
 	if(verbose){
         now <- Sys.time()
@@ -198,10 +218,12 @@ xEnricherSNPs <- function(data, background=NULL, ontology=c("EF","EF_disease","E
     
     ####################################################################################
     endT <- Sys.time()
-    message(paste(c("\nEnd at ",as.character(endT)), collapse=""), appendLF=T)
-    
     runTime <- as.numeric(difftime(strptime(endT, "%Y-%m-%d %H:%M:%S"), strptime(startT, "%Y-%m-%d %H:%M:%S"), units="secs"))
-    message(paste(c("Runtime in total is: ",runTime," secs\n"), collapse=""), appendLF=T)
+    
+    if(!silent){
+    	message(paste(c("\nEnd at ",as.character(endT)), collapse=""), appendLF=TRUE)
+    	message(paste(c("Runtime in total is: ",runTime," secs\n"), collapse=""), appendLF=TRUE)
+    }
     
     invisible(eTerm)
 }

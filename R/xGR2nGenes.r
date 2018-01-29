@@ -78,7 +78,7 @@ xGR2nGenes <- function(data, format=c("chr:start-end","data.frame","bed","GRange
 		message(sprintf("Load positional information for Genes (%s) ...", as.character(now)), appendLF=T)
 	}
 	if(class(GR.Gene) == "GRanges"){
-			gr_Gene <- GR.Gene
+		gr_Gene <- xGR(GR.Gene, format="GRanges", build.conversion=build.conversion, verbose=verbose, RData.location=RData.location)
 	}else{
 		gr_Gene <- xRDataLoader(RData.customised=GR.Gene[1], verbose=verbose, RData.location=RData.location)
 		if(is.null(gr_Gene)){
@@ -95,8 +95,10 @@ xGR2nGenes <- function(data, format=c("chr:start-end","data.frame","bed","GRange
 		message(sprintf("Define nearby genes (%s) ...", as.character(now)), appendLF=T)
 	}
 	# genes: get all UCSC genes within defined distance window away from variants
-	maxgap <- distance.max
-	minoverlap <- 1L # 1b overlaps
+	#maxgap <- distance.max
+	maxgap <- distance.max -1
+	#minoverlap <- 1L # 1b overlaps
+	minoverlap <- 0L
 	subject <- gr_Gene
 	query <- dGR
 	q2r <- as.matrix(as.data.frame(suppressWarnings(GenomicRanges::findOverlaps(query=query, subject=subject, maxgap=maxgap, minoverlap=minoverlap, type="any", select="all", ignore.strand=T))))

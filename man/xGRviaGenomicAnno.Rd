@@ -9,9 +9,10 @@ NULL,
 format.file = c("data.frame", "bed", "chr:start-end", "GRanges"),
 build.conversion = c(NA, "hg38.to.hg19", "hg18.to.hg19"),
 resolution = c("bases", "regions", "hybrid"),
-background.annotatable.only = T, p.adjust.method = c("BH", "BY",
-"bonferroni", "holm", "hochberg", "hommel"), GR.annotation = c(NA,
-"Uniform_TFBS", "ENCODE_TFBS_ClusteredV3",
+background.annotatable.only = T, p.tail = c("one-tail", "two-tails"),
+p.adjust.method = c("BH", "BY", "bonferroni", "holm", "hochberg",
+"hommel"),
+GR.annotation = c(NA, "Uniform_TFBS", "ENCODE_TFBS_ClusteredV3",
 "ENCODE_TFBS_ClusteredV3_CellTypes", "Uniform_DNaseI_HS",
 "ENCODE_DNaseI_ClusteredV3", "ENCODE_DNaseI_ClusteredV3_CellTypes",
 "Broad_Histone", "SYDH_Histone", "UW_Histone", "FANTOM5_Enhancer_Cell",
@@ -38,7 +39,8 @@ background.annotatable.only = T, p.adjust.method = c("BH", "BY",
 "EpigenomeAtlas_15Segments_E045", "EpigenomeAtlas_15Segments_E046",
 "EpigenomeAtlas_15Segments_E047", "EpigenomeAtlas_15Segments_E048",
 "EpigenomeAtlas_15Segments_E050", "EpigenomeAtlas_15Segments_E051",
-"EpigenomeAtlas_15Segments_E062"), verbose = T,
+"EpigenomeAtlas_15Segments_E062", "CpG_anno", "Genic_anno"), verbose =
+T,
 RData.location = "http://galahad.well.ox.ac.uk/bigdata")
 }
 \arguments{
@@ -105,6 +107,11 @@ background bases are those after being overlapped with annotatable
 bases. Notably, if only one annotation (eg only a transcription factor)
 is provided in 'annotation.file', it should be false}
 
+\item{p.tail}{the tail used to calculate p-values. It can be either
+"two-tails" for the significance based on two-tails (ie both over- and
+under-overrepresentation) or "one-tail" (by default) for the
+significance based on one tail (ie only over-representation)}
+
 \item{p.adjust.method}{the method used to adjust p-values. It can be
 one of "BH", "BY", "bonferroni", "holm", "hochberg" and "hommel". The
 first two methods "BH" (widely used) and "BY" control the false
@@ -131,8 +138,8 @@ displayed in the screen. By default, it sets to false for no display}
 RData files. See \code{\link{xRDataLoader}} for details}
 }
 \value{
-a data frame with 8 columns (below explanations are based on results at
-the 'hybrid' resolution):
+a data frame with following columns (below explanations are based on
+results at the 'hybrid' resolution):
 \itemize{
 \item{\code{name}: the annotation name}
 \item{\code{nAnno}: the number of bases covered by that annotation. If
@@ -145,6 +152,11 @@ also restricted by this}
 \item{\code{pvalue}: p-value}
 \item{\code{adjp}: adjusted p-value. It is the p value but after being
 adjusted for multiple comparisons}
+\item{\code{or}: a vector containing odds ratio}
+\item{\code{CIl}: a vector containing lower bound confidence interval
+for the odds ratio}
+\item{\code{CIu}: a vector containing upper bound confidence interval
+for the odds ratio}
 \item{\code{expProb}: the probability of expecting bases overlapped
 between background regions and annotation regions}
 \item{\code{obsProb}: the probability of observing regions overlapped
@@ -173,7 +185,7 @@ factor.}
 \item{\code{ENCODE_TFBS_ClusteredV3}: a list (161 transcription
 factors) of GenomicRanges objects; each is an GR object containing
 clustered peaks per transcription factor, along with a meta-column
-'cells' telling cell types associtated with a clustered peak.}
+'cells' telling cell types associated with a clustered peak.}
 \item{\code{ENCODE_TFBS_ClusteredV3_CellTypes}: a list (91 cell types)
 of a list (transcription factors) of GenomicRanges objects. Each cell
 type is a list (transcription factor) of GenomicRanges objects; each is
@@ -186,7 +198,7 @@ GenomicRanges objects; each is an GR object containing uniformly
 identified peaks per cell type.}
 \item{\code{ENCODE_DNaseI_ClusteredV3}: an GR object containing
 clustered peaks, along with a meta-column 'num_cells' telling how many
-cell types associtated with a clustered peak.}
+cell types associated with a clustered peak.}
 \item{\code{ENCODE_DNaseI_ClusteredV3_CellTypes}: a list (125 cell
 types) of GenomicRanges objects; each is an GR object containing
 clustered peaks per cell type.}
@@ -424,6 +436,27 @@ segments) of GenomicRanges objects; each is an GR object containing
 segments per category in the reference epigenome E051 (Primary
 hematopoietic stem cells G-CSF-mobilized Male).}
 }
+15. CpG annotation
+\itemize{
+\item{\code{CpG_anno}: a list (4 categories) of GenomicRanges objects;
+each is an GR object. They are exclusive, including (in order)
+"CpG_islands", "CpG_shores" (2Kb upstream/downstream from the ends of
+the CpG islands), "CpG_shelves" (2Kb upstream/downstream of the
+farthest upstream/downstream limits of the CpG shores), and "CpG_inter"
+(the remaining inter-CGI genomic regions 'open sea'). }
+}
+16. Genic annotation
+\itemize{
+\item{\code{Genic_anno}: a list (12 categories) of GenomicRanges
+objects; each is an GR object. They are not exclusively, including
+"Genic_1to5kb" (1-5Kb upstream of TSS), "Genic_promoters" (1Kb upstream
+of TSS), "Genic_5UTRs", "Genic_firstexons" (first exons),
+"Genic_exons", "Genic_exonintronboundaries", "Genic_introns",
+"Genic_intronexonboundaries", "Genic_cds", "Genic_3UTRs",
+"Genic_intergenic" (the intergenic regions exclude the previous list of
+annotations), and "Genic_lncRNA" (GENCODE long non-coding RNA (lncRNA)
+transcripts). }
+}
 }
 \examples{
 \dontrun{
@@ -436,8 +469,13 @@ RData.location <- "http://galahad.well.ox.ac.uk/bigdata_dev"
 data.file <- "http://galahad.well.ox.ac.uk/bigdata/ImmunoBase_GWAS.bed"
 
 ## b) perform enrichment analysis using FANTOM expressed enhancers
-eTerm <- xGRviaGenomicAnno(data.file=data.file, format.file="bed",
+### one-tail p-value calculation (by default)
+eTerm <- xGRviaGenomicAnno(data.file, format.file="bed",
 GR.annotation="FANTOM5_Enhancer_Cell", RData.location=RData.location)
+### alternatively: two-tails p-value calculation (useful to identify depletions)
+eTerm_2 <- xGRviaGenomicAnno(data.file, format.file="bed",
+GR.annotation="FANTOM5_Enhancer_Cell", p.tail="two-tails",
+RData.location=RData.location)
 
 ## c) view enrichment results for the top significant terms
 xEnrichViewer(eTerm)
@@ -446,7 +484,11 @@ xEnrichViewer(eTerm)
 bp <- xEnrichBarplot(eTerm, top_num='auto', displayBy="fc")
 bp
 
-## e) save enrichment results to the file called 'Regions_enrichments.txt'
+## e) forest plot of enriched terms
+gp <- xEnrichForest(eTerm)
+gp
+
+## f) save enrichment results to the file called 'Regions_enrichments.txt'
 output <- xEnrichViewer(eTerm, top_num=length(eTerm$adjp),
 sortBy="adjp", details=TRUE)
 utils::write.table(output, file="Regions_enrichments.txt", sep="\\t",

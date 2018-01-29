@@ -6,7 +6,11 @@
 \usage{
 xColormap(colormap = c("bwr", "jet", "gbr", "wyr", "br", "yr",
 "rainbow",
-"wb", "heat", "terrain", "topo", "cm", "ggplot2"))
+"wb", "heat", "terrain", "topo", "cm", "ggplot2", "jet.top",
+"jet.bottom",
+"jet.both", "spectral", "ggplot2.top", "ggplot2.bottom",
+"ggplot2.both"),
+interpolate = c("spline", "linear"))
 }
 \arguments{
 \item{colormap}{short name for the colormap. It can be one of "jet"
@@ -19,7 +23,10 @@ default color palette). Alternatively, any hyphen-separated HTML color
 names, e.g. "lightyellow-orange" (by default), "blue-black-yellow",
 "royalblue-white-sandybrown", "darkgreen-white-darkviolet". A list of
 standard color names can be found in
-\url{http://html-color-codes.info/color-names}}
+\url{http://html-color-codes.info/color-names}. It can also be a
+function of 'colorRampPalette'}
+
+\item{interpolate}{use spline or linear interpolation}
 }
 \value{
 \itemize{
@@ -45,6 +52,7 @@ The input colormap includes:
 \item{"rainbow": rainbow colormap, that is,
 red-yellow-green-cyan-blue-magenta}
 \item{"ggplot2": emulating ggplot2 default color palette}
+\item{"spectral": emulating RColorBrewer spectral color palette}
 \item{Alternatively, any hyphen-separated HTML color names, e.g.
 "blue-black-yellow", "royalblue-white-sandybrown",
 "darkblue-lightblue-lightyellow-darkorange",

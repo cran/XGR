@@ -11,8 +11,10 @@ xDefineNet(network = c("STRING_highest", "STRING_high",
 "PCommonsDN_medium", "PCommonsDN_Reactome", "PCommonsDN_KEGG",
 "PCommonsDN_HumanCyc", "PCommonsDN_PID", "PCommonsDN_PANTHER",
 "PCommonsDN_ReconX", "PCommonsDN_TRANSFAC", "PCommonsDN_PhosphoSite",
-"PCommonsDN_CTD"), STRING.only = c(NA, "neighborhood_score",
-"fusion_score",
+"PCommonsDN_CTD", "KEGG", "KEGG_metabolism", "KEGG_genetic",
+"KEGG_environmental", "KEGG_cellular", "KEGG_organismal",
+"KEGG_disease"),
+STRING.only = c(NA, "neighborhood_score", "fusion_score",
 "cooccurence_score", "coexpression_score", "experimental_score",
 "database_score", "textmining_score")[1], weighted = FALSE,
 verbose = TRUE, RData.location =
@@ -49,7 +51,14 @@ from HumanCyc, "PCommonsDN_PID" for those froom PID,
 "PCommonsDN_PANTHER" for those from PANTHER, "PCommonsDN_ReconX" for
 those from ReconX, "PCommonsDN_TRANSFAC" for those from TRANSFAC,
 "PCommonsDN_PhosphoSite" for those from PhosphoSite, and
-"PCommonsDN_CTD" for those from CTD}
+"PCommonsDN_CTD" for those from CTD. For direct (pathway-merged)
+interactions sourced from KEGG, it can be 'KEGG' for all,
+'KEGG_metabolism' for pathways grouped into 'Metabolism',
+'KEGG_genetic' for 'Genetic Information Processing' pathways,
+'KEGG_environmental' for 'Environmental Information Processing'
+pathways, 'KEGG_cellular' for 'Cellular Processes' pathways,
+'KEGG_organismal' for 'Organismal Systems' pathways, and 'KEGG_disease'
+for 'Human Diseases' pathways}
 
 \item{STRING.only}{the further restriction of STRING by interaction
 type. If NA, no such restriction. Otherwide, it can be one or more of
@@ -89,10 +98,27 @@ library(XGR)
 
 RData.location <- "http://galahad.well.ox.ac.uk/bigdata_dev"
 \dontrun{
+# STRING (high quality)
+g <- xDefineNet(network="STRING_high", RData.location=RData.location)
+# STRING (high quality), with edges weighted 
+g <- xDefineNet(network="STRING_high", weighted=T,
+RData.location=RData.location)
+# STRING (high quality), only edges sourced from experimental or curated data
+g <- xDefineNet(network="STRING_high",
+STRING.only=c("experimental_score","database_score"),
+RData.location=RData.location)
+
+# Pathway Commons 
 g <- xDefineNet(network="PCommonsDN_medium",
+RData.location=RData.location)
+
+# KEGG (all)
+g <- xDefineNet(network="KEGG", RData.location=RData.location)
+# KEGG ('Organismal Systems')
+g <- xDefineNet(network="KEGG_organismal",
 RData.location=RData.location)
 }
 }
 \seealso{
-\code{\link{xRDataLoader}}
+\code{\link{xCombineNet}}
 }

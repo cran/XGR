@@ -9,6 +9,8 @@
 #' @param bar.label.size an integer specifying the bar labelling text size. By default, it sets to 3
 #' @param wrap.width a positive integer specifying wrap width of name
 #' @param sharings a numeric vector specifying whether only shared terms will be displayed. For example, when comparing three groups of enrichment results, it can be set into c(2,3) to display only shared terms by any two or all three. By default, it is NULL meaning no such restriction
+#' @param font.family the font family for texts
+#' @param facet logical to indicate whether to facet/wrap a 1d of panels into 2d. By default, it sets TRUE
 #' @param signature logical to indicate whether the signature is assigned to the plot caption. By default, it sets TRUE showing which function is used to draw this graph
 #' @return an object of class "ggplot", but appended with a 'g' (an igraph object to represent DAG after being unionised)
 #' @note none
@@ -58,10 +60,16 @@
 #' xEnrichDAGplotAdv(bp, graph.node.attrs=list(fontsize=100))
 #' }
 
-xEnrichCompare <- function(list_eTerm, displayBy=c("fc","adjp","fdr","zscore","pvalue"), FDR.cutoff=0.05, bar.label=TRUE, bar.label.size=3, wrap.width=NULL, sharings=NULL, signature=TRUE) 
+xEnrichCompare <- function(list_eTerm, displayBy=c("fc","adjp","fdr","zscore","pvalue"), FDR.cutoff=0.05, bar.label=TRUE, bar.label.size=2.5, wrap.width=NULL, sharings=NULL, font.family="sans", facet=TRUE, signature=TRUE) 
 {
     
     displayBy <- match.arg(displayBy)
+    
+    ## Remove null elements in a list
+	list_eTerm <- base::Filter(base::Negate(is.null), list_eTerm)
+    if(length(list_eTerm)==0){
+    	return(NULL)
+    }
     
 	## Combine into a data frame called 'df_all'
 	list_names <- names(list_eTerm)
@@ -70,7 +78,11 @@ xEnrichCompare <- function(list_eTerm, displayBy=c("fc","adjp","fdr","zscore","p
 	}
 	res_ls <- lapply(1:length(list_eTerm), function(i){
 		df <- xEnrichViewer(list_eTerm[[i]], top_num="all", sortBy="none")
-		cbind(group=rep(list_names[i],nrow(df)), id=rownames(df), df, stringsAsFactors=F)
+		if(is.null(df)){
+			return(NULL)
+		}else{
+			cbind(group=rep(list_names[i],nrow(df)), id=rownames(df), df, stringsAsFactors=F)
+		}
 	})
 	df_all <- do.call(rbind, res_ls)
 	rownames(df_all) <- NULL
@@ -80,7 +92,7 @@ xEnrichCompare <- function(list_eTerm, displayBy=c("fc","adjp","fdr","zscore","p
 	d <- df_all[ind, c("id","name","fc","adjp","zscore","pvalue","group")]
 	
 	## group factor
-	d$group <- factor(d$group, levels=list_names)
+	d$group <- factor(d$group, levels=rev(list_names))
 
 	## text wrap
 	if(!is.null(wrap.width)){
@@ -128,8 +140,70 @@ xEnrichCompare <- function(list_eTerm, displayBy=c("fc","adjp","fdr","zscore","p
 		}
 	}
 	
-	## append 'label' (FDR) to the data frame 'd'
-	d$label <- rep('',nrow(d))
+	## draw side-by-side barplot
+	name <- fc <- group <- adjp <- zscore <- pvalue <- label <- direction <- height <- hjust <- NULL
+	
+	##########
+	## consider the direction of z-score
+	d <- d %>% dplyr::mutate(direction=ifelse(zscore>0,1,-1))
+	##########
+	
+	if(displayBy=='fc'){
+		## sort by: nSig group fc (adjp)
+		d <- d %>% dplyr::arrange(nSig,group, direction, fc, desc(adjp)) %>% dplyr::mutate(height=log2(fc)) %>% dplyr::mutate(hjust=ifelse(height>=0,1,0))
+		## define levels
+		d$name <- factor(d$name, levels=unique(d$name))
+		## define horizontal lines: separating terms according to their sharings
+		ind <- match(unique(d$id), names(nSig))
+		xintercept <- which(!duplicated(nSig[ind]))[-1]
+		## ggplot
+		p <- ggplot(d, aes(x=name,y=height,fill=group))
+		p <- p + ylab(expression(paste("Enrichment changes: ", log[2]("FC"))))
+		
+	}else if(displayBy=='adjp' | displayBy=='fdr'){
+		## sort by: nSig group adjp (zscore)
+		d <- d %>% dplyr::arrange(nSig,group, direction, desc(adjp), zscore) %>% dplyr::mutate(height=-1*log10(adjp)) %>% dplyr::mutate(hjust=1)
+		## define levels
+		d$name <- factor(d$name, levels=unique(d$name))
+		## define horizontal lines: separating terms according to their sharings
+		ind <- match(unique(d$id), names(nSig))
+		xintercept <- which(!duplicated(nSig[ind]))[-1]
+		## ggplot
+		p <- ggplot(d, aes(x=name,y=height,fill=group))
+		p <- p + ylab(expression(paste("Enrichment significance: ", -log[10]("FDR"))))
+		
+	}else if(displayBy=='zscore'){
+		## sort by: nSig group zcore (adjp)
+		d <- d %>% dplyr::arrange(nSig,group, direction, zscore, desc(adjp)) %>% dplyr::mutate(height=zscore) %>% dplyr::mutate(hjust=ifelse(height>=0,1,0))
+		## define levels
+		d$name <- factor(d$name, levels=unique(d$name))
+		## define horizontal lines: separating terms according to their sharings
+		ind <- match(unique(d$id), names(nSig))
+		xintercept <- which(!duplicated(nSig[ind]))[-1]
+		## ggplot
+		p <- ggplot(d, aes(x=name,y=height,fill=group))
+		p <- p + ylab("Enrichment z-scores")
+		
+	}else if(displayBy=='pvalue'){
+		## sort by: nSig group pvalue (zscore)
+		d <- d %>% dplyr::arrange(nSig,group, direction, desc(pvalue), zscore) %>% dplyr::mutate(height=-1*log10(pvalue)) %>% dplyr::mutate(hjust=1)
+		## define levels
+		d$name <- factor(d$name, levels=unique(d$name))
+		## define horizontal lines: separating terms according to their sharings
+		ind <- match(unique(d$id), names(nSig))
+		xintercept <- which(!duplicated(nSig[ind]))[-1]
+		## ggplot
+		p <- ggplot(d, aes(x=name,y=height,fill=group))
+		p <- p + ylab(expression(paste("Enrichment significance: ", -log[10]("p-value"))))
+		
+	}
+	
+	bp <- p + geom_bar(stat="identity")+ theme_bw() + theme(legend.position="none",legend.title=element_blank(), axis.title.y=element_blank(), axis.text.y=element_text(size=10,color="black"), axis.title.x=element_text(size=14,color="black")) + geom_vline(xintercept=xintercept-0.5,color="black",linetype="dotdash") + coord_flip()
+	bp <- bp + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+	
+	## strip
+	bp <- bp + theme(strip.background=element_rect(fill="transparent",color="transparent"), strip.text=element_text(size=12,face="italic"))
+	
 	if(bar.label){
 		## get text label
 		to_scientific_notation <- function(x) {
@@ -138,81 +212,38 @@ xEnrichCompare <- function(list_eTerm, displayBy=c("fc","adjp","fdr","zscore","p
 			sub("-0?", "-", res)
 		}
 		label <- to_scientific_notation(d$adjp)
-		label <- paste('FDR', as.character(label), sep='=')
-		d$label <- label
-	}
+		d$label <- paste('FDR', as.character(label), sep='=')
 	
-	## draw side-by-side barplot
-	name <- fc <- group <- adjp <- zscore <- pvalue <- label <- NULL
-	if(displayBy=='fc'){
-		## sort by: nSig group fc (adjp)
-		d <- d[with(d, order(nSig,group,fc,-adjp)), ]
-		## define levels
-		d$name <- factor(d$name, levels=unique(d$name))
-		## define horizontal lines: separating terms according to their sharings
-		ind <- match(unique(d$id), names(nSig))
-		xintercept <- which(!duplicated(nSig[ind]))[-1]
-		## ggplot
-		p <- ggplot(d, aes(x=name,y=fc,fill=group))
-		p <- p + ylab("Enrichment changes")
-	}else if(displayBy=='adjp' | displayBy=='fdr'){
-		## sort by: nSig group adjp (zscore)
-		d <- d[with(d, order(nSig,group,-adjp,zscore)), ]
-		## define levels
-		d$name <- factor(d$name, levels=unique(d$name))
-		## define horizontal lines: separating terms according to their sharings
-		ind <- match(unique(d$id), names(nSig))
-		xintercept <- which(!duplicated(nSig[ind]))[-1]
-		## ggplot
-		p <- ggplot(d, aes(x=name,y=-1*log10(adjp),fill=group))
-		p <- p + ylab("Enrichment significance: -log10(FDR)")
-	}else if(displayBy=='zscore'){
-		## sort by: nSig group zcore (adjp)
-		d <- d[with(d, order(nSig,group,zscore,-adjp)), ]
-		## define levels
-		d$name <- factor(d$name, levels=unique(d$name))
-		## define horizontal lines: separating terms according to their sharings
-		ind <- match(unique(d$id), names(nSig))
-		xintercept <- which(!duplicated(nSig[ind]))[-1]
-		## ggplot
-		p <- ggplot(d, aes(x=name,y=zscore,fill=group))
-		p <- p + ylab("Enrichment z-scores")
-	}else if(displayBy=='pvalue'){
-		## sort by: nSig group pvalue (zscore)
-		d <- d[with(d, order(nSig,group,-pvalue,zscore)), ]
-		## define levels
-		d$name <- factor(d$name, levels=unique(d$name))
-		## define horizontal lines: separating terms according to their sharings
-		ind <- match(unique(d$id), names(nSig))
-		xintercept <- which(!duplicated(nSig[ind]))[-1]
-		## ggplot
-		p <- ggplot(d, aes(x=name,y=-1*log10(pvalue),fill=group))
-		p <- p + ylab("Enrichment significance: -log10(p-value)")
-	}
-	
-	p <- p + geom_bar(stat="identity")+ theme_bw() + theme(legend.position="none",legend.title=element_blank(), axis.title.y=element_blank(), axis.text.y=element_text(size=10,color="black"), axis.title.x=element_text(size=14,color="black")) + geom_vline(xintercept=xintercept-0.5,color="black",linetype="dotdash") + coord_flip()
-	
-	## strip
-	p <- p + theme(strip.background=element_rect(fill="transparent",color="transparent"), strip.text=element_text(size=12,face="italic"))
-	
-	if(bar.label){
-		p <- p + geom_text(aes(label=label),hjust=1,size=bar.label.size)
+		## hjust==1
+		df_sub <- d %>% dplyr::filter(hjust==1)
+		bp <- bp + geom_text(data=df_sub, aes(label=label),hjust=1,size=bar.label.size,family=font.family)
+		## hjust==0
+		df_sub <- d %>% dplyr::filter(hjust==0)
+		bp <- bp + geom_text(data=df_sub, aes(label=label),hjust=0,size=bar.label.size,family=font.family)
 	}
 	
 	## title
-	title <- paste0('Enrichments under FDR < ', FDR.cutoff)
-	p <- p + labs(title=title) + theme(plot.title=element_text(hjust=0.5))
+	title <- paste0('Enrichments (FDR < ', FDR.cutoff, ')')
+	bp <- bp + labs(title=title) + theme(plot.title=element_text(hjust=0.5))
 	## caption
     if(signature){
     	caption <- paste("Created by xEnrichCompare from XGR version", utils ::packageVersion("XGR"))
-    	p <- p + labs(caption=caption) + theme(plot.caption=element_text(hjust=1,face='bold.italic',size=8,colour='#002147'))
+    	bp <- bp + labs(caption=caption) + theme(plot.caption=element_text(hjust=1,face='bold.italic',size=8,colour='#002147'))
     }
 	
+	## change font family to 'Arial'
+	bp <- bp + theme(text=element_text(family=font.family))
+	
 	## put arrows on x-axis
-	p <- p + theme(axis.line.x=element_line(arrow=arrow(angle=30,length=unit(0.25,"cm"), type="open")))
+	bp <- bp + theme(axis.line.x=element_line(arrow=arrow(angle=30,length=unit(0.25,"cm"), type="open")))
 	
 	## group
-	bp <- p + facet_grid(~group)
+	if(facet){
+		bp <- bp + facet_grid(~group)
+	}else{
+		#bp <- bp + theme(legend.position="bottom",legend.title=element_blank()) + guides(fill=guide_legend(reverse=TRUE,nrow=1,byrow=TRUE))
+		bp <- bp + theme(legend.position="bottom",legend.title=element_text(size=10,color="black",face="bold")) + guides(fill=guide_legend(title="",title.position="left",reverse=TRUE,nrow=1,byrow=TRUE))
+	}
 	
 	##############################
 	## append 'g' to 'bp' (if DAG)
@@ -236,6 +267,7 @@ xEnrichCompare <- function(list_eTerm, displayBy=c("fc","adjp","fdr","zscore","p
 		bp$g <- ig
 	}
 	##############################
+
 		
 	invisible(bp)
 }

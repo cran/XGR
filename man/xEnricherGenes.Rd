@@ -10,17 +10,23 @@ ontology = c("GOBP", "GOMF", "GOCC", "PS", "PS2", "SF", "Pfam", "DO",
 "MsigdbC2CGP", "MsigdbC2CPall", "MsigdbC2CP", "MsigdbC2KEGG",
 "MsigdbC2REACTOME", "MsigdbC2BIOCARTA", "MsigdbC3TFT", "MsigdbC3MIR",
 "MsigdbC4CGN", "MsigdbC4CM", "MsigdbC5BP", "MsigdbC5MF", "MsigdbC5CC",
-"MsigdbC6", "MsigdbC7", "DGIdb", "GTExV4", "GTExV6", "CreedsDisease",
-"CreedsDiseaseUP", "CreedsDiseaseDN", "CreedsDrug", "CreedsDrugUP",
-"CreedsDrugDN", "CreedsGene", "CreedsGeneUP", "CreedsGeneDN"),
+"MsigdbC6", "MsigdbC7", "DGIdb", "GTExV4", "GTExV6p", "GTExV7",
+"CreedsDisease", "CreedsDiseaseUP", "CreedsDiseaseDN", "CreedsDrug",
+"CreedsDrugUP", "CreedsDrugDN", "CreedsGene", "CreedsGeneUP",
+"CreedsGeneDN", "KEGG", "KEGGmetabolism", "KEGGgenetic",
+"KEGGenvironmental",
+"KEGGcellular", "KEGGorganismal", "KEGGdisease", "REACTOME",
+"REACTOME_ImmuneSystem", "REACTOME_SignalTransduction", "CGL"),
 size.range = c(10, 2000), min.overlap = 3, which.distance = NULL,
-test = c("hypergeo", "fisher", "binomial"), p.adjust.method = c("BH",
-"BY", "bonferroni", "holm", "hochberg", "hommel"),
-ontology.algorithm = c("none", "pc", "elim", "lea"), elim.pvalue =
-0.01,
-lea.depth = 2, path.mode = c("all_paths", "shortest_paths",
-"all_shortest_paths"), true.path.rule = F, verbose = T,
-RData.location = "http://galahad.well.ox.ac.uk/bigdata")
+test = c("hypergeo", "fisher", "binomial"), p.tail = c("one-tail",
+"two-tails"), p.adjust.method = c("BH", "BY", "bonferroni", "holm",
+"hochberg", "hommel"), ontology.algorithm = c("none", "pc", "elim",
+"lea"),
+elim.pvalue = 0.01, lea.depth = 2, path.mode = c("all_paths",
+"shortest_paths", "all_shortest_paths"), true.path.rule = F, verbose =
+T,
+silent = FALSE, RData.location =
+"http://galahad.well.ox.ac.uk/bigdata")
 }
 \arguments{
 \item{data}{an input vector containing gene symbols}
@@ -44,13 +50,29 @@ Phenotypic Abnormality, "HPMI" for Human Phenotype Mode of Inheritance,
 "HPCM" for Human Phenotype Clinical Modifier, "HPMA" for Human
 Phenotype Mortality Aging, "MP" for Mammalian Phenotype, "EF" for
 Experimental Factor Ontology (used to annotate GWAS Catalog genes),
-Drug-Gene Interaction database ("DGIdb") for drugable categories,
-tissue-specific eQTL-containing genes from GTEx ("GTExV4" and
-"GTExV6"), crowd extracted expression of differential signatures from
-CREEDS ("CreedsDisease", "CreedsDiseaseUP", "CreedsDiseaseDN",
+Drug-Gene Interaction database ("DGIdb") for druggable categories,
+tissue-specific eQTL-containing genes from GTEx ("GTExV4", "GTExV6p"
+and "GTExV7"), crowd extracted expression of differential signatures
+from CREEDS ("CreedsDisease", "CreedsDiseaseUP", "CreedsDiseaseDN",
 "CreedsDrug", "CreedsDrugUP", "CreedsDrugDN", "CreedsGene",
-"CreedsGeneUP" and "CreedsGeneDN"), and the molecular signatures
-database (Msigdb, including "MsigdbH", "MsigdbC1", "MsigdbC2CGP",
+"CreedsGeneUP" and "CreedsGeneDN"), KEGG pathways (including 'KEGG' for
+all, 'KEGGmetabolism' for 'Metabolism' pathways, 'KEGGgenetic' for
+'Genetic Information Processing' pathways, 'KEGGenvironmental' for
+'Environmental Information Processing' pathways, 'KEGGcellular' for
+'Cellular Processes' pathways, 'KEGGorganismal' for 'Organismal
+Systems' pathways, and 'KEGGdisease' for 'Human Diseases' pathways),
+'REACTOME' for REACTOME pathways or 'REACTOME_x' for its sub-ontologies
+(where x can be 'CellCellCommunication', 'CellCycle',
+'CellularResponsesToExternalStimuli', 'ChromatinOrganization',
+'CircadianClock', 'DevelopmentalBiology', 'DigestionAndAbsorption',
+'Disease', 'DNARepair', 'DNAReplication',
+'ExtracellularMatrixOrganization', 'GeneExpression(Transcription)',
+'Hemostasis', 'ImmuneSystem', 'Metabolism', 'MetabolismOfProteins',
+'MetabolismOfRNA', 'Mitophagy', 'MuscleContraction', 'NeuronalSystem',
+'OrganelleBiogenesisAndMaintenance', 'ProgrammedCellDeath',
+'Reproduction', 'SignalTransduction', 'TransportOfSmallMolecules',
+'VesicleMediatedTransport'), and the molecular signatures database
+(Msigdb, including "MsigdbH", "MsigdbC1", "MsigdbC2CGP",
 "MsigdbC2CPall", "MsigdbC2CP", "MsigdbC2KEGG", "MsigdbC2REACTOME",
 "MsigdbC2BIOCARTA", "MsigdbC3TFT", "MsigdbC3MIR", "MsigdbC4CGN",
 "MsigdbC4CM", "MsigdbC5BP", "MsigdbC5MF", "MsigdbC5CC", "MsigdbC6",
@@ -83,6 +105,11 @@ finding the significance, they are in order: hypergeometric test >
 fisher's exact test > binomial test. In other words, in terms of the
 calculated p-value, hypergeometric test < fisher's exact test <
 binomial test}
+
+\item{p.tail}{the tail used to calculate p-values. It can be either
+"two-tails" for the significance based on two-tails (ie both over- and
+under-overrepresentation) or "one-tail" (by default) for the
+significance based on one tail (ie only over-representation)}
 
 \item{p.adjust.method}{the method used to adjust p-values. It can be
 one of "BH", "BY", "bonferroni", "holm", "hochberg" and "hommel". The
@@ -121,6 +148,10 @@ false}
 \item{verbose}{logical to indicate whether the messages will be
 displayed in the screen. By default, it sets to false for no display}
 
+\item{silent}{logical to indicate whether the messages will be silent
+completely. By default, it sets to false. If true, verbose will be
+forced to be false}
+
 \item{RData.location}{the characters to tell the location of built-in
 RData files. See \code{\link{xRDataLoader}} for details}
 }
@@ -148,6 +179,11 @@ the snps of interest). Always, gene sets are identified by "id"}
 \item{\code{pvalue}: a vector containing p-values}
 \item{\code{adjp}: a vector containing adjusted p-values. It is the p
 value but after being adjusted for multiple comparisons}
+\item{\code{or}: a vector containing odds ratio}
+\item{\code{CIl}: a vector containing lower bound confidence interval
+for the odds ratio}
+\item{\code{CIu}: a vector containing upper bound confidence interval
+for the odds ratio}
 \item{\code{cross}: a matrix of nTerm X nTerm, with an on-diagnal cell
 for the overlapped-members observed in an individaul term, and
 off-diagnal cell for the overlapped-members shared betwene two terms}
@@ -191,11 +227,13 @@ maximum of both p-values in these two calculations.}
 \dontrun{
 # Load the library
 library(XGR)
+RData.location <- "http://galahad.well.ox.ac.uk/bigdata_dev/"
 
-# Gene-based enrichment analysis using Mammalian Phenotype Ontology (MP)
+# Gene-based enrichment analysis using REACTOME pathways
 # a) provide the input Genes of interest (eg 100 randomly chosen human genes)
 ## load human genes
-org.Hs.eg <- xRDataLoader(RData='org.Hs.eg')
+org.Hs.eg <- xRDataLoader(RData='org.Hs.eg',
+RData.location=RData.location)
 set.seed(825)
 data <- as.character(sample(org.Hs.eg$gene_info$Symbol, 100))
 data
@@ -204,16 +242,17 @@ data
 #background <- as.character(org.Hs.eg$gene_info$Symbol)
 
 # b) perform enrichment analysis
-eTerm <- xEnricherGenes(data=data, ontology="MP")
+eTerm <- xEnricherGenes(data=data, ontology="REACTOME",
+RData.location=RData.location)
 
 # c) view enrichment results for the top significant terms
 xEnrichViewer(eTerm)
 
-# d) save enrichment results to the file called 'MP_enrichments.txt'
+# d) save enrichment results to the file called 'REACTOME_enrichments.txt'
 res <- xEnrichViewer(eTerm, top_num=length(eTerm$adjp), sortBy="adjp",
 details=TRUE)
 output <- data.frame(term=rownames(res), res)
-utils::write.table(output, file="MP_enrichments.txt", sep="\\t",
+utils::write.table(output, file="REACTOME_enrichments.txt", sep="\\t",
 row.names=FALSE)
 
 # e) barplot of significant enrichment results
@@ -223,10 +262,21 @@ print(bp)
 # f) visualise the top 10 significant terms in the ontology hierarchy
 # color-code terms according to the adjust p-values (taking the form of 10-based negative logarithm)
 xEnrichDAGplot(eTerm, top_num=10, displayBy="adjp",
-node.info=c("full_term_name"))
+node.info=c("full_term_name"), graph.node.attrs=list(fontsize=25))
 # color-code terms according to the z-scores
 xEnrichDAGplot(eTerm, top_num=10, displayBy="zscore",
-node.info=c("full_term_name"))
+node.info=c("full_term_name"), graph.node.attrs=list(fontsize=25))
+
+# g) visualise the significant terms in the ontology hierarchy 
+# restricted to Immune System ('R-HSA-168256') or Signal Transduction ('R-HSA-162582')
+g <- xRDataLoader(RData.customised='ig.REACTOME',
+RData.location=RData.location)
+neighs.out <- igraph::neighborhood(g, order=vcount(g),
+nodes=c("R-HSA-162582","R-HSA-168256"), mode="out")
+nodeInduced <- V(g)[unique(unlist(neighs.out))]$name
+ig <- igraph::induced.subgraph(g, vids=nodeInduced)
+xEnrichDAGplot(eTerm, top_num="auto", ig=ig, displayBy="adjp",
+node.info=c("full_term_name"), graph.node.attrs=list(fontsize=25))
 }
 }
 \seealso{

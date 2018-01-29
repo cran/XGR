@@ -20,7 +20,10 @@ bilinear or bicubic spline interpolation onto a grid.
 xVisInterp(ls_xyz, interpolation = c("spline", "linear"), nx = 100,
 ny = 100, zlim = NULL, nD = c("auto", "2D", "3D"), colkey = TRUE,
 contour = FALSE, image = FALSE, clab = c("Value", ""), nlevels = 20,
-colormap = "terrain", theta.3D = 40, phi.3D = 20, verbose = TRUE)
+colormap = "terrain", label.pch = 17, label.text.cex = 0.8,
+label.text.adj = -0.4, label.text.adj.z = 0.01,
+label.font.family = "sans", xy.swap = FALSE, theta.3D = 40,
+phi.3D = 20, verbose = TRUE)
 </pre>
 
 
@@ -29,7 +32,8 @@ colormap = "terrain", theta.3D = 40, phi.3D = 20, verbose = TRUE)
 <table summary="R argblock">
 <tr valign="top"><td><code>ls_xyz</code></td>
 <td>
-<p>a list with three components (x, y and z)</p>
+<p>a list with 3 required components (x, y and z) and an
+optional component (label)</p>
 </td></tr>
 <tr valign="top"><td><code>interpolation</code></td>
 <td>
@@ -106,6 +110,37 @@ hyphen-separated HTML color names, e.g. &quot;blue-black-yellow&quot;,
 standard color names can be found in
 <a href="http://html-color-codes.info/color-names">http://html-color-codes.info/color-names</a></p>
 </td></tr>
+<tr valign="top"><td><code>label.pch</code></td>
+<td>
+<p>a numeric value specifying the graphiics symbol (by
+default, 17 for upward triangle). This argument only works when the
+labelling is enabled</p>
+</td></tr>
+<tr valign="top"><td><code>label.text.cex</code></td>
+<td>
+<p>a numeric value specifying the text size. This
+argument only works when the labelling is enabled</p>
+</td></tr>
+<tr valign="top"><td><code>label.text.adj</code></td>
+<td>
+<p>a numeric value adjusting the text location in
+xy-plane. This argument only works when the labelling is enabled</p>
+</td></tr>
+<tr valign="top"><td><code>label.text.adj.z</code></td>
+<td>
+<p>a numeric value adjusting the text locaion in
+z-axis. This argument only works when the labelling is enabled</p>
+</td></tr>
+<tr valign="top"><td><code>label.font.family</code></td>
+<td>
+<p>the font family for texts. This argument only
+works when the labelling is enabled</p>
+</td></tr>
+<tr valign="top"><td><code>xy.swap</code></td>
+<td>
+<p>logical to indicate whether to wrap x and y. By default,
+it sets to false</p>
+</td></tr>
 <tr valign="top"><td><code>theta.3D</code></td>
 <td>
 <p>the azimuthal direction. By default, it is 40</p>
@@ -149,9 +184,10 @@ library(XGR)
 ## End(Not run)
 RData.location &lt;- "http://galahad.well.ox.ac.uk/bigdata_dev"
 ## Not run: 
-g &lt;- erdos.renyi.game(100, 1/10)
+g &lt;- erdos.renyi.game(20, 1/10)
 glayout &lt;- layout_with_kk(g)
-ls_xyz &lt;- data.frame(x=glayout[,1], y=glayout[,2], z=degree(g))
+ls_xyz &lt;- data.frame(x=glayout[,1], y=glayout[,2], z=degree(g),
+label=degree(g))
 
 # auto
 ls_xyz.smooth &lt;- xVisInterp(ls_xyz, nD="auto")
