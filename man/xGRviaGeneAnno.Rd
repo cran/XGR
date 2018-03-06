@@ -9,29 +9,31 @@ format.file = c("data.frame", "bed", "chr:start-end", "GRanges"),
 build.conversion = c(NA, "hg38.to.hg19", "hg18.to.hg19"), gap.max = 0,
 GR.Gene = c("UCSC_knownGene", "UCSC_knownCanonical"), ontology =
 c("GOBP",
-"GOMF", "GOCC", "PS", "PS2", "SF", "Pfam", "DO", "HPPA", "HPMI",
-"HPCM",
-"HPMA", "MP", "EF", "MsigdbH", "MsigdbC1", "MsigdbC2CGP",
-"MsigdbC2CPall",
-"MsigdbC2CP", "MsigdbC2KEGG", "MsigdbC2REACTOME", "MsigdbC2BIOCARTA",
-"MsigdbC3TFT", "MsigdbC3MIR", "MsigdbC4CGN", "MsigdbC4CM",
-"MsigdbC5BP",
-"MsigdbC5MF", "MsigdbC5CC", "MsigdbC6", "MsigdbC7", "DGIdb", "GTExV4",
-"GTExV6", "CreedsDisease", "CreedsDiseaseUP", "CreedsDiseaseDN",
-"CreedsDrug",
-"CreedsDrugUP", "CreedsDrugDN", "CreedsGene", "CreedsGeneUP",
-"CreedsGeneDN", "KEGG", "KEGGmetabolism", "KEGGgenetic",
-"KEGGenvironmental",
-"KEGGcellular", "KEGGorganismal", "KEGGdisease", "REACTOME",
-"REACTOME_ImmuneSystem", "REACTOME_SignalTransduction", "CGL"),
+"GOMF", "GOCC", "PSG", "PS", "PS2", "SF", "Pfam", "DO", "HPPA", "HPMI",
+"HPCM", "HPMA", "MP", "EF", "MsigdbH", "MsigdbC1", "MsigdbC2CGP",
+"MsigdbC2CPall", "MsigdbC2CP", "MsigdbC2KEGG", "MsigdbC2REACTOME",
+"MsigdbC2BIOCARTA", "MsigdbC3TFT", "MsigdbC3MIR", "MsigdbC4CGN",
+"MsigdbC4CM",
+"MsigdbC5BP", "MsigdbC5MF", "MsigdbC5CC", "MsigdbC6", "MsigdbC7",
+"DGIdb",
+"GTExV4", "GTExV6", "CreedsDisease", "CreedsDiseaseUP",
+"CreedsDiseaseDN",
+"CreedsDrug", "CreedsDrugUP", "CreedsDrugDN", "CreedsGene",
+"CreedsGeneUP", "CreedsGeneDN", "KEGG", "KEGGmetabolism",
+"KEGGgenetic",
+"KEGGenvironmental", "KEGGcellular", "KEGGorganismal", "KEGGdisease",
+"REACTOME", "REACTOME_ImmuneSystem", "REACTOME_SignalTransduction",
+"CGL"),
 size.range = c(10, 2000), min.overlap = 3, which.distance = NULL,
-test = c("hypergeo", "fisher", "binomial"), p.tail = c("one-tail",
-"two-tails"), p.adjust.method = c("BH", "BY", "bonferroni", "holm",
-"hochberg", "hommel"), ontology.algorithm = c("none", "pc", "elim",
-"lea"),
-elim.pvalue = 0.01, lea.depth = 2, path.mode = c("all_paths",
-"shortest_paths", "all_shortest_paths"), true.path.rule = F, verbose =
-T,
+test = c("hypergeo", "fisher", "binomial"),
+background.annotatable.only = NULL, p.tail = c("one-tail",
+"two-tails"),
+p.adjust.method = c("BH", "BY", "bonferroni", "holm", "hochberg",
+"hommel"),
+ontology.algorithm = c("none", "pc", "elim", "lea"), elim.pvalue =
+0.01,
+lea.depth = 2, path.mode = c("all_paths", "shortest_paths",
+"all_shortest_paths"), true.path.rule = F, verbose = T,
 RData.location = "http://galahad.well.ox.ac.uk/bigdata")
 }
 \arguments{
@@ -54,11 +56,8 @@ separator between columns}
 
 \item{background.file}{an input background file containing a list of
 genomic regions as the test background. The file format is the same as
-'data.file'. By default, it is NULL meaning all annotatable bases (ig
-non-redundant bases covered by 'annotation.file') are used as
-background. However, if only one annotation (eg only a transcription
-factor) is provided in 'annotation.file', the background must be
-provided}
+'data.file'. By default, it is NULL meaning all annotatable genes are
+used as background}
 
 \item{format.file}{the format for input files. It can be one of
 "data.frame", "chr:start-end", "bed" or "GRanges"}
@@ -86,7 +85,8 @@ without extension), plus specify your file RData path in
 
 \item{ontology}{the ontology supported currently. It can be "GOBP" for
 Gene Ontology Biological Process, "GOMF" for Gene Ontology Molecular
-Function, "GOCC" for Gene Ontology Cellular Component, "PS" for
+Function, "GOCC" for Gene Ontology Cellular Component, "PSG" for
+phylostratigraphy (phylostratific age), "PS" for sTOL-based
 phylostratific age information, "PS2" for the collapsed PS version
 (inferred ancestors being collapsed into one with the known taxonomy
 information), "SF" for SCOP domain superfamilies, "Pfam" for Pfam
@@ -150,6 +150,12 @@ finding the significance, they are in order: hypergeometric test >
 fisher's exact test > binomial test. In other words, in terms of the
 calculated p-value, hypergeometric test < fisher's exact test <
 binomial test}
+
+\item{background.annotatable.only}{logical to indicate whether the
+background is further restricted to the annotatable. By default, it is
+NULL: if ontology.algorithm is not 'none', it is always TRUE;
+otherwise, it depends on the background (if not provided, it will be
+TRUE; otherwise FALSE). Surely, it can be explicitly stated}
 
 \item{p.tail}{the tail used to calculate p-values. It can be either
 "two-tails" for the significance based on two-tails (ie both over- and

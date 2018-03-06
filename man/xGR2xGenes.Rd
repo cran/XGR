@@ -7,11 +7,13 @@
 xGR2xGenes(data, format = c("chr:start-end", "data.frame", "bed",
 "GRanges"),
 build.conversion = c(NA, "hg38.to.hg19", "hg18.to.hg19"),
-crosslink = c("genehancer", "nearby"), crosslink.customised = NULL,
-cdf.function = c("original", "empirical"), scoring = F,
-scoring.scheme = c("max", "sum", "sequential"), scoring.rescale = F,
-nearby.distance.max = 50000, nearby.decay.kernel = c("rapid", "slow",
-"linear", "constant"), nearby.decay.exponent = 2, verbose = T,
+crosslink = c("genehancer", "PCHiC_combined", "GTEx_V6p_combined",
+"nearby"), crosslink.customised = NULL, cdf.function = c("original",
+"empirical"), scoring = F, scoring.scheme = c("max", "sum",
+"sequential"),
+scoring.rescale = F, nearby.distance.max = 50000,
+nearby.decay.kernel = c("rapid", "slow", "linear", "constant"),
+nearby.decay.exponent = 2, verbose = T,
 RData.location = "http://galahad.well.ox.ac.uk/bigdata")
 }
 \arguments{
@@ -38,16 +40,18 @@ another. The conversions supported are "hg38.to.hg19" and
 
 \item{crosslink}{the built-in crosslink info with a score quantifying
 the link of a GR to a gene. It can be one of 'genehancer' (enhancer
-genes; PMID:28605766) or 'nearby' (nearby genes; if so, please also
+genes; PMID:28605766), 'nearby' (nearby genes; if so, please also
 specify the relevant parameters 'nearby.distance.max',
-'nearby.decay.kernel' and 'nearby.decay.exponent' below)}
+'nearby.decay.kernel' and 'nearby.decay.exponent' below),
+'PCHiC_combined' (conformation genes; PMID:27863249),
+'GTEx_V6p_combined' (eQTL genes; PMID:29022597)}
 
 \item{crosslink.customised}{the crosslink info with a score quantifying
 the link of a GR to a gene. A user-input matrix or data frame with 4
 columns: 1st column for genomic regions (formatted as "chr:start-end",
 genome build 19), 2nd column for Genes, 3rd for crosslink score
 (crosslinking a genomic region to a gene, such as -log10 significance
-level), and 4th for contexts (optional; if nor provided, it will be
+level), and 4th for contexts (optional; if not provided, it will be
 added as 'C'). Alternatively, it can be a file containing these 4
 columns. Required, otherwise it will return NULL}
 
@@ -100,6 +104,8 @@ If scoring sets to true, a data frame with following columns:
 \item{\code{Gene}: crosslinked genes}
 \item{\code{Score}: gene score summarised over its list of crosslinked
 GR}
+\item{\code{Pval}: p-value-like significance level transformed from
+gene scores}
 \item{\code{Context}: the context}
 }
 }
@@ -130,6 +136,12 @@ dGR <- xGR(gr, format="GRanges")
 ## enhancer genes
 df_xGenes <- xGR2xGenes(dGR, format="GRanges", crosslink="genehancer",
 RData.location=RData.location)
+## conformation genes
+df_xGenes <- xGR2xGenes(dGR, format="GRanges",
+crosslink="PCHiC_combined", RData.location=RData.location)
+## eQTL genes
+df_xGenes <- xGR2xGenes(dGR, format="GRanges",
+crosslink="GTEx_V6p_combined", RData.location=RData.location)
 ## nearby genes (50kb, decaying rapidly)
 df_xGenes <- xGR2xGenes(dGR, format="GRanges", crosslink="nearby",
 nearby.distance.max=50000, nearby.decay.kernel="rapid",
@@ -147,7 +159,7 @@ Score=df$Weight, Context=rep('C',nrow(df)), stringsAsFactors=F)
 df_xGenes <- xGR2xGenes(dGR, format="GRanges",
 crosslink.customised=crosslink.customised,
 RData.location=RData.location)
-# with their scores
+# with gene scoring
 df_xGenes <- xGR2xGenes(dGR, format="GRanges",
 crosslink.customised=crosslink.customised, scoring=T,
 scoring.scheme="max", RData.location=RData.location)

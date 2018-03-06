@@ -1,3 +1,25 @@
+CHANGES IN VERSION 1.1.2
+-----------------------
+
+NEW FEATURES
+
+    o Populate annotations
+    
+    o Fix bugs in the functions 'xEnrichConciser' and 'xEnrichForest'
+
+    o Modify functions ('xEnricher', 'xEnricherGenes', 'xEnricherSNPs', 'xEnricherYours', 'xEnricherGenesAdv', 'xGRviaGeneAnno' and 'xGRviaGeneAnnoAdv') enabling the control of, adding 'background.annotatable.only', how to use the test background 
+
+    o Add functions ('xGR2xGeneAnno' and 'xGR2xGeneAnnoAdv') supporing genomic region-based enrichment analysis using the crosslinked gene annotations
+    
+    o Add a new function 'xEnrichTreemap' for visualising enrichment results in a treemap
+    
+    o Add a new function 'xCrosstalk' for active pathway crosstalk identification
+    
+    o Add new functions ('xGRsort', 'xGRsep' and 'xGRcse') for genomic range operations
+
+    o Add a new function 'xEnrichLadder' for ladder-like plot of enrichment results
+
+
 CHANGES IN VERSION 1.1.1
 -----------------------
 

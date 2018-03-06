@@ -39,6 +39,12 @@ xGR <- function(data, format=c("chr:start-end","data.frame","bed","GRanges"), bu
     format <- match.arg(format)
     build.conversion <- match.arg(build.conversion)
 	
+	###################
+	if(is.null(data)){
+		return(NULL)
+	}
+	###################
+		
     ## import data
     if(is.matrix(data) | is.data.frame(data) | class(data)=="GRanges"){
         data <- data
@@ -78,7 +84,7 @@ xGR <- function(data, format=c("chr:start-end","data.frame","bed","GRanges"), bu
 		
 	}else if(format=="chr:start-end"){
 		data <- unique(data[!is.na(data)])
-		input <- do.call(rbind, strsplit(data, ":|-"))
+		input <- do.call(rbind, strsplit(data, ":|-|,"))
 		if(ncol(input)>=3){
 			data <- matrix(input[,1:3], nrow=nrow(input))
 		}else if(ncol(input)==2){

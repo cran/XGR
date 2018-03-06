@@ -4,13 +4,13 @@
 \alias{xGR2xGeneScores}
 \title{Function to identify likely modulated seed genes from an input list of genomic regions together with the significance level given the crosslink info}
 \usage{
-xGR2xGeneScores(data, significance.threshold = 5e-05, score.cap = 10,
+xGR2xGeneScores(data, significance.threshold = NULL, score.cap = NULL,
 build.conversion = c(NA, "hg38.to.hg19", "hg18.to.hg19"),
-crosslink = c("genehancer", "nearby"), crosslink.customised = NULL,
-cdf.function = c("original", "empirical"), scoring.scheme = c("max",
-"sum", "sequential"), nearby.distance.max = 50000,
-nearby.decay.kernel = c("rapid", "slow", "linear", "constant"),
-nearby.decay.exponent = 2, verbose = T,
+crosslink = c("genehancer", "PCHiC_combined", "GTEx_V6p_combined",
+"nearby"), crosslink.customised = NULL, cdf.function = c("original",
+"empirical"), scoring.scheme = c("max", "sum", "sequential"),
+nearby.distance.max = 50000, nearby.decay.kernel = c("rapid", "slow",
+"linear", "constant"), nearby.decay.exponent = 2, verbose = T,
 RData.location = "http://galahad.well.ox.ac.uk/bigdata")
 }
 \arguments{
@@ -30,17 +30,14 @@ thus scored positively. Instead, those above this are considered
 insignificant and thus receive no score}
 
 \item{score.cap}{the maximum score being capped. By default, it is set
-to 10. If NULL, no capping is applied}
+to NULL, meaning that no capping is applied}
 
 \item{build.conversion}{the conversion from one genome build to
 another. The conversions supported are "hg38.to.hg19" and
 "hg18.to.hg19". By default it is NA (no need to do so)}
 
 \item{crosslink}{the built-in crosslink info with a score quantifying
-the link of a GR to a gene. It can be one of 'genehancer' (enhancer
-genes; PMID:28605766) or 'nearby' (nearby genes; if so, please also
-specify the relevant parameters 'nearby.distance.max',
-'nearby.decay.kernel' and 'nearby.decay.exponent' below)}
+the link of a GR to a gene. See \code{\link{xGR2xGenes}} for details}
 
 \item{crosslink.customised}{the crosslink info with a score quantifying
 the link of a GR to a gene. A user-input matrix or data frame with 4
@@ -92,9 +89,13 @@ account the given threshold of the significant level), "Pval" (the
 input p-values for GR)}
 \item{\code{Gene}: a matrix of nGene X 3 containing Gene information,
 where nGene is the number of seed genes, and the 3 columns are "Gene"
-(gene symbol), "Score" (the scores for seed genes), "Pval" (pvalue-like
-significance level transformed from gene scores)}
-\item{\code{call}: the call that produced this result}
+(gene symbol), "Score" (the scores for seed genes), "Pval"
+(p-value-like significance level transformed from gene scores)}
+\item{\code{Link}: a matrix of nLink X 5 containing GR-Gene link
+information, where nLink is the number of links, and the 5 columns are
+"GR" (genomic regions), "Gene" (gene symbol), "Score" (the scores for
+the link multiplied by the GR score), "Score_GR" (the scores for GR),
+"Score_link" (the scores for the link), }
 }
 }
 \description{

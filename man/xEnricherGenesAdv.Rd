@@ -6,8 +6,10 @@
 \usage{
 xEnricherGenesAdv(list_vec, background = NULL, check.symbol.identity =
 F,
-ontologies = c("GOBP", "GOMF", "GOCC", "PS", "PS2", "SF", "Pfam", "DO",
-"HPPA", "HPMI", "HPCM", "HPMA", "MP", "EF", "MsigdbH", "MsigdbC1",
+ontologies = c("GOBP", "GOMF", "GOCC", "PSG", "PS", "PS2", "SF",
+"Pfam",
+"DO", "HPPA", "HPMI", "HPCM", "HPMA", "MP", "EF", "MsigdbH",
+"MsigdbC1",
 "MsigdbC2CGP", "MsigdbC2CPall", "MsigdbC2CP", "MsigdbC2KEGG",
 "MsigdbC2REACTOME", "MsigdbC2BIOCARTA", "MsigdbC3TFT", "MsigdbC3MIR",
 "MsigdbC4CGN", "MsigdbC4CM", "MsigdbC5BP", "MsigdbC5MF", "MsigdbC5CC",
@@ -19,16 +21,18 @@ ontologies = c("GOBP", "GOMF", "GOCC", "PS", "PS2", "SF", "Pfam", "DO",
 "KEGGcellular", "KEGGorganismal", "KEGGdisease", "REACTOME",
 "REACTOME_ImmuneSystem", "REACTOME_SignalTransduction", "CGL"),
 size.range = c(10, 2000), min.overlap = 3, which.distance = NULL,
-test = c("hypergeo", "fisher", "binomial"), p.tail = c("one-tail",
-"two-tails"), p.adjust.method = c("BH", "BY", "bonferroni", "holm",
-"hochberg", "hommel"), ontology.algorithm = c("none", "pc", "elim",
-"lea"),
-elim.pvalue = 0.01, lea.depth = 2, path.mode = c("all_paths",
-"shortest_paths", "all_shortest_paths"), true.path.rule = F, verbose =
-T,
-silent = FALSE, plot = TRUE, fdr.cutoff = 0.05,
-displayBy = c("zscore", "fdr", "pvalue", "fc", "or"),
-RData.location = "http://galahad.well.ox.ac.uk/bigdata")
+test = c("hypergeo", "fisher", "binomial"),
+background.annotatable.only = NULL, p.tail = c("one-tail",
+"two-tails"),
+p.adjust.method = c("BH", "BY", "bonferroni", "holm", "hochberg",
+"hommel"),
+ontology.algorithm = c("none", "pc", "elim", "lea"), elim.pvalue =
+0.01,
+lea.depth = 2, path.mode = c("all_paths", "shortest_paths",
+"all_shortest_paths"), true.path.rule = F, verbose = T, silent = FALSE,
+plot = TRUE, fdr.cutoff = 0.05, displayBy = c("zscore", "fdr",
+"pvalue",
+"fc", "or"), RData.location = "http://galahad.well.ox.ac.uk/bigdata")
 }
 \arguments{
 \item{list_vec}{an input vector containing gene symbols. Alternatively
@@ -44,8 +48,9 @@ gene symbols. By default, it sets to false}
 
 \item{ontologies}{the ontologies supported currently. It can be "GOBP"
 for Gene Ontology Biological Process, "GOMF" for Gene Ontology
-Molecular Function, "GOCC" for Gene Ontology Cellular Component, "PS"
-for phylostratific age information, "PS2" for the collapsed PS version
+Molecular Function, "GOCC" for Gene Ontology Cellular Component, "PSG"
+for phylostratigraphy (phylostratific age), "PS" for sTOL-based
+phylostratific age information, "PS2" for the collapsed PS version
 (inferred ancestors being collapsed into one with the known taxonomy
 information), "SF" for SCOP domain superfamilies, "Pfam" for Pfam
 domain families, "DO" for Disease Ontology, "HPPA" for Human Phenotype
@@ -108,6 +113,12 @@ finding the significance, they are in order: hypergeometric test >
 fisher's exact test > binomial test. In other words, in terms of the
 calculated p-value, hypergeometric test < fisher's exact test <
 binomial test}
+
+\item{background.annotatable.only}{logical to indicate whether the
+background is further restricted to the annotatable. By default, it is
+NULL: if ontology.algorithm is not 'none', it is always TRUE;
+otherwise, it depends on the background (if not provided, it will be
+TRUE; otherwise FALSE). Surely, it can be explicitly stated}
 
 \item{p.tail}{the tail used to calculate p-values. It can be either
 "two-tails" for the significance based on two-tails (ie both over- and

@@ -19,10 +19,13 @@ version of <code>xGRviaGeneAnno</code>, returning an object of the class
 <h3>Usage</h3>
 
 <pre>
-xGRviaGeneAnnoAdv(list_vec, background = NULL, gap.max = 0,
+xGRviaGeneAnnoAdv(list_vec, background = NULL, build.conversion = c(NA,
+"hg38.to.hg19", "hg18.to.hg19"), gap.max = 0,
 GR.Gene = c("UCSC_knownGene", "UCSC_knownCanonical"),
-ontologies = c("GOBP", "GOMF", "GOCC", "PS", "PS2", "SF", "Pfam", "DO",
-"HPPA", "HPMI", "HPCM", "HPMA", "MP", "EF", "MsigdbH", "MsigdbC1",
+ontologies = c("GOBP", "GOMF", "GOCC", "PSG", "PS", "PS2", "SF",
+"Pfam",
+"DO", "HPPA", "HPMI", "HPCM", "HPMA", "MP", "EF", "MsigdbH",
+"MsigdbC1",
 "MsigdbC2CGP", "MsigdbC2CPall", "MsigdbC2CP", "MsigdbC2KEGG",
 "MsigdbC2REACTOME", "MsigdbC2BIOCARTA", "MsigdbC3TFT", "MsigdbC3MIR",
 "MsigdbC4CGN", "MsigdbC4CM", "MsigdbC5BP", "MsigdbC5MF", "MsigdbC5CC",
@@ -33,16 +36,16 @@ ontologies = c("GOBP", "GOMF", "GOCC", "PS", "PS2", "SF", "Pfam", "DO",
 "KEGGorganismal", "KEGGdisease", "REACTOME", "REACTOME_ImmuneSystem",
 "REACTOME_SignalTransduction", "CGL"), size.range = c(10, 2000),
 min.overlap = 3, which.distance = NULL, test = c("hypergeo", "fisher",
-"binomial"), p.tail = c("one-tail", "two-tails"),
-p.adjust.method = c("BH", "BY", "bonferroni", "holm", "hochberg",
-"hommel"),
-ontology.algorithm = c("none", "pc", "elim", "lea"), elim.pvalue =
-0.01,
-lea.depth = 2, path.mode = c("all_paths", "shortest_paths",
-"all_shortest_paths"), true.path.rule = F, verbose = T, silent = FALSE,
-plot = TRUE, fdr.cutoff = 0.05, displayBy = c("zscore", "fdr",
-"pvalue",
-"fc", "or"), RData.location = "http://galahad.well.ox.ac.uk/bigdata")
+"binomial"), background.annotatable.only = NULL, p.tail = c("one-tail",
+"two-tails"), p.adjust.method = c("BH", "BY", "bonferroni", "holm",
+"hochberg", "hommel"), ontology.algorithm = c("none", "pc", "elim",
+"lea"),
+elim.pvalue = 0.01, lea.depth = 2, path.mode = c("all_paths",
+"shortest_paths", "all_shortest_paths"), true.path.rule = F, verbose =
+T,
+silent = FALSE, plot = TRUE, fdr.cutoff = 0.05,
+displayBy = c("zscore", "fdr", "pvalue", "fc", "or"),
+RData.location = "http://galahad.well.ox.ac.uk/bigdata")
 </pre>
 
 
@@ -51,15 +54,21 @@ plot = TRUE, fdr.cutoff = 0.05, displayBy = c("zscore", "fdr",
 <table summary="R argblock">
 <tr valign="top"><td><code>list_vec</code></td>
 <td>
-<p>an input vector containing gene symbols. Alternatively
-it can be a list of vectors, representing multiple groups of genomic
-regions. Formatted as &quot;chr:start-end&quot; are genomic regions</p>
+<p>an input vector containing genomic regions.
+Alternatively it can be a list of vectors, representing multiple groups
+of genomic regions. Formatted as &quot;chr:start-end&quot; are genomic regions</p>
 </td></tr>
 <tr valign="top"><td><code>background</code></td>
 <td>
 <p>a background vector containing genomic regions
 (formatted as &quot;chr:start-end&quot;) as the test background. If NULL, by
 default all annotatable are used as background</p>
+</td></tr>
+<tr valign="top"><td><code>build.conversion</code></td>
+<td>
+<p>the conversion from one genome build to
+another. The conversions supported are &quot;hg38.to.hg19&quot; and
+&quot;hg18.to.hg19&quot;. By default it is NA (no need to do so)</p>
 </td></tr>
 <tr valign="top"><td><code>gap.max</code></td>
 <td>
@@ -86,8 +95,9 @@ without extension), plus specify your file RData path in
 <td>
 <p>the ontologies supported currently. It can be &quot;GOBP&quot;
 for Gene Ontology Biological Process, &quot;GOMF&quot; for Gene Ontology
-Molecular Function, &quot;GOCC&quot; for Gene Ontology Cellular Component, &quot;PS&quot;
-for phylostratific age information, &quot;PS2&quot; for the collapsed PS version
+Molecular Function, &quot;GOCC&quot; for Gene Ontology Cellular Component, &quot;PSG&quot;
+for phylostratigraphy (phylostratific age), &quot;PS&quot; for sTOL-based
+phylostratific age information, &quot;PS2&quot; for the collapsed PS version
 (inferred ancestors being collapsed into one with the known taxonomy
 information), &quot;SF&quot; for SCOP domain superfamilies, &quot;Pfam&quot; for Pfam
 domain families, &quot;DO&quot; for Disease Ontology, &quot;HPPA&quot; for Human Phenotype
@@ -158,6 +168,14 @@ finding the significance, they are in order: hypergeometric test &gt;
 fisher's exact test &gt; binomial test. In other words, in terms of the
 calculated p-value, hypergeometric test &lt; fisher's exact test &lt;
 binomial test</p>
+</td></tr>
+<tr valign="top"><td><code>background.annotatable.only</code></td>
+<td>
+<p>logical to indicate whether the
+background is further restricted to the annotatable. By default, it is
+NULL: if ontology.algorithm is not 'none', it is always TRUE;
+otherwise, it depends on the background (if not provided, it will be
+TRUE; otherwise FALSE). Surely, it can be explicitly stated</p>
 </td></tr>
 <tr valign="top"><td><code>p.tail</code></td>
 <td>
