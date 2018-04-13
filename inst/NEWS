@@ -1,3 +1,17 @@
+CHANGES IN VERSION 1.1.3
+-----------------------
+
+NEW FEATURES
+
+    o Populate annotations
+    
+    o Fix bugs in the function 'xGRviaGenomicAnno' (disabling OR calculation)
+    
+    o Add function 'xEnrichHeatmap' for visualising enrichment results in a heatmap
+    
+    o Add functions ('xGRoverlap' and 'xGRtrack') enabling extraction and analysis of genomic scores
+    
+
 CHANGES IN VERSION 1.1.2
 -----------------------
 
@@ -9,7 +23,7 @@ NEW FEATURES
 
     o Modify functions ('xEnricher', 'xEnricherGenes', 'xEnricherSNPs', 'xEnricherYours', 'xEnricherGenesAdv', 'xGRviaGeneAnno' and 'xGRviaGeneAnnoAdv') enabling the control of, adding 'background.annotatable.only', how to use the test background 
 
-    o Add functions ('xGR2xGeneAnno' and 'xGR2xGeneAnnoAdv') supporing genomic region-based enrichment analysis using the crosslinked gene annotations
+    o Add functions ('xGR2xGeneAnno' and 'xGR2xGeneAnnoAdv') supporting genomic region-based enrichment analysis using the crosslinked gene annotations
     
     o Add a new function 'xEnrichTreemap' for visualising enrichment results in a treemap
     

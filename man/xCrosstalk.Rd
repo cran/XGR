@@ -15,12 +15,15 @@ nearby.decay.kernel = c("rapid", "slow", "linear", "constant"),
 nearby.decay.exponent = 2, networks = c("KEGG", "KEGG_metabolism",
 "KEGG_genetic", "KEGG_environmental", "KEGG_cellular",
 "KEGG_organismal",
-"KEGG_disease"), seed.genes = T, subnet.significance = 0.01,
-subnet.size = NULL, ontologies = c("KEGGenvironmental", "KEGG",
-"KEGGmetabolism", "KEGGgenetic", "KEGGcellular", "KEGGorganismal",
-"KEGGdisease"), size.range = c(10, 2000), min.overlap = 10,
-fdr.cutoff = 0.05, crosstalk.top = NULL, glayout = layout_with_kk,
-verbose = T, RData.location = "http://galahad.well.ox.ac.uk/bigdata")
+"KEGG_disease", "REACTOME", "PCommonsDN_Reactome"), seed.genes = T,
+subnet.significance = 0.01, subnet.size = NULL,
+ontologies = c("KEGGenvironmental", "KEGG", "KEGGmetabolism",
+"KEGGgenetic",
+"KEGGcellular", "KEGGorganismal", "KEGGdisease"), size.range = c(10,
+2000),
+min.overlap = 10, fdr.cutoff = 0.05, crosstalk.top = NULL,
+glayout = layout_with_kk, verbose = T,
+RData.location = "http://galahad.well.ox.ac.uk/bigdata")
 }
 \arguments{
 \item{data}{a named input vector containing the significance level for
@@ -93,7 +96,10 @@ interactions sourced from KEGG, it can be 'KEGG' for all,
 'KEGG_environmental' for 'Environmental Information Processing'
 pathways, 'KEGG_cellular' for 'Cellular Processes' pathways,
 'KEGG_organismal' for 'Organismal Systems' pathways, and 'KEGG_disease'
-for 'Human Diseases' pathways}
+for 'Human Diseases' pathways. 'REACTOME' for protein-protein
+interactions derived from Reactome pathways. Pathways Commons
+pathway-merged network from individual sources, that is,
+"PCommonsDN_Reactome" for those from Reactome}
 
 \item{seed.genes}{logical to indicate whether the identified network is
 restricted to seed genes (ie input genes with the signficant level). By
@@ -245,8 +251,7 @@ CgProbes <- xRDataLoader(RData.customised='CgProbes',
 RData.location=RData.location)
 ind <- match(Age_CpG, names(CgProbes))
 gr_CpG <- CgProbes[ind[!is.na(ind)]]
-df <- as.data.frame(gr_CpG)
-data <- paste0(df$seqnames,':',df$start,'-',df$end)
+data <- xGRcse(gr_CpG, format='GRanges')
 ## pathway crosstalk
 df_xGenes <- xGR2xGenes(data, format="chr:start-end",
 crosslink="PCHiC_combined", scoring=T, RData.location=RData.location)

@@ -60,7 +60,8 @@ xGR <- function(data, format=c("chr:start-end","data.frame","bed","GRanges"), bu
 			data <- data
 		}
     }else{
-    	stop("The file 'data' must be provided!\n")
+		warning("The file 'data' must be provided!\n")
+		return(NULL)
     }
 	
     ## construct GR
@@ -71,7 +72,8 @@ xGR <- function(data, format=c("chr:start-end","data.frame","bed","GRanges"), bu
 		}else if(ncol(data)==2){
 			data <- cbind(data, data[,2])
 		}else{
-			stop("Your input 'data.file' is not as expected!\n")
+			warning("Your input 'data.file' is not as expected!\n")
+			return(NULL)
 		}
 		## make sure positions are numeric
 		ind <- suppressWarnings(which(!is.na(as.numeric(data[,2])) & !is.na(as.numeric(data[,3]))))
@@ -80,7 +82,7 @@ xGR <- function(data, format=c("chr:start-end","data.frame","bed","GRanges"), bu
 			ranges = IRanges::IRanges(start=as.numeric(data[ind,2]), end=as.numeric(data[ind,3])),
 			strand = S4Vectors::Rle(rep('*',length(ind)))
 		)
-		names(dGR) <- paste(data[,1], ':', data[,2], '-', data[,3], sep='')
+		names(dGR) <- paste(data[ind,1], ':', data[ind,2], '-', data[ind,3], sep='')
 		
 	}else if(format=="chr:start-end"){
 		data <- unique(data[!is.na(data)])
@@ -90,7 +92,8 @@ xGR <- function(data, format=c("chr:start-end","data.frame","bed","GRanges"), bu
 		}else if(ncol(input)==2){
 			data <- matrix(input[,c(1,2,2)], nrow=nrow(input))
 		}else{
-			stop("Your input 'data' does not meet the format 'chr:start-end'!\n")
+			warning("Your input 'data' does not meet the format 'chr:start-end'!\n")
+			return(NULL)
 		}
 		## make sure positions are numeric
 		ind <- suppressWarnings(which(!is.na(as.numeric(data[,2])) & !is.na(as.numeric(data[,3]))))
@@ -99,7 +102,7 @@ xGR <- function(data, format=c("chr:start-end","data.frame","bed","GRanges"), bu
 			ranges = IRanges::IRanges(start=as.numeric(data[ind,2]), end=as.numeric(data[ind,3])),
 			strand = S4Vectors::Rle(rep('*',length(ind)))
 		)
-		names(dGR) <- paste(data[,1], ':', data[,2], '-', data[,3], sep='')
+		names(dGR) <- paste(data[ind,1], ':', data[ind,2], '-', data[ind,3], sep='')
 		
 	}else if(format=="bed"){
 		## construct data GR
@@ -110,7 +113,7 @@ xGR <- function(data, format=c("chr:start-end","data.frame","bed","GRanges"), bu
 			ranges = IRanges::IRanges(start=as.numeric(data[ind,2])+1, end=as.numeric(data[ind,3])),
 			strand = S4Vectors::Rle(rep('*',length(ind)))
 		)
-		names(dGR) <- paste(data[,1], ':', data[,2], '-', data[,3], sep='')
+		names(dGR) <- paste(data[ind,1], ':', data[ind,2]+1, '-', data[ind,3], sep='')
 	}else if(format=="GRanges"){
 		dGR <- data
 		

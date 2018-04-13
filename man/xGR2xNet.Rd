@@ -2,7 +2,7 @@
 % Please edit documentation in R/xGR2xNet.r
 \name{xGR2xNet}
 \alias{xGR2xNet}
-\title{Function to identify a gene network from an input network given a list of genomic regions together with the significance level}
+\title{Function to identify a gene network from an input network given a list of genomic regions}
 \usage{
 xGR2xNet(data, significance.threshold = NULL, score.cap = NULL,
 build.conversion = c(NA, "hg38.to.hg19", "hg18.to.hg19"),
@@ -19,9 +19,9 @@ network = c("STRING_highest", "STRING_high", "STRING_medium",
 "PCommonsDN_ReconX", "PCommonsDN_TRANSFAC", "PCommonsDN_PhosphoSite",
 "PCommonsDN_CTD", "KEGG", "KEGG_metabolism", "KEGG_genetic",
 "KEGG_environmental", "KEGG_cellular", "KEGG_organismal",
-"KEGG_disease"),
-network.customised = NULL, seed.genes = T, subnet.significance = 5e-05,
-subnet.size = NULL, verbose = T,
+"KEGG_disease",
+"REACTOME"), network.customised = NULL, seed.genes = T,
+subnet.significance = 5e-05, subnet.size = NULL, verbose = T,
 RData.location = "http://galahad.well.ox.ac.uk/bigdata")
 }
 \arguments{
@@ -122,7 +122,8 @@ interactions sourced from KEGG, it can be 'KEGG' for all,
 'KEGG_environmental' for 'Environmental Information Processing'
 pathways, 'KEGG_cellular' for 'Cellular Processes' pathways,
 'KEGG_organismal' for 'Organismal Systems' pathways, and 'KEGG_disease'
-for 'Human Diseases' pathways}
+for 'Human Diseases' pathways. 'REACTOME' for protein-protein
+interactions derived from Reactome pathways}
 
 \item{network.customised}{an object of class "igraph". By default, it
 is NULL. It is designed to allow the user analysing their customised
@@ -162,11 +163,10 @@ graph attributes (evidence, gp_evidence) and node attributes
 }
 \description{
 \code{xGR2xNet} is supposed to identify maximum-scoring gene subnetwork
-from an input graph with the node information on the significance
-(measured as p-values or fdr). To do so, it defines seed genes and
-their scores that take into account the distance to and the
-significance of input genomic regions (GR). It returns an object of
-class "igraph".
+from an input graph with the node information (genomic regions with or
+without the significance). To do so, it defines seed genes and their
+scores that take into account the distance to and the significance of
+input genomic regions (GR). It returns an object of class "igraph".
 }
 \note{
 The algorithm identifying a gene subnetwork that is likely modulated by

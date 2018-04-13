@@ -1,11 +1,11 @@
 #' Function to define genes from an input list of genomic regions given the crosslink info
 #'
-#' \code{xGR2xGenes} is supposed to define genes crosslinking to an input list of genomic regions (GR). Also required is the crosslink info with a score quantifying the link of a GR to a gene. Currently supported built-in crosslink info is enhancer genes and nearby genes (purely), though the user can customise it via 'crosslink.customised'; if so, it has priority over the built-in data.
+#' \code{xGR2xGenes} is supposed to define genes crosslinking to an input list of genomic regions (GR). Also required is the crosslink info with a score quantifying the link of a GR to a gene. Currently supported built-in crosslink info is enhancer genes, eQTL genes, conformation genes and nearby genes (purely), though the user can customise it via 'crosslink.customised'; if so, it has priority over the built-in data.
 #'
 #' @param data input genomic regions (GR). If formatted as "chr:start-end" (see the next parameter 'format' below), GR should be provided as a vector in the format of 'chrN:start-end', where N is either 1-22 or X, start (or end) is genomic positional number; for example, 'chr1:13-20'. If formatted as a 'data.frame', the first three columns correspond to the chromosome (1st column), the starting chromosome position (2nd column), and the ending chromosome position (3rd column). If the format is indicated as 'bed' (browser extensible data), the same as 'data.frame' format but the position is 0-based offset from chromomose position. If the genomic regions provided are not ranged but only the single position, the ending chromosome position (3rd column) is allowed not to be provided. The data could also be an object of 'GRanges' (in this case, formatted as 'GRanges')
 #' @param format the format of the input data. It can be one of "data.frame", "chr:start-end", "bed" or "GRanges"
 #' @param build.conversion the conversion from one genome build to another. The conversions supported are "hg38.to.hg19" and "hg18.to.hg19". By default it is NA (no need to do so)
-#' @param crosslink the built-in crosslink info with a score quantifying the link of a GR to a gene. It can be one of 'genehancer' (enhancer genes; PMID:28605766), 'nearby' (nearby genes; if so, please also specify the relevant parameters 'nearby.distance.max', 'nearby.decay.kernel' and 'nearby.decay.exponent' below), 'PCHiC_combined' (conformation genes; PMID:27863249), 'GTEx_V6p_combined' (eQTL genes; PMID:29022597)
+#' @param crosslink the built-in crosslink info with a score quantifying the link of a GR to a gene. It can be one of 'genehancer' (enhancer genes; PMID:28605766), 'nearby' (nearby genes; if so, please also specify the relevant parameters 'nearby.distance.max', 'nearby.decay.kernel' and 'nearby.decay.exponent' below), 'PCHiC_combined' (conformation genes; PMID:27863249), 'GTEx_V6p_combined' (eQTL genes; PMID:29022597), 'eQTL_scRNAseq_combined' (eQTL genes; PMID:29610479), 'eQTL_ImmuneCells_combined' (eQTL genes; PMID:29610479)
 #' @param crosslink.customised the crosslink info with a score quantifying the link of a GR to a gene. A user-input matrix or data frame with 4 columns: 1st column for genomic regions (formatted as "chr:start-end", genome build 19), 2nd column for Genes, 3rd for crosslink score (crosslinking a genomic region to a gene, such as -log10 significance level), and 4th for contexts (optional; if not provided, it will be added as 'C'). Alternatively, it can be a file containing these 4 columns. Required, otherwise it will return NULL
 #' @param cdf.function a character specifying how to transform the input crosslink score. It can be one of 'original' (no such transformation), and 'empirical'  for looking at empirical Cumulative Distribution Function (cdf; as such it is converted into pvalue-like values [0,1])
 #' @param scoring logical to indicate whether gene-level scoring will be further calculated. By default, it sets to false
@@ -21,7 +21,7 @@
 #' \itemize{
 #'  \item{\code{GR}: genomic regions}
 #'  \item{\code{Gene}: crosslinked genes}
-#'  \item{\code{Score}: the score between the gene and the GR}
+#'  \item{\code{Score}: the original score between the gene and the GR (if cdf.function is 'original'); otherwise cdf (based on the whole crosslink inputs)}
 #'  \item{\code{Context}: the context}
 #' }
 #' If scoring sets to true, a data frame with following columns:
@@ -89,6 +89,10 @@ xGR2xGenes <- function(data, format=c("chr:start-end","data.frame","bed","GRange
     scoring.scheme <- match.arg(scoring.scheme)
     nearby.decay.kernel <- match.arg(nearby.decay.kernel)
 	
+	if(class(data)=='GRanges'){
+		names(data) <- NULL
+	}
+	
 	dGR <- xGR(data=data, format=format, build.conversion=build.conversion, verbose=verbose, RData.location=RData.location)
 	
 	###################
@@ -108,6 +112,7 @@ xGR2xGenes <- function(data, format=c("chr:start-end","data.frame","bed","GRange
 		###########################	
 		# customised df_SGS
 		###########################
+		df <- NULL
 		if(is.vector(crosslink.customised)){
 			# assume a file
 			df <- utils::read.delim(file=crosslink.customised, header=TRUE, row.names=NULL, stringsAsFactors=FALSE)
@@ -115,7 +120,7 @@ xGR2xGenes <- function(data, format=c("chr:start-end","data.frame","bed","GRange
 			df <- crosslink.customised
 		}
 		
-		if(!is.null(df) & (ncol(df)==4 | ncol(df)==3)){
+		if(!is.null(df) && (ncol(df)==4 | ncol(df)==3)){
 		
 			if(ncol(df)==4){
 				SGS_customised <- df
@@ -149,7 +154,7 @@ xGR2xGenes <- function(data, format=c("chr:start-end","data.frame","bed","GRange
 
 	if(is.null(df_SGS_customised)){
 		
-		default.crosslink <- c("genehancer","PCHiC_combined","GTEx_V6p_combined","nearby", "PCHiC_Monocytes","PCHiC_Macrophages_M0","PCHiC_Macrophages_M1","PCHiC_Macrophages_M2","PCHiC_Neutrophils","PCHiC_Megakaryocytes","PCHiC_Endothelial_precursors","PCHiC_Erythroblasts","PCHiC_Fetal_thymus","PCHiC_Naive_CD4_T_cells","PCHiC_Total_CD4_T_cells","PCHiC_Activated_total_CD4_T_cells","PCHiC_Nonactivated_total_CD4_T_cells","PCHiC_Naive_CD8_T_cells","PCHiC_Total_CD8_T_cells","PCHiC_Naive_B_cells","PCHiC_Total_B_cells", "GTEx_V6p_Adipose_Subcutaneous","GTEx_V6p_Adipose_Visceral_Omentum","GTEx_V6p_Adrenal_Gland","GTEx_V6p_Artery_Aorta","GTEx_V6p_Artery_Coronary","GTEx_V6p_Artery_Tibial","GTEx_V6p_Brain_Anterior_cingulate_cortex_BA24","GTEx_V6p_Brain_Caudate_basal_ganglia","GTEx_V6p_Brain_Cerebellar_Hemisphere","GTEx_V6p_Brain_Cerebellum","GTEx_V6p_Brain_Cortex","GTEx_V6p_Brain_Frontal_Cortex_BA9","GTEx_V6p_Brain_Hippocampus","GTEx_V6p_Brain_Hypothalamus","GTEx_V6p_Brain_Nucleus_accumbens_basal_ganglia","GTEx_V6p_Brain_Putamen_basal_ganglia","GTEx_V6p_Breast_Mammary_Tissue","GTEx_V6p_Cells_EBVtransformed_lymphocytes","GTEx_V6p_Cells_Transformed_fibroblasts","GTEx_V6p_Colon_Sigmoid","GTEx_V6p_Colon_Transverse","GTEx_V6p_Esophagus_Gastroesophageal_Junction","GTEx_V6p_Esophagus_Mucosa","GTEx_V6p_Esophagus_Muscularis","GTEx_V6p_Heart_Atrial_Appendage","GTEx_V6p_Heart_Left_Ventricle","GTEx_V6p_Liver","GTEx_V6p_Lung","GTEx_V6p_Muscle_Skeletal","GTEx_V6p_Nerve_Tibial","GTEx_V6p_Ovary","GTEx_V6p_Pancreas","GTEx_V6p_Pituitary","GTEx_V6p_Prostate","GTEx_V6p_Skin_Not_Sun_Exposed_Suprapubic","GTEx_V6p_Skin_Sun_Exposed_Lower_leg","GTEx_V6p_Small_Intestine_Terminal_Ileum","GTEx_V6p_Spleen","GTEx_V6p_Stomach","GTEx_V6p_Testis","GTEx_V6p_Thyroid","GTEx_V6p_Uterus","GTEx_V6p_Vagina","GTEx_V6p_Whole_Blood")
+		default.crosslink <- c("genehancer","PCHiC_combined","PCHiC_combined_PE","GTEx_V6p_combined","eQTL_ImmuneCells_combined","eQTL_scRNAseq_combined","FANTOM5_Cell","FANTOM5_Tissue", "REG_lncRNA","REG_enhancer", "nearby", "PCHiC_Monocytes","PCHiC_Macrophages_M0","PCHiC_Macrophages_M1","PCHiC_Macrophages_M2","PCHiC_Neutrophils","PCHiC_Megakaryocytes","PCHiC_Endothelial_precursors","PCHiC_Erythroblasts","PCHiC_Fetal_thymus","PCHiC_Naive_CD4_T_cells","PCHiC_Total_CD4_T_cells","PCHiC_Activated_total_CD4_T_cells","PCHiC_Nonactivated_total_CD4_T_cells","PCHiC_Naive_CD8_T_cells","PCHiC_Total_CD8_T_cells","PCHiC_Naive_B_cells","PCHiC_Total_B_cells", "PCHiC_PE_Monocytes","PCHiC_PE_Macrophages_M0","PCHiC_PE_Macrophages_M1","PCHiC_PE_Macrophages_M2","PCHiC_PE_Neutrophils","PCHiC_PE_Megakaryocytes","PCHiC_PE_Erythroblasts","PCHiC_PE_Naive_CD4_T_cells","PCHiC_PE_Naive_CD8_T_cells", "GTEx_V6p_Adipose_Subcutaneous","GTEx_V6p_Adipose_Visceral_Omentum","GTEx_V6p_Adrenal_Gland","GTEx_V6p_Artery_Aorta","GTEx_V6p_Artery_Coronary","GTEx_V6p_Artery_Tibial","GTEx_V6p_Brain_Anterior_cingulate_cortex_BA24","GTEx_V6p_Brain_Caudate_basal_ganglia","GTEx_V6p_Brain_Cerebellar_Hemisphere","GTEx_V6p_Brain_Cerebellum","GTEx_V6p_Brain_Cortex","GTEx_V6p_Brain_Frontal_Cortex_BA9","GTEx_V6p_Brain_Hippocampus","GTEx_V6p_Brain_Hypothalamus","GTEx_V6p_Brain_Nucleus_accumbens_basal_ganglia","GTEx_V6p_Brain_Putamen_basal_ganglia","GTEx_V6p_Breast_Mammary_Tissue","GTEx_V6p_Cells_EBVtransformed_lymphocytes","GTEx_V6p_Cells_Transformed_fibroblasts","GTEx_V6p_Colon_Sigmoid","GTEx_V6p_Colon_Transverse","GTEx_V6p_Esophagus_Gastroesophageal_Junction","GTEx_V6p_Esophagus_Mucosa","GTEx_V6p_Esophagus_Muscularis","GTEx_V6p_Heart_Atrial_Appendage","GTEx_V6p_Heart_Left_Ventricle","GTEx_V6p_Liver","GTEx_V6p_Lung","GTEx_V6p_Muscle_Skeletal","GTEx_V6p_Nerve_Tibial","GTEx_V6p_Ovary","GTEx_V6p_Pancreas","GTEx_V6p_Pituitary","GTEx_V6p_Prostate","GTEx_V6p_Skin_Not_Sun_Exposed_Suprapubic","GTEx_V6p_Skin_Sun_Exposed_Lower_leg","GTEx_V6p_Small_Intestine_Terminal_Ileum","GTEx_V6p_Spleen","GTEx_V6p_Stomach","GTEx_V6p_Testis","GTEx_V6p_Thyroid","GTEx_V6p_Uterus","GTEx_V6p_Vagina","GTEx_V6p_Whole_Blood", "eQTL_ImmuneCells_bcell","eQTL_ImmuneCells_Blood","eQTL_ImmuneCells_CD4","eQTL_ImmuneCells_CD8","eQTL_ImmuneCells_JKscience_CD14","eQTL_ImmuneCells_JKscience_IFN","eQTL_ImmuneCells_JKscience_LPS2","eQTL_ImmuneCells_JKscience_LPS24","eQTL_ImmuneCells_mono","eQTL_ImmuneCells_Neutrophils","eQTL_ImmuneCells_NK", "eQTL_scRNAseq_Bcell","eQTL_scRNAseq_PBMC","eQTL_scRNAseq_NK","eQTL_scRNAseq_Mono","eQTL_scRNAseq_DC","eQTL_scRNAseq_CD8","eQTL_scRNAseq_CD4")
 		ind <- match(default.crosslink, crosslink)
 		crosslink <- default.crosslink[!is.na(ind)]
 		if(length(crosslink)==0){
@@ -189,6 +194,14 @@ xGR2xGenes <- function(data, format=c("chr:start-end","data.frame","bed","GRange
 				rdata <- paste0('crosslink.customised.', crosslink)
 				df_SGS_customised <- xRDataLoader(rdata, verbose=verbose, RData.location=RData.location)
 					
+			}else if(sum(grep("FANTOM5_",crosslink,perl=TRUE)) > 0){
+				rdata <- paste0('crosslink.customised.', crosslink)
+				df_SGS_customised <- xRDataLoader(rdata, verbose=verbose, RData.location=RData.location)
+					
+			}else{
+				## general use
+				rdata <- paste0('crosslink.customised.', crosslink)
+				df_SGS_customised <- xRDataLoader(rdata, verbose=verbose, RData.location=RData.location)
 			}
 
 			if(!is.null(df_SGS_customised)){
@@ -212,6 +225,7 @@ xGR2xGenes <- function(data, format=c("chr:start-end","data.frame","bed","GRange
 		}
 		
 		Gene <- Weight <- Score <- NULL
+		dgr <- NULL
 		
 		ls_df_SGS <- split(x=df_SGS_customised, f=df_SGS_customised$Context)
 		ls_res_df <- lapply(1:length(ls_df_SGS), function(j){
@@ -238,33 +252,63 @@ xGR2xGenes <- function(data, format=c("chr:start-end","data.frame","bed","GRange
 			df_found <- df_SGS[!is.na(ind), ]
 			#################################
 			
-			system.time({
-			
-			## very slow
-			ls_dgr <- split(x=q2r$gr, f=q2r$dgr)
-			ls_df <- lapply(1:length(ls_dgr), function(i){
-							
-				#################
-				## very important
-				#################
-				if(0){
-				ind <- match(df_SGS$GR, ls_dgr[[i]])
-				df <- df_SGS[!is.na(ind), ]
-				}else{
-				ind <- match(df_found$GR, ls_dgr[[i]])
-				df <- df_found[!is.na(ind), ]
-				}
+			if(1){
+				system.time({
+				
+				## very fast
+				ls_df_found <- split(x=df_found[,c('GR','Gene','Weight')], f=df_found$GR)
+				
+				### df_found_reorder
+				ind <- match(q2r$gr, names(ls_df_found))
+				ls_df_found_reorder <- ls_df_found[ind]
+				df_found_reorder <- do.call(rbind, ls_df_found_reorder)
+				
+				### df_q2r
+				vec_nrow <- sapply(ls_df_found_reorder, nrow)
+				ind_times <- rep(1:nrow(q2r),times=vec_nrow)
+				df_q2r <- q2r[ind_times,]
+				
+				### df
+				df <- cbind(df_q2r, df_found_reorder)
 				
 				#################################
-				## keep maximum weight per gene if there are many overlaps
+				## keep maximum weight per gene and dgr if there are many overlaps
 				#################################
-				df <- as.data.frame(df %>% dplyr::group_by(Gene) %>% dplyr::summarize(Score=max(Weight)))
-				data.frame(GR=rep(names(ls_dgr)[i],nrow(df)), df, stringsAsFactors=F)
-			})
-			df_xGenes <- do.call(rbind, ls_df)
-	
-			})
+				df_xGenes <- as.data.frame(df %>% dplyr::group_by(dgr,Gene) %>% dplyr::summarize(Score=max(Weight)))
+				colnames(df_xGenes) <- c('GR','Gene','Score')
+				
+				})
+				
+			}else{
 
+				system.time({
+			
+				## very slow
+				ls_dgr <- split(x=q2r$gr, f=q2r$dgr)
+				ls_df <- lapply(1:length(ls_dgr), function(i){
+				
+					#################
+					## very important
+					#################
+					if(0){
+					ind <- match(df_SGS$GR, ls_dgr[[i]])
+					df <- df_SGS[!is.na(ind), ]
+					}else{
+					ind <- match(df_found$GR, ls_dgr[[i]])
+					df <- df_found[!is.na(ind), ]
+					}
+				
+					#################################
+					## keep maximum weight per gene if there are many overlaps
+					#################################
+					df <- as.data.frame(df %>% dplyr::group_by(Gene) %>% dplyr::summarize(Score=max(Weight)))
+					data.frame(GR=rep(names(ls_dgr)[i],nrow(df)), df, stringsAsFactors=F)
+				})
+				df_xGenes <- do.call(rbind, ls_df)
+
+				})
+			}
+			
 			########################################
 			# check gene (make sure official symbol)
 			ind <- !is.na(XGR::xSymbol2GeneID(df_xGenes$Gene, details=TRUE, verbose=FALSE, RData.location=RData.location)$Symbol)
@@ -371,9 +415,11 @@ xGR2xGenes <- function(data, format=c("chr:start-end","data.frame","bed","GRange
 		df_xGenes <- df_xGenes %>% dplyr::arrange(-Score)
 		#### sort GR by chromosome, start and end
 		ind <- xGRsort(df_xGenes$GR)
-		df_xGenes <- df_xGenes[ind,]
-		####
-		df_xGenes <- df_xGenes %>% dplyr::arrange(Context)
+		if(!is.null(ind)){
+			df_xGenes <- df_xGenes[ind,]
+			####
+			df_xGenes <- df_xGenes %>% dplyr::arrange(Context)
+		}
 	}
 	
 	####################################
