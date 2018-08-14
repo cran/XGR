@@ -24,7 +24,7 @@
 #' \dontrun{
 #' # Load the library
 #' library(XGR)
-#' RData.location <- "http://galahad.well.ox.ac.uk/bigdata_dev/"
+#' RData.location <- "http://galahad.well.ox.ac.uk/bigdata/"
 #' 
 #' # provide the input Genes of interest (eg 100 randomly chosen human genes)
 #' ## load human genes
@@ -168,7 +168,7 @@ xEnrichForest <- function(eTerm, top_num=10, FDR.cutoff=0.05, CI.one=T, colormap
 	## order by 'or', 'adjp'
 	df <- df[with(df,order(group, ontology, or, fdr)),]
 	df$name <- factor(df$name, levels=unique(df$name))
-	
+
 	###########################################
 	bp <- ggplot(df, aes(x=name, y=log2(or), ymin=log2(CIl), ymax=log2(CIu), color=fdr))
 	bp <- bp + geom_pointrange(size=0.3) + ylab(expression(log[2]("odds ratio")))

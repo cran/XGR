@@ -11,7 +11,7 @@
 #' @param edge.width the width of edges
 #' @param edge.palette the palette defining edge color. It is correponding to the edge attribute 'weight' for the input graph (if any). By default, it is NULL: if the edge attribute 'weight' exists for the input graph, it will be 'RdPu' (RColorBrewer::display.brewer.all()); otherwise 'skyblue'
 #' @return
-#' a gpplot2 object
+#' a ggplot2 object
 #' @export
 #' @seealso \code{\link{xHEB}}
 #' @include xHEB.r
@@ -76,6 +76,7 @@ xHEB <- function(g, leave.label.size=3, leave.label.color="black", leave.size=NU
 		
 		community <- order <- NULL
 		df_nodes <- igraph::get.data.frame(ig,what="vertices")
+		#df_nodes$community <- factor(df_nodes$community, levels=unique(df_nodes$community))
 		df_nodes <- df_nodes %>% dplyr::arrange(community,order)
 
 		## a data structure contains both hierarchical components (i.e., parent-child relations between data items) and non-hierarchical components (representing additional relations between data items). Parent-child relations are called hierarchy relations, whereas additional, non-hierarchical relations are called adjacency relations

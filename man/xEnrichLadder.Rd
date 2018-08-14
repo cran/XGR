@@ -7,7 +7,9 @@
 xEnrichLadder(eTerm, sortBy = c("or", "adjp", "fdr", "pvalue",
 "zscore", "fc",
 "nAnno", "nOverlap", "none"), top_num = 10, FDR.cutoff = 0.05,
-CI.one = T, colormap = "skyblue-darkblue", verbose = T)
+CI.one = T, colormap = "skyblue-darkblue", x.rotate = 60,
+x.text.size = 6, y.text.size = 6, shape = 19, size = 2,
+label = c("concise", "full"), verbose = T)
 }
 \arguments{
 \item{eTerm}{an object of class "eTerm"}
@@ -40,6 +42,22 @@ hyphen-separated HTML color names, e.g. "blue-black-yellow",
 standard color names can be found in
 \url{http://html-color-codes.info/color-names}}
 
+\item{x.rotate}{the angle to rotate the x tick labelings. By default,
+it is 60}
+
+\item{x.text.size}{the text size of the x tick labelings. By default,
+it is 6}
+
+\item{y.text.size}{the text size of the y tick labelings. By default,
+it is 6}
+
+\item{shape}{the number specifying the shape. By default, it is 19}
+
+\item{size}{the number specifying the shape size. By default, it is 2}
+
+\item{label}{how to label gene sets (terms). It can be "concise" or
+"full"}
+
 \item{verbose}{logical to indicate whether the messages will be
 displayed in the screen}
 }
@@ -59,7 +77,7 @@ none
 \dontrun{
 # Load the XGR package and specify the location of built-in data
 library(XGR)
-RData.location <- "http://galahad.well.ox.ac.uk/bigdata_dev/"
+RData.location <- "http://galahad.well.ox.ac.uk/bigdata/"
 
 data(Haploid_regulators)
 ## only IRF1 positive regulators
@@ -77,6 +95,7 @@ ontology=c("PSG","Approved","GWAS","CGL")[1], size.range=c(1,20000),
 min.overlap=0, RData.location=RData.location)
 gp_ladder <- xEnrichLadder(eTerm, sortBy="none", top_num="auto",
 FDR.cutoff=1)
+gp_ladder+ coord_flip()
 
 # 3) save into the file "xEnrichLadder.pdf"
 mat <- xSparseMatrix(gp_ladder$data)
@@ -84,6 +103,59 @@ pdf("xEnrichLadder.pdf", width=2+ncol(mat)*0.075,
 height=2+nrow(mat)*0.1, compress=T)
 print(gp_ladder)
 dev.off()
+
+# 4) SIFTS2GOMF
+## df_fpocket
+SIFTS_fpocket <-
+xRDataLoader(RData='SIFTS_fpocket',RData.location=RData.location)
+df_fpocket <- as.data.frame(SIFTS_fpocket \%>\%
+dplyr::filter(druggable=='Y') \%>\% dplyr::group_by(Symbol,PDB_code)
+\%>\% dplyr::summarise(num_pockets=n()) \%>\%
+dplyr::arrange(Symbol,desc(num_pockets),PDB_code))
+df_fpocket <- df_fpocket[!duplicated(df_fpocket$Symbol), ]
+## mat_fpocket
+mat_fpocket <- df_fpocket \%>\% tidyr::spread(Symbol, num_pockets)
+rownames(mat_fpocket) <- mat_fpocket[,1]
+mat_fpocket <- mat_fpocket[,-1]
+## gp_ladder
+set.seed(825)
+data <- as.character(sample(unique(df_fpocket$Symbol), 100))
+eTerm <- xEnricherGenes(data=data, ontology="SIFTS2GOMF",
+RData.location=RData.location)
+gp_ladder <- xEnrichLadder(eTerm, sortBy="none", top_num=5,
+FDR.cutoff=0.01, x.rotate=90)
+#gp_ladder + coord_flip()
+## data_matrix
+ind <- match(colnames(gp_ladder$matrix), colnames(mat_fpocket))
+data_matrix <- mat_fpocket[,ind[!is.na(ind)]]
+ind <- which(apply(!is.na(data_matrix), 1, sum)!=0)
+data_matrix <- data_matrix[ind,]
+ind <- match(data, colnames(data_matrix))
+data_matrix <- data_matrix[,ind[!is.na(ind)]]
+## gp_pdb
+gp_pdb <- xHeatmap(t(data_matrix), reorder="row", colormap="jet.top",
+x.rotate=90, shape=19, size=1, x.text.size=6,y.text.size=5,
+na.color='transparent', legend.title='# pockets')
+#gp_pdb + coord_flip()
+## plot_combined
+#plot_combined <- cowplot::plot_grid(gp_ladder, gp_pdb, align="h", ncol=1, rel_heights=c(2,3))
+
+## enrichment analysis
+SIFTS_fpocket <-
+xRDataLoader(RData='SIFTS_fpocket',RData.location=RData.location)
+annotation.file <- SIFTS_fpocket[!duplicated(SIFTS_fpocket$Symbol),
+c('Symbol','druggable')]
+### 100 randomly chosen human genes
+org.Hs.eg <- xRDataLoader(RData='org.Hs.eg',
+RData.location=RData.location)
+set.seed(825)
+data <- as.character(sample(org.Hs.eg$gene_info$Symbol, 100))
+### optionally, provide the test background (if not provided, all human genes)
+background <- as.character(org.Hs.eg$gene_info$Symbol)
+### perform enrichment analysis
+eTerm <- xEnricherYours(data.file=data,
+annotation.file=annotation.file, background.file=background,
+size.range=c(10,20000))
 }
 }
 \seealso{

@@ -26,7 +26,7 @@
 #' @param label.color the label color
 #' @param ... additional graphic parameters for supraHex::visTreeBootstrap
 #' @return 
-#' a gpplot2 object
+#' a ggplot2 object
 #' @note none
 #' @export
 #' @seealso \code{\link{xHeatmap}}
@@ -75,35 +75,33 @@ xHeatmap <- function(data, reorder=c("none","row","col","both"), colormap="spect
 		################
 	}
 	
-	ind_row <- 1:nrow(mat_val)
-	if(ncol(mat_val)>1 & (reorder=="row" | reorder=="both")){
-		mat <- mat_val
-		colnames(mat) <- 1:ncol(mat)
-		rownames(mat) <- 1:nrow(mat)
-		####
-		mat[is.na(mat)] <- 0
-		####
-		set.seed(825)
-		tree_bs <- visTreeBootstrap(mat, visTree=FALSE, ...)
-		ind_row <- match(tree_bs$tip.label, rownames(mat))
-	}
-	ind_col <- 1:ncol(mat_val)
-	if(nrow(mat_val)>1 & (reorder=="col" | reorder=="both")){
-		mat <- mat_val
-		colnames(mat) <- 1:ncol(mat)
-		rownames(mat) <- 1:nrow(mat)
-		####
-		mat[is.na(mat)] <- 0
-		####
-		set.seed(825)
-		tree_bs <- visTreeBootstrap(t(mat), visTree=FALSE, ...)
-		ind_col <- match(tree_bs$tip.label, colnames(mat))
-	}
+	if(nrow(mat_val)>1 & nrow(mat_val)>1){
 	
-	################
-	if(0){
-		mat_val <- mat_val[ind_row, ind_col]
-	}else{
+		ind_row <- 1:nrow(mat_val)
+		if(ncol(mat_val)>1 & (reorder=="row" | reorder=="both")){
+			mat <- mat_val
+			colnames(mat) <- 1:ncol(mat)
+			rownames(mat) <- 1:nrow(mat)
+			####
+			mat[is.na(mat)] <- 0
+			####
+			set.seed(825)
+			tree_bs <- visTreeBootstrap(mat, visTree=FALSE, ...)
+			ind_row <- match(tree_bs$tip.label, rownames(mat))
+		}
+		ind_col <- 1:ncol(mat_val)
+		if(nrow(mat_val)>1 & (reorder=="col" | reorder=="both")){
+			mat <- mat_val
+			colnames(mat) <- 1:ncol(mat)
+			rownames(mat) <- 1:nrow(mat)
+			####
+			mat[is.na(mat)] <- 0
+			####
+			set.seed(825)
+			tree_bs <- visTreeBootstrap(t(mat), visTree=FALSE, ...)
+			ind_col <- match(tree_bs$tip.label, colnames(mat))
+		}
+	
 		mat_tmp <- as.matrix(mat_val[ind_row, ind_col], ncol=length(ind_col))
 		rownames(mat_tmp) <- rownames(mat_val)[ind_row]
 		colnames(mat_tmp) <- colnames(mat_val)[ind_col]
@@ -162,7 +160,7 @@ xHeatmap <- function(data, reorder=c("none","row","col","both"), colormap="spect
 		
 		#######################
 		if(!is.null(data.label)){
-			mat_label <- as.data.frame(data.label[ind_row, ind_col])
+			mat_label <- as.data.frame(data.label[ind_row, ind_col], stringsAsFactors=F)
 			gene <- sample <- val <- NULL
 			df_label <- suppressWarnings(mat_label %>% dplyr::mutate(gene=rownames(mat_label)) %>% tidyr::gather(sample, val, -gene))
 			df_label$gene <- factor(df_label$gene, levels=rev(rownames(mat_label)))

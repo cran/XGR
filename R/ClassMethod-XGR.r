@@ -22,7 +22,7 @@
 #' # Load the library
 #' library(XGR)
 #' }
-#' RData.location <- "http://galahad.well.ox.ac.uk/bigdata_dev"
+#' RData.location <- "http://galahad.well.ox.ac.uk/bigdata"
 #' \dontrun{
 #' eTerm(term_info, annotation, g, data, background, overlap, fc, zscore, pvalue, adjp, cross)
 #' }
@@ -68,7 +68,7 @@ print.eTerm <- function(x, ...) {
 #' # Load the library
 #' library(XGR)
 #' }
-#' RData.location <- "http://galahad.well.ox.ac.uk/bigdata_dev"
+#' RData.location <- "http://galahad.well.ox.ac.uk/bigdata"
 #' \dontrun{
 #' mSeed(GR, Gene, Link)
 #' }
@@ -119,7 +119,7 @@ print.mSeed <- function(x, ...) {
 #' # Load the library
 #' library(XGR)
 #' }
-#' RData.location <- "http://galahad.well.ox.ac.uk/bigdata_dev"
+#' RData.location <- "http://galahad.well.ox.ac.uk/bigdata"
 #' \dontrun{
 #' ls_eTerm(df, mat, gp)
 #' }
@@ -164,7 +164,7 @@ print.ls_eTerm <- function(x, ...) {
 #' # Load the library
 #' library(XGR)
 #' }
-#' RData.location <- "http://galahad.well.ox.ac.uk/bigdata_dev"
+#' RData.location <- "http://galahad.well.ox.ac.uk/bigdata"
 #' \dontrun{
 #' cPath(ig_paths, gp_paths, gp_heatmap, ig_subg)
 #' }
@@ -190,5 +190,140 @@ print.cPath <- function(x, ...) {
 	cat("\n--------------------------------------------------\n")
 	cat("$ig_paths$enrichment:\n")
 	print(x$ig_paths$enrichment[1:min(2,nrow(x$ig_paths$enrichment)),2:13], row.names=FALSE)
+	cat("......\n")
+}
+
+######################################################################
+# bLD
+######################################################################
+#' @title Definition for S3 class \code{bLD}
+#' @description \code{bLD} has 2 components: best, block.
+#' @param best a GR object
+#' @param block a GRL object
+#' @return an object of S3 class \code{bLD}
+#' @keywords S3 classes
+#' @export
+#' @examples
+#' \dontrun{
+#' # Load the library
+#' library(XGR)
+#' }
+#' RData.location <- "http://galahad.well.ox.ac.uk/bigdata"
+#' \dontrun{
+#' bLD(best, block)
+#' }
+bLD <- function(best, block){
+	## integrity checks
+	if(class(best)!='GRanges' | class(block)!='GRangesList'){
+		stop("The S3 class 'bLD' object failed to pass integrity checks!\n")
+	}
+	value <- list(best=best, block=block)
+	class(value) <- "bLD"
+	return(value)
+}
+#' @param x an object of class \code{bLD}
+#' @param ... other parameters
+#' @rdname bLD
+#' @export
+print.bLD <- function(x, ...) {
+	cat(sprintf("An object of S3 class '%s', with %d components:", class(x), length(names(x))), "\n", sep="")
+	cat(sprintf("  $best: a GR object or NULL"), "\n", sep="")
+	cat(sprintf("  $block: a GRL object or NULL"), "\n", sep="")
+	cat("\n--------------------------------------------------\n")
+	cat("$best:\n")
+	print(head(x$best,1))
+	cat("......\n")
+	cat("$block:\n")
+	print(x$block)
+	cat("......\n")
+}
+
+######################################################################
+# aOnto
+######################################################################
+#' @title Definition for S3 class \code{aOnto}
+#' @description \code{aOnto} has 2 components: g, anno.
+#' @param g an igraph object
+#' @param anno a list
+#' @return an object of S3 class \code{aOnto}
+#' @keywords S3 classes
+#' @export
+#' @examples
+#' \dontrun{
+#' # Load the library
+#' library(XGR)
+#' }
+#' RData.location <- "http://galahad.well.ox.ac.uk/bigdata"
+#' \dontrun{
+#' aOnto(g, anno)
+#' }
+aOnto <- function(g, anno){
+	## integrity checks
+	if(class(g)!='igraph' | class(anno)!='list'){
+		stop("The S3 class 'aOnto' object failed to pass integrity checks!\n")
+	}
+	value <- list(g=g, anno=anno)
+	class(value) <- "aOnto"
+	return(value)
+}
+#' @param x an object of class \code{aOnto}
+#' @param ... other parameters
+#' @rdname aOnto
+#' @export
+print.aOnto <- function(x, ...) {
+	cat(sprintf("An object of S3 class '%s', with %d components:", class(x), length(names(x))), "\n", sep="")
+	cat(sprintf("  $g: an igraph object or NULL"), "\n", sep="")
+	cat(sprintf("  $anno: a list with %d length or NULL", length(x$anno)), "\n", sep="")
+	
+	cat("\n--------------------------------------------------\n")
+	cat("$g:\n")
+	print(x$g)
+	cat("......\n")
+}
+
+######################################################################
+# DR
+######################################################################
+#' @title Definition for S3 class \code{DR}
+#' @description \code{DR} has 3 components: df, index, gp.
+#' @param df a data frame
+#' @param index a data frame
+#' @param gp a ggplot object
+#' @return an object of S3 class \code{DR}
+#' @keywords S3 classes
+#' @export
+#' @examples
+#' \dontrun{
+#' # Load the library
+#' library(XGR)
+#' }
+#' RData.location <- "http://galahad.well.ox.ac.uk/bigdata"
+#' \dontrun{
+#' DR(df, index, gp)
+#' }
+DR <- function(df, index, gp){
+	## integrity checks
+	if(class(df)!='data.frame' | class(index)!='data.frame' | any(class(gp)!='ggplot')){
+		stop("The S3 class 'DR' object failed to pass integrity checks!\n")
+	}
+	value <- list(df=df, index=index, gp=gp)
+	class(value) <- "DR"
+	return(value)
+}
+#' @param x an object of class \code{DR}
+#' @param ... other parameters
+#' @rdname DR
+#' @export
+print.DR <- function(x, ...) {
+	cat(sprintf("An object of S3 class '%s', with %d components:", class(x), length(names(x))), "\n", sep="")
+	cat(sprintf("  $df: a data frame of %d rows X %d columns", dim(x$df)[1],dim(x$df)[2]), "\n", sep="")
+	cat(sprintf("  $index: a data frame of %d rows X %d columns", dim(x$index)[1],dim(x$index)[2]), "\n", sep="")
+	cat(sprintf("  $gp: a ggplot object"), "\n", sep="")
+	cat("\n--------------------------------------------------\n")
+	cat("$df:\n")
+	print(head(x$df,2))
+	cat("......\n")
+	cat("$index:\n")
+	print(head(x$index,2))
 	cat("......\n")
 }

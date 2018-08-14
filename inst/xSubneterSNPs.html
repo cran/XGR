@@ -23,8 +23,8 @@ significance of input SNPs. It returns an object of class &quot;igraph&quot;.
 xSubneterSNPs(data, include.LD = NA, LD.customised = NULL, LD.r2 = 0.8,
 significance.threshold = 5e-05, score.cap = 10, distance.max = 2e+05,
 decay.kernel = c("slow", "linear", "rapid", "constant"),
-decay.exponent = 2, GR.SNP = c("dbSNP_GWAS", "dbSNP_Common"),
-GR.Gene = c("UCSC_knownGene", "UCSC_knownCanonical"),
+decay.exponent = 2, GR.SNP = c("dbSNP_GWAS", "dbSNP_Common",
+"dbSNP_Single"), GR.Gene = c("UCSC_knownGene", "UCSC_knownCanonical"),
 scoring.scheme = c("max", "sum", "sequential"),
 network = c("STRING_highest", "STRING_high", "STRING_medium",
 "STRING_low",
@@ -269,7 +269,7 @@ highly scored genes as possible but a few less scored genes as linkers.
 ## Not run: 
 # Load the XGR package and specify the location of built-in data
 library(XGR)
-RData.location &lt;- "http://galahad.well.ox.ac.uk/bigdata_dev/"
+RData.location &lt;- "http://galahad.well.ox.ac.uk/bigdata/"
 
 # a) provide the seed SNPs with the weight info
 ## load ImmunoBase

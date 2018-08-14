@@ -22,7 +22,7 @@
 #' \dontrun{
 #' # Load the XGR package and specify the location of built-in data
 #' library(XGR)
-#' RData.location <- "http://galahad.well.ox.ac.uk/bigdata_dev/"
+#' RData.location <- "http://galahad.well.ox.ac.uk/bigdata/"
 #' 
 #' # 1) load eQTL mapping results: cis-eQTLs significantly induced by IFN
 #' cis <- xRDataLoader(RData.customised='JKscience_TS2A', RData.location=RData.location)
@@ -103,7 +103,11 @@ xEnrichBarplot <- function(eTerm, top_num=10, displayBy=c("fc","adjp","fdr","zsc
 		df <- df %>% dplyr::arrange(direction, desc(adjp), zscore) %>% dplyr::mutate(height=-1*log10(adjp)) %>% dplyr::mutate(hjust=1)
 		df$name <- factor(df$name, levels=df$name)
 		####
-		df$height[is.infinite(df$height)] <- max(df$height[!is.infinite(df$height)])
+		if(length(df$height[!is.infinite(df$height)])==0){
+			df$height <- 10
+		}else{
+			df$height[is.infinite(df$height)] <- max(df$height[!is.infinite(df$height)])
+		}
 		####
 		p <- ggplot(df, aes(x=name, y=height))
 		p <- p + ylab(expression(paste("Enrichment significance: ", -log[10]("FDR"))))
@@ -118,7 +122,11 @@ xEnrichBarplot <- function(eTerm, top_num=10, displayBy=c("fc","adjp","fdr","zsc
 		df <- df %>% dplyr::arrange(direction, desc(pvalue), zscore) %>%  dplyr::mutate(height=-1*log10(pvalue)) %>% dplyr::mutate(hjust=1)
 		df$name <- factor(df$name, levels=df$name)
 		####
-		df$height[is.infinite(df$height)] <- max(df$height[!is.infinite(df$height)])
+		if(length(df$height[!is.infinite(df$height)])==0){
+			df$height <- 10
+		}else{
+			df$height[is.infinite(df$height)] <- max(df$height[!is.infinite(df$height)])
+		}
 		####
 		p <- ggplot(df, aes(x=name, y=height))
 		p <- p + ylab(expression(paste("Enrichment significance: ", -log[10]("p-value"))))

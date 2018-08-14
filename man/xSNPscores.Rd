@@ -9,7 +9,7 @@ significance.threshold = 5e-05, score.cap = 10, verbose = T,
 RData.location = "http://galahad.well.ox.ac.uk/bigdata")
 }
 \arguments{
-\item{data}{a named input vector containing the sinificance level for
+\item{data}{a named input vector containing the significance level for
 nodes (dbSNP). For this named vector, the element names are dbSNP
 (starting with rs or in the format of 'chrN:xxx', where N is either
 1-22 or X, xxx is number; for example, 'chr16:28525386'), the element
@@ -79,7 +79,7 @@ None
 # Load the XGR package and specify the location of built-in data
 library(XGR)
 }
-RData.location <- "http://galahad.well.ox.ac.uk/bigdata_dev"
+RData.location <- "http://galahad.well.ox.ac.uk/bigdata"
 
 \dontrun{
 # a) provide the seed SNPs with the significance info

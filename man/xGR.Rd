@@ -5,7 +5,8 @@
 \title{Function to create a GRanges object given a list of genomic regions}
 \usage{
 xGR(data, format = c("chr:start-end", "data.frame", "bed", "GRanges"),
-build.conversion = c(NA, "hg38.to.hg19", "hg18.to.hg19"), verbose = T,
+build.conversion = c(NA, "hg38.to.hg19", "hg18.to.hg19"), add.name = T,
+remove.mcol = F, include.strand = F, verbose = T,
 RData.location = "http://galahad.well.ox.ac.uk/bigdata")
 }
 \arguments{
@@ -30,6 +31,15 @@ this case, formatted as 'GRanges')}
 another. The conversions supported are "hg38.to.hg19" and
 "hg18.to.hg19". By default it is NA (no need to do so)}
 
+\item{add.name}{logical to add names. By default, it sets to true}
+
+\item{remove.mcol}{logical to remove meta-columns. By default, it sets
+to false}
+
+\item{include.strand}{logical to include strand. By default, it sets to
+false. It only works when the format is "data.frame" or "bed" and the
+input data has 4 columns}
+
 \item{verbose}{logical to indicate whether the messages will be
 displayed in the screen. By default, it sets to true for display}
 
@@ -47,7 +57,7 @@ genomic regions.
 \dontrun{
 # Load the XGR package and specify the location of built-in data
 library(XGR)
-RData.location <- "http://galahad.well.ox.ac.uk/bigdata_dev"
+RData.location <- "http://galahad.well.ox.ac.uk/bigdata"
 
 # a) provide the genomic regions
 ## load ImmunoBase
