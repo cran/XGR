@@ -5,22 +5,29 @@
 \title{Function to define ontology and its annotations}
 \usage{
 xDefineOntology(ontology = c(NA, "GOBP", "GOMF", "GOCC", "PSG", "PS",
-"PS2",
-"SF", "Pfam", "DO", "HPPA", "HPMI", "HPCM", "HPMA", "MP", "EF",
-"MsigdbH",
-"MsigdbC1", "MsigdbC2CGP", "MsigdbC2CPall", "MsigdbC2CP",
-"MsigdbC2KEGG",
-"MsigdbC2REACTOME", "MsigdbC2BIOCARTA", "MsigdbC3TFT", "MsigdbC3MIR",
-"MsigdbC4CGN", "MsigdbC4CM", "MsigdbC5BP", "MsigdbC5MF", "MsigdbC5CC",
-"MsigdbC6", "MsigdbC7", "DGIdb", "GTExV4", "GTExV6p", "GTExV7",
-"CreedsDisease", "CreedsDiseaseUP", "CreedsDiseaseDN", "CreedsDrug",
-"CreedsDrugUP", "CreedsDrugDN", "CreedsGene", "CreedsGeneUP",
-"CreedsGeneDN", "KEGG", "KEGGmetabolism", "KEGGgenetic",
-"KEGGenvironmental",
-"KEGGcellular", "KEGGorganismal", "KEGGdisease", "REACTOME",
-"REACTOME_ImmuneSystem", "REACTOME_SignalTransduction", "CGL",
-"SIFTS2GOBP",
-"SIFTS2GOMF", "SIFTS2GOCC"), verbose = T,
+"PS2", "SF", "Pfam", "DO", "HPPA", "HPMI", "HPCM", "HPMA", "MP", "EF",
+"MsigdbH", "MsigdbC1", "MsigdbC2CGP", "MsigdbC2CPall", "MsigdbC2CP",
+"MsigdbC2KEGG", "MsigdbC2REACTOME", "MsigdbC2BIOCARTA", "MsigdbC3TFT",
+"MsigdbC3MIR", "MsigdbC4CGN", "MsigdbC4CM", "MsigdbC5BP", "MsigdbC5MF",
+"MsigdbC5CC", "MsigdbC6", "MsigdbC7", "DGIdb", "GTExV4", "GTExV6p",
+"GTExV7", "CreedsDisease", "CreedsDiseaseUP", "CreedsDiseaseDN",
+"CreedsDrug", "CreedsDrugUP", "CreedsDrugDN", "CreedsGene",
+"CreedsGeneUP", "CreedsGeneDN", "KEGG", "KEGGmetabolism",
+"KEGGgenetic",
+"KEGGenvironmental", "KEGGcellular", "KEGGorganismal", "KEGGdisease",
+"REACTOME", "REACTOME_ImmuneSystem", "REACTOME_SignalTransduction",
+"CGL", "SIFTS2GOBP", "SIFTS2GOMF", "SIFTS2GOCC", "EnrichrARCHS4Cells",
+"EnrichrARCHS4Tissues", "EnrichrHumanGeneAtlas",
+"EnrichrTissueHumanProteomeMap", "EnrichrTissueProteomicsDB",
+"EnrichrAchillesFitnessD", "EnrichrAchillesFitnessI", "EnrichrDSigDB",
+"EnrichrOMIM", "EnrichrOMIMexpanded", "EnrichrdbGaP",
+"EnrichrJensenDiseases", "EnrichrJensenTissues", "EnrichrBioCarta",
+"EnrichrKEGG", "EnrichrNCIpathway", "EnrichrPanther",
+"EnrichrReactome",
+"EnrichrWikiPathways", "EnrichrhuMAP", "EnrichrChEA",
+"EnrichrConsensusTFs", "EnrichrEncodeTF", "EnrichrTFlof",
+"EnrichrTFpert"), ontology.customised = NULL,
+anno.identity = c("GeneID", "Symbol"), verbose = T,
 RData.location = "http://galahad.well.ox.ac.uk/bigdata")
 }
 \arguments{
@@ -64,7 +71,16 @@ Systems' pathways, and 'KEGGdisease' for 'Human Diseases' pathways),
 "MsigdbC4CM", "MsigdbC5BP", "MsigdbC5MF", "MsigdbC5CC", "MsigdbC6",
 "MsigdbC7"), and the SIFTS database ("SIFTS2GOBP" for Gene Ontology
 Biological Process, "SIFTS2GOMF" for Gene Ontology Molecular Function,
-"SIFTS2GOCC" for Gene Ontology Cellular Component)}
+"SIFTS2GOCC" for Gene Ontology Cellular Component), and 'EnrichrX' for
+Enrichr libraries (where X can be
+"AchillesFitnessD","AchillesFitnessI","ARCHS4Cells","ARCHS4Tissues","BioCarta","ChEA","ConsensusTFs","dbGaP","DSigDB","EncodeTF","HumanGeneAtlas","huMAP","JensenDiseases","JensenTissues","KEGG","NCIpathway","OMIM","OMIMexpanded","Panther","Reactome","TFlof","TFpert","TissueHumanProteomeMap","TissueProteomicsDB","WikiPathways")}
+
+\item{ontology.customised}{an object 'GS'. Higher priority over
+'ontology' above. Required, otherwise it will return NULL}
+
+\item{anno.identity}{identity for gene annotations. It can be "GeneID"
+for Gene ID and "Symbol" for gene symbol. Does not support the
+customised ontology}
 
 \item{verbose}{logical to indicate whether the messages will be
 displayed in the screen. By default, it sets to false for no display}
@@ -73,8 +89,9 @@ displayed in the screen. By default, it sets to false for no display}
 RData files. See \code{\link{xRDataLoader}} for details}
 }
 \value{
-an object of class "aOnto", a list with two components (an igraph
-object 'g' and a list 'anno')
+an object of class "aOnto", a list with two components: an igraph
+object 'g' (with graph attributes 'ontology' and 'type' [either 'dag'
+or 'iso']) and a list 'anno'
 }
 \description{
 \code{xDefineOntology} is supposed to define ontology and its
@@ -90,9 +107,17 @@ RData.location <- "http://galahad.well.ox.ac.uk/bigdata"
 
 \dontrun{
 aOnto <- xDefineOntology("HPPA", RData.location=RData.location)
+
+# only support internally (please contact us if you would like to use)
 aOnto <- xDefineOntology("REACTOME_ImmuneSystem",
 RData.location=RData.location)
+aOnto <- xDefineOntology("KEGGenvironmental",
+RData.location=RData.location)
 aOnto <- xDefineOntology("CGL", RData.location=RData.location)
+
+# advanced use: customisation
+GS <- xRDataLoader('org.Mm.egKEGG', RData.location=RData.location)
+res <- xDefineOntology(ontology.customised=GS)
 }
 }
 \seealso{

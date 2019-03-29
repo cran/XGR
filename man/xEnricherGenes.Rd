@@ -5,16 +5,15 @@
 \title{Function to conduct enrichment analysis given a list of genes and the ontology in query}
 \usage{
 xEnricherGenes(data, background = NULL, check.symbol.identity = F,
-ontology = NA, size.range = c(10, 2000), min.overlap = 3,
-which.distance = NULL, test = c("hypergeo", "fisher", "binomial"),
-background.annotatable.only = NULL, p.tail = c("one-tail",
-"two-tails"),
-p.adjust.method = c("BH", "BY", "bonferroni", "holm", "hochberg",
-"hommel"),
-ontology.algorithm = c("none", "pc", "elim", "lea"), elim.pvalue =
-0.01,
-lea.depth = 2, path.mode = c("all_paths", "shortest_paths",
-"all_shortest_paths"), true.path.rule = F, verbose = T, silent = FALSE,
+ontology = NA, ontology.customised = NULL, size.range = c(10,
+2000), min.overlap = 5, which.distance = NULL, test = c("fisher",
+"hypergeo", "binomial"), background.annotatable.only = NULL,
+p.tail = c("one-tail", "two-tails"), p.adjust.method = c("BH", "BY",
+"bonferroni", "holm", "hochberg", "hommel"),
+ontology.algorithm = c("none", "pc", "elim", "lea"),
+elim.pvalue = 0.01, lea.depth = 2, path.mode = c("all_paths",
+"shortest_paths", "all_shortest_paths"), true.path.rule = F,
+verbose = T, silent = F,
 RData.location = "http://galahad.well.ox.ac.uk/bigdata")
 }
 \arguments{
@@ -31,6 +30,9 @@ gene symbols. By default, it sets to false}
 \item{ontology}{the ontology supported currently. By default, it is
 'NA' to disable this option. Pre-built ontology and annotation data are
 detailed in \code{\link{xDefineOntology}}.}
+
+\item{ontology.customised}{an object 'GS'. Higher priority over
+'ontology' above. Required, otherwise it will return NULL}
 
 \item{size.range}{the minimum and maximum size of members of each term
 in consideration. By default, it sets to a minimum of 10 but no more
@@ -190,19 +192,19 @@ library(XGR)
 RData.location <- "http://galahad.well.ox.ac.uk/bigdata/"
 
 # Gene-based enrichment analysis using REACTOME pathways
-# a) provide the input Genes of interest (eg 100 randomly chosen human genes)
+# a) provide the input Genes of interest (eg 500 randomly chosen human genes)
 ## load human genes
 org.Hs.eg <- xRDataLoader(RData='org.Hs.eg',
 RData.location=RData.location)
 set.seed(825)
-data <- as.character(sample(org.Hs.eg$gene_info$Symbol, 100))
+data <- as.character(sample(org.Hs.eg$gene_info$Symbol, 500))
 data
 
 # optionally, provide the test background (if not provided, all human genes)
 #background <- as.character(org.Hs.eg$gene_info$Symbol)
 
 # b) perform enrichment analysis
-eTerm <- xEnricherGenes(data=data, ontology="REACTOME",
+eTerm <- xEnricherGenes(data=data, ontology="MsigdbC2REACTOME",
 RData.location=RData.location)
 
 # c) view enrichment results for the top significant terms
@@ -216,8 +218,8 @@ utils::write.table(output, file="REACTOME_enrichments.txt", sep="\\t",
 row.names=FALSE)
 
 # e) barplot of significant enrichment results
-bp <- xEnrichBarplot(eTerm, top_num="auto", displayBy="adjp")
-print(bp)
+gp <- xEnrichBarplot(eTerm, top_num="auto", displayBy="adjp")
+print(gp)
 
 # f) visualise the top 10 significant terms in the ontology hierarchy
 # color-code terms according to the adjust p-values (taking the form of 10-based negative logarithm)

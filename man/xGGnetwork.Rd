@@ -7,17 +7,16 @@
 xGGnetwork(g, node.label = NULL, label.wrap.width = NULL,
 label.wrap.lineheight = 0.8, node.label.size = NULL,
 node.label.fontface = "plain", node.label.color = "darkblue",
-node.label.alpha = 0.8, node.label.padding = 1, node.label.arrow =
-0.01,
-node.label.force = 1, node.shape = 19, node.shape.title = NULL,
-node.xcoord = NULL, node.ycoord = NULL, node.color = NULL,
-node.color.title = NULL, colormap = "grey-orange-darkred", ncolors =
-64,
-zlim = NULL, na.color = "grey80", node.size = NULL,
+node.label.alpha = 0.8, node.label.padding = 1,
+node.label.arrow = 0.01, node.label.force = 1, node.shape = 19,
+node.shape.title = NULL, node.xcoord = NULL, node.ycoord = NULL,
+node.color = NULL, node.color.title = NULL,
+colormap = "grey-orange-darkred", ncolors = 64, zlim = NULL,
+na.color = "grey80", node.color.alpha = 1, node.size = NULL,
 node.size.title = NULL, node.size.range = c(1, 4), slim = NULL,
 title = "", edge.size = 0.5, edge.color = "black",
 edge.color.alpha = 0.5, edge.curve = 0.1, edge.arrow = 2,
-edge.arrow.gap = 0.02)
+edge.arrow.gap = 0.02, ncolumns = NULL)
 }
 \arguments{
 \item{g}{an object of class "igraph". For an advanced use, it can be a
@@ -92,6 +91,9 @@ plotted}
 
 \item{na.color}{the color for NAs. By default, it is 'grey80'}
 
+\item{node.color.alpha}{the 0-1 value specifying transparency of node
+colors}
+
 \item{node.size}{either a vector specifying node size or a character
 specifying which node attribute used for the node size}
 
@@ -106,7 +108,8 @@ plotted}
 \item{title}{a character specifying the title for the plot}
 
 \item{edge.size}{a numeric value specifying the edge size. By default,
-it is 0.5}
+it is 0.5. It can be a character specifying which edge attribute
+defining the edge colors (though without the legend)}
 
 \item{edge.color}{a character specifying which edge attribute defining
 the the edge colors}
@@ -121,6 +124,10 @@ straight line}
 default, it is 2}
 
 \item{edge.arrow.gap}{a gap between the arrow and the node}
+
+\item{ncolumns}{an integer specifying the number of columns for
+facet_wrap. By defaul, it is NULL (decided on according to the number
+of groups that will be visualised)}
 }
 \value{
 a ggplot object, appended with 'data_nodes' and 'data_edges'
@@ -232,6 +239,17 @@ node.color.title='5-star\\nrating', colormap='white-yellow-red',
 ncolors=64, zlim=c(0,5), node.size.range=5,
 edge.color="orange",edge.color.alpha=0.3,edge.curve=0,edge.arrow.gap=0.02,
 title='')
+
+###########################
+# use edge weight to color/size edges (without legends)
+# edge color
+#E(g)$color <- xColormap(colormap='RdYlBu', data=E(g)$weight)
+#E(g)$size <- (E(g)$weight - min(E(g)$weight)) / (max(E(g)$weight) - min(E(g)$weight))
+e.color <- subset(gp$data, !is.na(na.y))$e.color
+gp + ggnetwork::geom_edges(color=e.color, show.legend=FALSE)
+# edge size/thickness
+e.size <- subset(gp$data, !is.na(na.y))$e.size
+gp + ggnetwork::geom_edges(size=e.size, show.legend=FALSE)
 }
 }
 \seealso{

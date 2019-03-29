@@ -5,18 +5,20 @@
 \title{Function to visualise enrichment results using a forest plot}
 \usage{
 xEnrichForest(eTerm, top_num = 10, FDR.cutoff = 0.05, CI.one = T,
-colormap = "ggplot2.top", ncolors = 64, zlim = NULL, barwidth = 0.5,
-barheight = NULL, wrap.width = NULL, font.family = "sans",
-signature = TRUE, drop = F)
+colormap = "ggplot2.top", ncolors = 64, zlim = NULL,
+barwidth = 0.5, barheight = NULL, wrap.width = NULL,
+font.family = "sans", signature = FALSE, drop = F,
+sortBy = c("or", "adjp", "fdr", "pvalue", "zscore", "fc", "nAnno",
+"nOverlap", "none"))
 }
 \arguments{
 \item{eTerm}{an object of class "eTerm" or "ls_eTerm". Alterntively, it
 can be a data frame having all these columns (named as
 'group','ontology','name','adjp','or','CIl','CIu')}
 
-\item{top_num}{the number of the top terms (sorted according to OR). If
-it is 'auto', only the significant terms (see below FDR.cutoff) will be
-displayed}
+\item{top_num}{the number of the top terms (sorted according to OR).
+For the eTerm object, if it is 'auto' (for eTerm), only the significant
+terms (see below FDR.cutoff) will be displayed}
 
 \item{FDR.cutoff}{FDR cutoff used to declare the significant terms. By
 default, it is set to 0.05}
@@ -58,6 +60,14 @@ used to draw this graph}
 the data will automatically be dropped. If FALSE (by default), all
 factor levels will be shown, regardless of whether or not they appear
 in the data}
+
+\item{sortBy}{which statistics will be used for sorting and viewing
+gene sets (terms). It can be "adjp" or "fdr" for adjusted p value
+(FDR), "pvalue" for p value, "zscore" for enrichment z-score, "fc" for
+enrichment fold change, "nAnno" for the number of sets (terms),
+"nOverlap" for the number in overlaps, "or" for the odds ratio, and
+"none" for ordering according to ID of terms. It only works when the
+input is an eTerm object}
 }
 \value{
 an object of class "ggplot"

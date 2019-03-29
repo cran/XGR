@@ -5,15 +5,13 @@
 \title{Function to define genes from an input list of genomic regions given the crosslink info}
 \usage{
 xGR2xGenes(data, format = c("chr:start-end", "data.frame", "bed",
-"GRanges"),
-build.conversion = c(NA, "hg38.to.hg19", "hg18.to.hg19"),
+"GRanges"), build.conversion = c(NA, "hg38.to.hg19", "hg18.to.hg19"),
 crosslink = c("genehancer", "PCHiC_combined", "GTEx_V6p_combined",
 "nearby"), crosslink.customised = NULL, cdf.function = c("original",
 "empirical"), scoring = F, scoring.scheme = c("max", "sum",
-"sequential"),
-scoring.rescale = F, nearby.distance.max = 50000,
+"sequential"), scoring.rescale = F, nearby.distance.max = 50000,
 nearby.decay.kernel = c("rapid", "slow", "linear", "constant"),
-nearby.decay.exponent = 2, verbose = T,
+nearby.decay.exponent = 2, verbose = T, silent = F,
 RData.location = "http://galahad.well.ox.ac.uk/bigdata")
 }
 \arguments{
@@ -46,7 +44,9 @@ specify the relevant parameters 'nearby.distance.max',
 'PCHiC_combined' (conformation genes; PMID:27863249),
 'GTEx_V6p_combined' (eQTL genes; PMID:29022597),
 'eQTL_scRNAseq_combined' (eQTL genes; PMID:29610479),
-'eQTL_ImmuneCells_combined' (eQTL genes; PMID:29610479)}
+'eQTL_jpRNAseq_combined' (eQTL genes; PMID:28553958),
+'eQTL_ImmuneCells_combined' (eQTL genes;
+PMID:24604202,22446964,26151758,28248954,24013639)}
 
 \item{crosslink.customised}{the crosslink info with a score quantifying
 the link of a GR to a gene. A user-input matrix or data frame with 4
@@ -90,6 +90,10 @@ default, it sets to 2}
 \item{verbose}{logical to indicate whether the messages will be
 displayed in the screen. By default, it sets to true for display}
 
+\item{silent}{logical to indicate whether the messages will be silent
+completely. By default, it sets to false. If true, verbose will be
+forced to be false}
+
 \item{RData.location}{the characters to tell the location of built-in
 RData files. See \code{\link{xRDataLoader}} for details}
 }
@@ -123,8 +127,6 @@ genes and nearby genes (purely), though the user can customise it via
 }
 \examples{
 \dontrun{
-# Load the XGR package and specify the location of built-in data
-library(XGR)
 RData.location <- "http://galahad.well.ox.ac.uk/bigdata"
 
 # 1) provide the genomic regions

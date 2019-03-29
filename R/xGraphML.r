@@ -8,7 +8,7 @@
 #' @param node.label.size the node label size
 #' @param node.label.color the node label color
 #' @param node.tooltip either a vector used for node tooltips or a character specifying which node attribute used for the tooltips. If NULL (by default), node attribute 'name' will be used node lab
-#' @param node.link a string specifying hyperlink address. By default, it is NULL meaning no hyperlink
+#' @param node.link either a vector used for node link or a character specifying which node attribute used for the link
 #' @param node.xcoord a vector specifying x coordinates. If NULL, it will be created using igraph::layout_with_kk
 #' @param node.ycoord a vector specifying y coordinates. If NULL, it will be created using igraph::layout_with_kk
 #' @param node.color.na the color for nodes with NA. By default, it is '#dddddd'
@@ -24,6 +24,7 @@
 #' @param edge.color a character specifying the edge colors. By default, it is #00000033
 #' @param edge.width the edge width. By default, it is 1
 #' @param filename the without-extension part of the name of the output file. By default, it is 'xGraphML'
+#' @param verbose logical to indicate whether the messages will be displayed in the screen. By default, it sets to true for display
 #' @return
 #' invisible (a string storing graphml-formatted content). If the filename is not NULL, a graphml-formatted file is also output.
 #' @note none
@@ -60,10 +61,11 @@
 #' glayout <- igraph::layout_with_kk(ig)
 #' V(ig)$xcoord <- glayout[,1]
 #' V(ig)$ycoord <- glayout[,2]
-#' xGraphML(g=ig, node.label="name", node.tooltip="description", node.xcoord="xcoord", node.ycoord="ycoord", node.color="pattern", colormap="grey-orange-darkred", node.link="http://www.genecards.org/cgi-bin/carddisp.pl?gene=", nlegend=11, node.size=30, node.coord.scale=300)
+#' V(ig)$node.link <- paste0("http://www.genecards.org/cgi-bin/carddisp.pl?gene=", V(ig)$name)
+#' xGraphML(g=ig, node.label="name", node.tooltip="description", node.xcoord="xcoord", node.ycoord="ycoord", node.color="pattern", colormap="grey-orange-darkred", node.link="node.link", nlegend=11, node.size=30, node.coord.scale=300)
 #' }
 
-xGraphML <- function(g, node.label=NULL, label.wrap.width=NULL, node.label.size=12, node.label.color='#000000', node.tooltip=NULL, node.link=NULL, node.xcoord="xcoord", node.ycoord="ycoord", node.color.na='#dddddd', node.color=NULL, colormap='grey-orange-darkred', ncolors=64, nlegend=11, legend.label.size=10, legend.interval=0.05, zlim=NULL, node.size=30, node.coord.scale=300, edge.color="#00000033", edge.width=1, filename='xGraphML')
+xGraphML <- function(g, node.label=NULL, label.wrap.width=NULL, node.label.size=12, node.label.color='#000000', node.tooltip=NULL, node.link=NULL, node.xcoord="xcoord", node.ycoord="ycoord", node.color.na='#dddddd', node.color=NULL, colormap='grey-orange-darkred', ncolors=64, nlegend=11, legend.label.size=10, legend.interval=0.05, zlim=NULL, node.size=30, node.coord.scale=300, edge.color="#00000033", edge.width=1, filename='xGraphML', verbose=T)
 {
     
     if (class(g) != "igraph"){
@@ -160,7 +162,7 @@ xGraphML <- function(g, node.label=NULL, label.wrap.width=NULL, node.label.size=
 	}
 	node.label <- unlist(lapply(node.label, function(x) gsub('/','-',x)))
 	node.label <- unlist(lapply(node.label, function(x) gsub('&','-',x)))
-	
+
 	## text wrap
 	if(!is.null(label.wrap.width)){
 		width <- as.integer(label.wrap.width)
@@ -172,7 +174,8 @@ xGraphML <- function(g, node.label=NULL, label.wrap.width=NULL, node.label.size=
 					paste(y, collapse='\n')
 				}else if(length(y)>2){
 					#paste0(y[1], '...')
-					paste0(paste(y[1:2],collapse='\n'),'...' )
+					#paste0(paste(y[1:2],collapse='\n'),'...' )
+					paste(y,collapse='\n')
 				}else{
 					y
 				}
@@ -194,6 +197,16 @@ xGraphML <- function(g, node.label=NULL, label.wrap.width=NULL, node.label.size=
     }
     node.tooltip <- unlist(lapply(node.tooltip, function(x) gsub('/','-',x)))
     node.tooltip <- unlist(lapply(node.tooltip, function(x) gsub('&','-',x)))
+    
+    ## node.link (by default, the 'name' node attribute)
+    if(length(node.link)!=nnode){
+		if(!is.null(node.link)){
+			node.link <- igraph::vertex_attr(ig, node.link)
+		}
+		if(is.null(node.link)){
+			node.link <- igraph::vertex_attr(ig, 'name')
+		}
+    }
     
     ## node.size (by default, 30)
     if(length(node.size)!=nnode){
@@ -249,6 +262,7 @@ xGraphML <- function(g, node.label=NULL, label.wrap.width=NULL, node.label.size=
     df_nodes <- igraph::get.data.frame(ig, what="vertices")
     df_nodes$node.label <- node.label
     df_nodes$node.tooltip <- node.tooltip
+    df_nodes$node.link <- node.link
     #df_nodes$node.color <- node.color
     df_nodes$node.color <- paste0(node.color, 'cc')
     df_nodes$node.size <- node.size
@@ -268,7 +282,8 @@ xGraphML <- function(g, node.label=NULL, label.wrap.width=NULL, node.label.size=
     	#######
     	if(!is.null(node.link)){
 			k <- k+1
-			vec[k] <- paste0('<data key="d1"><![CDATA[', node.link, df_nodes$node.label[i], ']]></data>')
+			#vec[k] <- paste0('<data key="d1"><![CDATA[', node.link, df_nodes$node.label[i], ']]></data>')
+			vec[k] <- paste0('<data key="d1"><![CDATA[', df_nodes$node.link[i],']]></data>')
     	}
     	#######
     	
@@ -430,7 +445,9 @@ xGraphML <- function(g, node.label=NULL, label.wrap.width=NULL, node.label.size=
 		fileConn <- base::file(outputfile)
 		base::writeLines(output, fileConn)
 		base::close(fileConn)
-		message(sprintf("Congratulations! A file '%s' (in the directory %s) has been created!", outputfile, getwd()), appendLF=T)
+		if(verbose){
+			message(sprintf("Congratulations! A file '%s' (in the directory %s) has been created!", outputfile, getwd()), appendLF=T)
+		}
 		############################
     }
     

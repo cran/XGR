@@ -4,21 +4,22 @@
 \alias{xGR2xGeneAnno}
 \title{Function to conduct region-based enrichment analysis via crosslinked genes}
 \usage{
-xGR2xGeneAnno(data, background = NULL, format = c("data.frame", "bed",
-"chr:start-end", "GRanges"), build.conversion = c(NA, "hg38.to.hg19",
-"hg18.to.hg19"), crosslink = c("genehancer", "PCHiC_combined",
-"GTEx_V6p_combined", "nearby"), crosslink.customised = NULL,
-crosslink.top = NULL, nearby.distance.max = 50000,
-nearby.decay.kernel = c("rapid", "slow", "linear", "constant"),
-nearby.decay.exponent = 2, ontology = NA, size.range = c(10, 2000),
-min.overlap = 3, which.distance = NULL, test = c("hypergeo", "fisher",
-"binomial"), background.annotatable.only = NULL, p.tail = c("one-tail",
+xGR2xGeneAnno(data, background = NULL, format = c("chr:start-end",
+"data.frame", "bed", "GRanges"), build.conversion = c(NA,
+"hg38.to.hg19", "hg18.to.hg19"), crosslink = c("genehancer",
+"PCHiC_combined", "GTEx_V6p_combined", "nearby"),
+crosslink.customised = NULL, crosslink.top = NULL,
+nearby.distance.max = 50000, nearby.decay.kernel = c("rapid", "slow",
+"linear", "constant"), nearby.decay.exponent = 2, ontology = NA,
+size.range = c(10, 2000), min.overlap = 5, which.distance = NULL,
+test = c("hypergeo", "fisher", "binomial"),
+background.annotatable.only = NULL, p.tail = c("one-tail",
 "two-tails"), p.adjust.method = c("BH", "BY", "bonferroni", "holm",
 "hochberg", "hommel"), ontology.algorithm = c("none", "pc", "elim",
-"lea"),
-elim.pvalue = 0.01, lea.depth = 2, path.mode = c("all_paths",
-"shortest_paths", "all_shortest_paths"), true.path.rule = F, verbose =
-T,
+"lea"), elim.pvalue = 0.01, lea.depth = 2,
+path.mode = c("all_paths", "shortest_paths", "all_shortest_paths"),
+true.path.rule = F, out.evidence = T, out.evidence.plot = F,
+verbose = T, silent = F,
 RData.location = "http://galahad.well.ox.ac.uk/bigdata")
 }
 \arguments{
@@ -153,8 +154,18 @@ for each node, find all shortest paths with the equal lengths)}
 should be applied to propagate annotations. By default, it sets to
 false}
 
+\item{out.evidence}{logical to indicate whether the evidence should be
+output. By default, it sets to true}
+
+\item{out.evidence.plot}{logical to indicate whether the evidence
+should be plot. By default, it sets to false}
+
 \item{verbose}{logical to indicate whether the messages will be
 displayed in the screen. By default, it sets to false for no display}
+
+\item{silent}{logical to indicate whether the messages will be silent
+completely. By default, it sets to false. If true, verbose will be
+forced to be false}
 
 \item{RData.location}{the characters to tell the location of built-in
 RData files. See \code{\link{xRDataLoader}} for details}
@@ -192,9 +203,14 @@ for the odds ratio}
 for the overlapped-members observed in an individaul term, and
 off-diagnal cell for the overlapped-members shared betwene two terms}
 \item{\code{call}: the call that produced this result}
+\item{\code{crosslink}: a data frame with 3 columns ('Gene' for
+crosslinked genes, 'Score' for gene score summarised over its list of
+crosslinked GR, and 'Pval' for p-value-like significance level
+transformed from gene scores); restricted by crosslink.top}
 \item{\code{evidence}: a data frame with 3 columns ('GR' for genomic
 regions, 'Gene' for crosslinked genes, and 'Score' for the score
-between the gene and the GR)}
+between the gene and the GR); restricted by crosslink.top and only
+works when out.evidence is true}
 \item{\code{gp_evidence}: a ggplot object for evidence data}
 }
 }
@@ -237,8 +253,6 @@ maximum of both p-values in these two calculations.}
 }
 \examples{
 \dontrun{
-# Load the XGR package and specify the location of built-in data
-library(XGR)
 RData.location <- "http://galahad.well.ox.ac.uk/bigdata"
 
 # 1) provide the genomic regions

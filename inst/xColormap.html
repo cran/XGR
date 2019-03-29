@@ -21,10 +21,18 @@ colors interpolate the given colormap.
 xColormap(colormap = c("bwr", "jet", "gbr", "wyr", "br", "yr",
 "rainbow",
 "wb", "heat", "terrain", "topo", "cm", "ggplot2", "jet.top",
-"jet.bottom",
-"jet.both", "spectral", "ggplot2.top", "ggplot2.bottom",
-"ggplot2.both",
-"RdYlBu"), interpolate = c("spline", "linear"))
+"jet.bottom", "jet.both", "spectral", "ggplot2.top", "ggplot2.bottom",
+"ggplot2.both", "RdYlBu", "brewer.BrBG", "brewer.PiYG", "brewer.PRGn",
+"brewer.PuOr", "brewer.RdBu", "brewer.RdGy", "brewer.RdYlBu",
+"brewer.RdYlGn", "brewer.Spectral", "brewer.Blues", "brewer.BuGn",
+"brewer.BuPu", "brewer.GnBu", "brewer.Greens", "brewer.Greys",
+"brewer.Oranges", "brewer.OrRd", "brewer.PuBu", "brewer.PuBuGn",
+"brewer.PuRd", "brewer.Purples", "brewer.RdPu", "brewer.Reds",
+"brewer.YlGn", "brewer.YlGnBu", "brewer.YlOrBr", "brewer.YlOrRd",
+"rainbow_hcl", "heat_hcl", "terrain_hcl", "diverge_hcl", "hcl_br",
+"hcl_bp", "hcl_bb", "hcl_gp", "hcl_go", "hcl_cp", "hcl_cy", "hcl_co",
+"sci_jco"), interpolate = c("spline", "linear"), data = NULL,
+zlim = NULL)
 </pre>
 
 
@@ -44,24 +52,37 @@ names, e.g. &quot;lightyellow-orange&quot; (by default), &quot;blue-black-yellow
 &quot;royalblue-white-sandybrown&quot;, &quot;darkgreen-white-darkviolet&quot;. A list of
 standard color names can be found in
 <a href="http://html-color-codes.info/color-names">http://html-color-codes.info/color-names</a>. It can also be a
-function of 'colorRampPalette'</p>
+function of 'colorRampPalette'. It can also be &quot;brewer.*&quot; (RColorBrewer
+palette; see RColorBrewer::display.brewer.all()). It can be colorspace
+defaults (&quot;rainbow_hcl&quot;,&quot;heat_hcl&quot;,&quot;terrain_hcl&quot;,&quot;diverge_hcl&quot;) or
+other useful ones
+(&quot;hcl_br&quot;,&quot;hcl_bp&quot;,&quot;hcl_bb&quot;,&quot;hcl_gp&quot;,&quot;hcl_go&quot;,&quot;hcl_cp&quot;,&quot;hcl_cy&quot;,&quot;hcl_co&quot;)</p>
 </td></tr>
 <tr valign="top"><td><code>interpolate</code></td>
 <td>
 <p>use spline or linear interpolation</p>
+</td></tr>
+<tr valign="top"><td><code>data</code></td>
+<td>
+<p>NULL or a numeric vector</p>
+</td></tr>
+<tr valign="top"><td><code>zlim</code></td>
+<td>
+<p>the minimum and maximum z/patttern values for which colors
+should be plotted, defaulting to the range of the finite values of z.
+Each of the given colors will be used to color an equispaced interval
+of this range. The midpoints of the intervals cover the range, so that
+values just outside the range will be plotted</p>
 </td></tr>
 </table>
 
 
 <h3>Value</h3>
 
-
-<ul>
-<li><p><code>palette.name</code>: a function that takes an integer argument
-for generating that number of colors interpolating the given sequence
+<p>palette.name (a function that takes an integer argument for generating
+that number of colors interpolating the given sequence) or mapped
+colors if data is provided.
 </p>
-</li></ul>
-
 
 
 <h3>Note</h3>
@@ -129,6 +150,9 @@ palette.name(3)
 palette.name &lt;- xColormap(colormap="RdYlBu")
 # use the return function "palette.name" to generate 3 default colors used by ggplot2
 palette.name(3)
+
+# 4) return mapped colors
+xColormap(colormap="RdYlBu", data=runif(5))
 </pre>
 
 

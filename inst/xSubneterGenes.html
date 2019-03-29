@@ -30,10 +30,11 @@ xSubneterGenes(data, network = c("STRING_highest", "STRING_high",
 "KEGG_disease", "REACTOME"), STRING.only = c(NA, "neighborhood_score",
 "fusion_score", "cooccurence_score", "coexpression_score",
 "experimental_score", "database_score", "textmining_score")[1],
-network.customised = NULL, seed.genes = T, subnet.significance = 0.01,
-subnet.size = NULL, test.permutation = F, num.permutation = 100,
-respect = c("none", "degree"), aggregateBy = c("Ztransform", "fishers",
-"logistic", "orderStatistic"), verbose = T,
+network.customised = NULL, seed.genes = T,
+subnet.significance = 0.01, subnet.size = NULL,
+test.permutation = F, num.permutation = 100, respect = c("none",
+"degree"), aggregateBy = c("Ztransform", "fishers", "logistic",
+"orderStatistic"), verbose = T, silent = F,
 RData.location = "http://galahad.well.ox.ac.uk/bigdata")
 </pre>
 
@@ -170,6 +171,12 @@ provides a compromise between these two. Notably, the aggregate methods
 <p>logical to indicate whether the messages will be
 displayed in the screen. By default, it sets to true for display</p>
 </td></tr>
+<tr valign="top"><td><code>silent</code></td>
+<td>
+<p>logical to indicate whether the messages will be silent
+completely. By default, it sets to false. If true, verbose will be
+forced to be false</p>
+</td></tr>
 <tr valign="top"><td><code>RData.location</code></td>
 <td>
 <p>the characters to tell the location of built-in
@@ -183,7 +190,7 @@ RData files. See <code>xRDataLoader</code> for details</p>
 <p>a subgraph with a maximum score, an object of class &quot;igraph&quot;. It has
 node attributes: significance, score, type. If permutation test is
 enabled, it also has a graph attribute (combinedP) and an edge
-attribute (edgeConfidence)
+attribute (edgeConfidence).
 </p>
 
 

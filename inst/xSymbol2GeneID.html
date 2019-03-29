@@ -17,8 +17,8 @@ geneid.
 <h3>Usage</h3>
 
 <pre>
-xSymbol2GeneID(data, check.symbol.identity = F, details = F, verbose =
-T,
+xSymbol2GeneID(data, org = c("human", "mouse"),
+check.symbol.identity = F, details = F, verbose = T,
 RData.location = "http://galahad.well.ox.ac.uk/bigdata")
 </pre>
 
@@ -29,6 +29,11 @@ RData.location = "http://galahad.well.ox.ac.uk/bigdata")
 <tr valign="top"><td><code>data</code></td>
 <td>
 <p>an input vector containing gene symbols</p>
+</td></tr>
+<tr valign="top"><td><code>org</code></td>
+<td>
+<p>a character specifying an organism. Currently supported
+organisms are 'human' and 'mouse'. It can be an object 'EG'</p>
 </td></tr>
 <tr valign="top"><td><code>check.symbol.identity</code></td>
 <td>
@@ -92,6 +97,10 @@ GeneID &lt;- xSymbol2GeneID(Symbol)
 
 # c) convert into a data frame
 df &lt;- xSymbol2GeneID(Symbol, details=TRUE)
+
+
+# advanced use
+df &lt;- xSymbol2GeneID(Symbol, org=org.Hs.eg, details=TRUE)
 
 ## End(Not run)
 </pre>

@@ -88,7 +88,7 @@
 #' print(bp)
 #' }
 
-xEnricherYours <- function(data.file, annotation.file, background.file=NULL, size.range=c(10,2000), min.overlap=3, test=c("hypergeo","fisher","binomial"), background.annotatable.only=NULL, p.tail=c("one-tail","two-tails"), p.adjust.method=c("BH", "BY", "bonferroni", "holm", "hochberg", "hommel"), verbose=T, silent=FALSE)
+xEnricherYours <- function(data.file, annotation.file, background.file=NULL, size.range=c(10,2000), min.overlap=5, test=c("fisher","hypergeo","binomial"), background.annotatable.only=NULL, p.tail=c("one-tail","two-tails"), p.adjust.method=c("BH", "BY", "bonferroni", "holm", "hochberg", "hommel"), verbose=T, silent=FALSE)
 {
     startT <- Sys.time()
     if(!silent){
@@ -207,7 +207,7 @@ xEnricherYours <- function(data.file, annotation.file, background.file=NULL, siz
     
     if(!silent){
     	message(paste(c("\nEnd at ",as.character(endT)), collapse=""), appendLF=TRUE)
-    	message(paste(c("Runtime in total is: ",runTime," secs\n"), collapse=""), appendLF=TRUE)
+    	message(paste(c("Runtime in total (xEnricherYours): ",runTime," secs\n"), collapse=""), appendLF=TRUE)
     }
     
     invisible(eTerm)

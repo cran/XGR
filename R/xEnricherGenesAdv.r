@@ -61,7 +61,7 @@
 #' gp <- xEnrichHeatmap(ls_eTerm, fdr.cutoff=0.1, displayBy="or")
 #' }
 
-xEnricherGenesAdv <- function(list_vec, background=NULL, check.symbol.identity=F, ontologies=NA, size.range=c(10,2000), min.overlap=3, which.distance=NULL, test=c("hypergeo","fisher","binomial"), background.annotatable.only=NULL, p.tail=c("one-tail","two-tails"), p.adjust.method=c("BH", "BY", "bonferroni", "holm", "hochberg", "hommel"), ontology.algorithm=c("none","pc","elim","lea"), elim.pvalue=1e-2, lea.depth=2, path.mode=c("all_paths","shortest_paths","all_shortest_paths"), true.path.rule=F, verbose=T, silent=FALSE, plot=TRUE, fdr.cutoff=0.05, displayBy=c("zscore","fdr","pvalue","fc","or"), RData.location="http://galahad.well.ox.ac.uk/bigdata")
+xEnricherGenesAdv <- function(list_vec, background=NULL, check.symbol.identity=F, ontologies=NA, size.range=c(10,2000), min.overlap=5, which.distance=NULL, test=c("fisher","hypergeo","binomial"), background.annotatable.only=NULL, p.tail=c("one-tail","two-tails"), p.adjust.method=c("BH", "BY", "bonferroni", "holm", "hochberg", "hommel"), ontology.algorithm=c("none","pc","elim","lea"), elim.pvalue=1e-2, lea.depth=2, path.mode=c("all_paths","shortest_paths","all_shortest_paths"), true.path.rule=F, verbose=F, silent=FALSE, plot=TRUE, fdr.cutoff=0.05, displayBy=c("zscore","fdr","pvalue","fc","or"), RData.location="http://galahad.well.ox.ac.uk/bigdata")
 {
     startT <- Sys.time()
     if(!silent){
@@ -81,6 +81,13 @@ xEnricherGenesAdv <- function(list_vec, background=NULL, check.symbol.identity=F
     p.tail <- match.arg(p.tail)
     displayBy <- match.arg(displayBy)
     
+    ################################################
+    ## support enrichment analysis for modular genes from the cModule object
+    if(class(list_vec)=='cModule'){
+    	list_vec <- split(x=list_vec$mem$nodes, f=list_vec$mem$modules)
+    }
+    ################################################
+        
     ############
     if(length(list_vec)==0){
     	return(NULL)
@@ -93,7 +100,7 @@ xEnricherGenesAdv <- function(list_vec, background=NULL, check.symbol.identity=F
 		list_vec <- base::Filter(base::Negate(is.null), list_vec)
 		if(length(list_vec)==0){
 			return(NULL)
-		}	
+		}
     }else{
         stop("The input data must be a vector or a list of vectors.\n")
     }
@@ -117,7 +124,7 @@ xEnricherGenesAdv <- function(list_vec, background=NULL, check.symbol.identity=F
 			}
 			ontology <- ontologies[j]
 			
-    		eTerm <- xEnricherGenes(data=data, background=background, check.symbol.identity=check.symbol.identity, ontology=ontology, size.range=size.range, min.overlap=min.overlap, which.distance=which.distance, test=test, background.annotatable.only=background.annotatable.only, p.tail=p.tail, p.adjust.method=p.adjust.method, ontology.algorithm=ontology.algorithm, elim.pvalue=elim.pvalue, lea.depth=lea.depth, path.mode=path.mode, true.path.rule=true.path.rule, verbose=verbose, silent=TRUE, RData.location=RData.location)
+    		eTerm <- xEnricherGenes(data=data, background=background, check.symbol.identity=check.symbol.identity, ontology=ontology, size.range=size.range, min.overlap=min.overlap, which.distance=which.distance, test=test, background.annotatable.only=background.annotatable.only, p.tail=p.tail, p.adjust.method=p.adjust.method, ontology.algorithm=ontology.algorithm, elim.pvalue=elim.pvalue, lea.depth=lea.depth, path.mode=path.mode, true.path.rule=true.path.rule, verbose=verbose, silent=!verbose, RData.location=RData.location)
 			df <- xEnrichViewer(eTerm, top_num="all", sortBy="or", details=TRUE)
 			
 			if(is.null(df)){
@@ -129,6 +136,8 @@ xEnricherGenesAdv <- function(list_vec, background=NULL, check.symbol.identity=F
 		df <- do.call(rbind, ls_df)
 	})
     df_all <- do.call(rbind, ls_df)
+    ## group ordered by the input data
+    df_all$group <- factor(df_all$group, levels=names(list_vec))
     
     ## heatmap view
     if(plot & !is.null(df_all)){
@@ -154,7 +163,7 @@ xEnricherGenesAdv <- function(list_vec, background=NULL, check.symbol.identity=F
     
     if(!silent){
     	message(paste(c("\nEnd at ",as.character(endT)), collapse=""), appendLF=TRUE)
-    	message(paste(c("Runtime in total is: ",runTime," secs\n"), collapse=""), appendLF=TRUE)
+    	message(paste(c("Runtime in total (xEnricherGenesAdv): ",runTime," secs\n"), collapse=""), appendLF=TRUE)
     }
     
     invisible(ls_eTerm)

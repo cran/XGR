@@ -5,14 +5,14 @@
 \title{Function to generate a graphml file from a graph object of class "igraph"}
 \usage{
 xGraphML(g, node.label = NULL, label.wrap.width = NULL,
-node.label.size = 12, node.label.color = "#000000", node.tooltip =
-NULL,
-node.link = NULL, node.xcoord = "xcoord", node.ycoord = "ycoord",
-node.color.na = "#dddddd", node.color = NULL,
-colormap = "grey-orange-darkred", ncolors = 64, nlegend = 11,
-legend.label.size = 10, legend.interval = 0.05, zlim = NULL,
-node.size = 30, node.coord.scale = 300, edge.color = "#00000033",
-edge.width = 1, filename = "xGraphML")
+node.label.size = 12, node.label.color = "#000000",
+node.tooltip = NULL, node.link = NULL, node.xcoord = "xcoord",
+node.ycoord = "ycoord", node.color.na = "#dddddd",
+node.color = NULL, colormap = "grey-orange-darkred", ncolors = 64,
+nlegend = 11, legend.label.size = 10, legend.interval = 0.05,
+zlim = NULL, node.size = 30, node.coord.scale = 300,
+edge.color = "#00000033", edge.width = 1, filename = "xGraphML",
+verbose = T)
 }
 \arguments{
 \item{g}{an object of class "igraph"}
@@ -33,8 +33,8 @@ name}
 character specifying which node attribute used for the tooltips. If
 NULL (by default), node attribute 'name' will be used node lab}
 
-\item{node.link}{a string specifying hyperlink address. By default, it
-is NULL meaning no hyperlink}
+\item{node.link}{either a vector used for node link or a character
+specifying which node attribute used for the link}
 
 \item{node.xcoord}{a vector specifying x coordinates. If NULL, it will
 be created using igraph::layout_with_kk}
@@ -90,6 +90,9 @@ it is #00000033}
 
 \item{filename}{the without-extension part of the name of the output
 file. By default, it is 'xGraphML'}
+
+\item{verbose}{logical to indicate whether the messages will be
+displayed in the screen. By default, it sets to true for display}
 }
 \value{
 invisible (a string storing graphml-formatted content). If the filename
@@ -138,11 +141,13 @@ node.size=8, node.label.size=4)
 glayout <- igraph::layout_with_kk(ig)
 V(ig)$xcoord <- glayout[,1]
 V(ig)$ycoord <- glayout[,2]
+V(ig)$node.link <-
+paste0("http://www.genecards.org/cgi-bin/carddisp.pl?gene=",
+V(ig)$name)
 xGraphML(g=ig, node.label="name", node.tooltip="description",
 node.xcoord="xcoord", node.ycoord="ycoord", node.color="pattern",
-colormap="grey-orange-darkred",
-node.link="http://www.genecards.org/cgi-bin/carddisp.pl?gene=",
-nlegend=11, node.size=30, node.coord.scale=300)
+colormap="grey-orange-darkred", node.link="node.link", nlegend=11,
+node.size=30, node.coord.scale=300)
 }
 }
 \seealso{

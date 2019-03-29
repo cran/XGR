@@ -15,10 +15,11 @@ xSubneterGenes(data, network = c("STRING_highest", "STRING_high",
 "KEGG_disease", "REACTOME"), STRING.only = c(NA, "neighborhood_score",
 "fusion_score", "cooccurence_score", "coexpression_score",
 "experimental_score", "database_score", "textmining_score")[1],
-network.customised = NULL, seed.genes = T, subnet.significance = 0.01,
-subnet.size = NULL, test.permutation = F, num.permutation = 100,
-respect = c("none", "degree"), aggregateBy = c("Ztransform", "fishers",
-"logistic", "orderStatistic"), verbose = T,
+network.customised = NULL, seed.genes = T,
+subnet.significance = 0.01, subnet.size = NULL,
+test.permutation = F, num.permutation = 100, respect = c("none",
+"degree"), aggregateBy = c("Ztransform", "fishers", "logistic",
+"orderStatistic"), verbose = T, silent = F,
 RData.location = "http://galahad.well.ox.ac.uk/bigdata")
 }
 \arguments{
@@ -127,6 +128,10 @@ provides a compromise between these two. Notably, the aggregate methods
 \item{verbose}{logical to indicate whether the messages will be
 displayed in the screen. By default, it sets to true for display}
 
+\item{silent}{logical to indicate whether the messages will be silent
+completely. By default, it sets to false. If true, verbose will be
+forced to be false}
+
 \item{RData.location}{the characters to tell the location of built-in
 RData files. See \code{\link{xRDataLoader}} for details}
 }
@@ -134,7 +139,7 @@ RData files. See \code{\link{xRDataLoader}} for details}
 a subgraph with a maximum score, an object of class "igraph". It has
 node attributes: significance, score, type. If permutation test is
 enabled, it also has a graph attribute (combinedP) and an edge
-attribute (edgeConfidence)
+attribute (edgeConfidence).
 }
 \description{
 \code{xSubneterGenes} is supposed to identify maximum-scoring

@@ -10,19 +10,16 @@ xGR2xGeneAnnoAdv(list_vec, background = NULL, build.conversion = c(NA,
 crosslink.customised = NULL, crosslink.top = NULL,
 nearby.distance.max = 50000, nearby.decay.kernel = c("rapid", "slow",
 "linear", "constant"), nearby.decay.exponent = 2, ontologies = NA,
-size.range = c(10, 2000), min.overlap = 3, which.distance = NULL,
+size.range = c(10, 2000), min.overlap = 5, which.distance = NULL,
 test = c("hypergeo", "fisher", "binomial"),
 background.annotatable.only = NULL, p.tail = c("one-tail",
-"two-tails"),
-p.adjust.method = c("BH", "BY", "bonferroni", "holm", "hochberg",
-"hommel"),
-ontology.algorithm = c("none", "pc", "elim", "lea"), elim.pvalue =
-0.01,
-lea.depth = 2, path.mode = c("all_paths", "shortest_paths",
-"all_shortest_paths"), true.path.rule = F, verbose = T, silent = FALSE,
-plot = TRUE, fdr.cutoff = 0.05, displayBy = c("zscore", "fdr",
-"pvalue",
-"fc", "or"), RData.location = "http://galahad.well.ox.ac.uk/bigdata")
+"two-tails"), p.adjust.method = c("BH", "BY", "bonferroni", "holm",
+"hochberg", "hommel"), ontology.algorithm = c("none", "pc", "elim",
+"lea"), elim.pvalue = 0.01, lea.depth = 2,
+path.mode = c("all_paths", "shortest_paths", "all_shortest_paths"),
+true.path.rule = F, verbose = F, silent = F, plot = T,
+fdr.cutoff = 0.05, displayBy = c("zscore", "fdr", "pvalue", "fc",
+"or"), RData.location = "http://galahad.well.ox.ac.uk/bigdata")
 }
 \arguments{
 \item{list_vec}{an input vector containing genomic regions.
@@ -167,7 +164,7 @@ RData files. See \code{\link{xRDataLoader}} for details}
 \value{
 an object of class "ls_eTerm", a list with following components:
 \itemize{
-\item{\code{df}: a data frame of n x 12, where the 12 columns are
+\item{\code{df}: a data frame of n x 12, where the 17 columns are
 "group" (the input group names), "ontology" (input ontologies), "id"
 (term ID), "name" (term name), "nAnno" (number in members annotated by
 a term), "nOverlap" (number in overlaps), "fc" (enrichment fold
@@ -175,8 +172,9 @@ changes), "zscore" (enrichment z-score), "pvalue" (nominal p value),
 "adjp" (adjusted p value (FDR)), "or" (odds ratio), "CIl" (lower bound
 confidence interval for the odds ratio), "CIu" (upper bound confidence
 interval for the odds ratio), "distance" (term distance or other
-information), "members" (members (represented as Gene Symbols) in
-overlaps)}
+information), "namespace", "members_Overlap" (members (represented as
+Gene Symbols) in overlaps), "members_Anno" (members (represented as
+Gene Symbols) in annotations)}
 \item{\code{mat}: NULL if the plot is not drawn; otherwise, a matrix of
 term names X groups with numeric values for the signficant enrichment,
 NA for the insignificant ones}
@@ -195,8 +193,6 @@ none
 }
 \examples{
 \dontrun{
-# Load the library
-library(XGR)
 RData.location <- "http://galahad.well.ox.ac.uk/bigdata/"
 
 # Enrichment analysis for GWAS SNPs from ImmunoBase

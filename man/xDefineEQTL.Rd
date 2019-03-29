@@ -11,18 +11,17 @@ xDefineEQTL(data = NULL, include.eQTL = c(NA, "JKscience_CD14",
 "JKscience_TS2B_LPS2", "JKscience_TS2B_LPS24", "JKscience_TS2B_IFN",
 "JKscience_TS3A", "JKng_bcell", "JKng_bcell_cis", "JKng_bcell_trans",
 "JKng_mono", "JKng_mono_cis", "JKng_mono_trans", "JKpg_CD4",
-"JKpg_CD4_cis",
-"JKpg_CD4_trans", "JKpg_CD8", "JKpg_CD8_cis", "JKpg_CD8_trans",
-"JKnc_neutro", "JKnc_neutro_cis", "JKnc_neutro_trans",
-"WESTRAng_blood",
-"WESTRAng_blood_cis", "WESTRAng_blood_trans", "JK_nk", "JK_nk_cis",
-"JK_nk_trans", "GTEx_V4_Adipose_Subcutaneous", "GTEx_V4_Artery_Aorta",
+"JKpg_CD4_cis", "JKpg_CD4_trans", "JKpg_CD8", "JKpg_CD8_cis",
+"JKpg_CD8_trans", "JKnc_neutro", "JKnc_neutro_cis",
+"JKnc_neutro_trans", "WESTRAng_blood", "WESTRAng_blood_cis",
+"WESTRAng_blood_trans", "JK_nk", "JK_nk_cis", "JK_nk_trans",
+"GTEx_V4_Adipose_Subcutaneous", "GTEx_V4_Artery_Aorta",
 "GTEx_V4_Artery_Tibial", "GTEx_V4_Esophagus_Mucosa",
 "GTEx_V4_Esophagus_Muscularis", "GTEx_V4_Heart_Left_Ventricle",
 "GTEx_V4_Lung", "GTEx_V4_Muscle_Skeletal", "GTEx_V4_Nerve_Tibial",
 "GTEx_V4_Skin_Sun_Exposed_Lower_leg", "GTEx_V4_Stomach",
-"GTEx_V4_Thyroid",
-"GTEx_V4_Whole_Blood", "GTEx_V6p_Adipose_Subcutaneous",
+"GTEx_V4_Thyroid", "GTEx_V4_Whole_Blood",
+"GTEx_V6p_Adipose_Subcutaneous",
 "GTEx_V6p_Adipose_Visceral_Omentum", "GTEx_V6p_Adrenal_Gland",
 "GTEx_V6p_Artery_Aorta", "GTEx_V6p_Artery_Coronary",
 "GTEx_V6p_Artery_Tibial",
@@ -47,10 +46,20 @@ xDefineEQTL(data = NULL, include.eQTL = c(NA, "JKscience_CD14",
 "GTEx_V6p_Skin_Sun_Exposed_Lower_leg",
 "GTEx_V6p_Small_Intestine_Terminal_Ileum", "GTEx_V6p_Spleen",
 "GTEx_V6p_Stomach", "GTEx_V6p_Testis", "GTEx_V6p_Thyroid",
-"GTEx_V6p_Uterus",
-"GTEx_V6p_Vagina", "GTEx_V6p_Whole_Blood"), eQTL.customised = NULL,
-verbose = TRUE, RData.location =
-"http://galahad.well.ox.ac.uk/bigdata")
+"GTEx_V6p_Uterus", "GTEx_V6p_Vagina", "GTEx_V6p_Whole_Blood",
+"eQTLGen",
+"eQTLGen_cis", "eQTLGen_trans", "scRNAseq_eQTL_Bcell",
+"scRNAseq_eQTL_CD4", "scRNAseq_eQTL_CD8", "scRNAseq_eQTL_cMono",
+"scRNAseq_eQTL_DC", "scRNAseq_eQTL_Mono", "scRNAseq_eQTL_ncMono",
+"scRNAseq_eQTL_NK", "scRNAseq_eQTL_PBMC", "jpRNAseq_eQTL_Bcell",
+"jpRNAseq_eQTL_CD4", "jpRNAseq_eQTL_CD8", "jpRNAseq_eQTL_Mono",
+"jpRNAseq_eQTL_NK", "jpRNAseq_eQTL_PBMC", "Pi_eQTL_Bcell",
+"Pi_eQTL_Blood", "Pi_eQTL_CD14", "Pi_eQTL_CD4", "Pi_eQTL_CD8",
+"Pi_eQTL_IFN", "Pi_eQTL_LPS2", "Pi_eQTL_LPS24", "Pi_eQTL_Monocyte",
+"Pi_eQTL_Neutrophil", "Pi_eQTL_NK", "Pi_eQTL_shared_CD14",
+"Pi_eQTL_shared_IFN", "Pi_eQTL_shared_LPS2", "Pi_eQTL_shared_LPS24"),
+eQTL.customised = NULL, verbose = TRUE,
+RData.location = "http://galahad.well.ox.ac.uk/bigdata")
 }
 \arguments{
 \item{data}{NULL or an input vector containing SNPs. If NULL, all SNPs
@@ -279,6 +288,63 @@ tissue "Small Intestine Terminal Ileum".}
 \item{\code{GTEx_V6p_Vagina}: cis-eQTLs in tissue "Vagina".}
 \item{\code{GTEx_V6p_Whole_Blood}: cis-eQTLs in tissue "Whole Blood".}
 }
+11. eQTLs in eQTLGen. Sourced from bioRxiv, 2018, doi:10.1101/447367
+\itemize{
+\item{\code{eQTLGen}: cis- and trans-eQTLs.}
+\item{\code{eQTLGen_cis}: cis-eQTLs only.}
+\item{\code{eQTLGen_trans}: trans-eQTLs only.}
+}
+12. Single-cell-RNA-identified celltype-specific cis-eQTLs (including 9
+cell types). Sourced from Nature Genetics 2018, 50(4):493-497
+\itemize{
+\item{\code{scRNAseq_eQTL_Bcell}: cis-eQTLs in B cells.}
+\item{\code{scRNAseq_eQTL_CD4}: cis-eQTLs in CD4+ T cells.}
+\item{\code{scRNAseq_eQTL_CD8}: cis-eQTLs in CD8+ T cells.}
+\item{\code{scRNAseq_eQTL_DC}: cis-eQTLs in dendritic cells.}
+\item{\code{scRNAseq_eQTL_cMono}: cis-eQTLs in classical monocytes.}
+\item{\code{scRNAseq_eQTL_ncMono}: cis-eQTLs in nonclassical
+monocytes.}
+\item{\code{scRNAseq_eQTL_Mono}: cis-eQTLs in monocytes.}
+\item{\code{scRNAseq_eQTL_NK}: cis-eQTLs in NK cells.}
+\item{\code{scRNAseq_eQTL_PBMC}: cis-eQTLs in PBMC.}
+}
+13. Japanese celltype-specific cis-eQTLs (including 6 cell types).
+Sourced from Nature Genetics 2017, 49(7):1120-1125
+\itemize{
+\item{\code{jpRNAseq_eQTL_Bcell}: cis-eQTLs in B cells.}
+\item{\code{jpRNAseq_eQTL_CD4}: cis-eQTLs in CD4+ T cells.}
+\item{\code{jpRNAseq_eQTL_CD8}: cis-eQTLs in CD8+ T cells.}
+\item{\code{jpRNAseq_eQTL_Mono}: cis-eQTLs in monocytes.}
+\item{\code{jpRNAseq_eQTL_NK}: cis-eQTLs in NK cells.}
+\item{\code{jpRNAseq_eQTL_PBMC}: cis-eQTLs in PBMC.}
+}
+14. Pi eQTL
+\itemize{
+\item{\code{Pi_eQTL_CD14}: cis and trans-eQTLs in the resting/CD14+
+state.}
+\item{\code{Pi_eQTL_LPS2}: cis and trans-eQTLs in the activating state
+induced by 2-hour LPS.}
+\item{\code{Pi_eQTL_LPS24}: cis and trans-eQTLs in the activating state
+induced by 24-hour LPS.}
+\item{\code{Pi_eQTL_IFN}: cis and trans-eQTLs in the activating state
+induced by 24-hour interferon-gamma.}
+\item{\code{Pi_eQTL_Bcell}: cis and trans-eQTLs in B cells.}
+\item{\code{Pi_eQTL_Blood}: cis and trans-eQTLs in the blood.}
+\item{\code{Pi_eQTL_CD4}: cis and trans-eQTLs in the CD4 cells.}
+\item{\code{Pi_eQTL_CD8}: cis and trans-eQTLs in the CD8 cells.}
+\item{\code{Pi_eQTL_Monocyte}: cis and trans-eQTLs in the monocytes.}
+\item{\code{Pi_eQTL_Neutrophil}: cis and trans-eQTLs in the
+neutrophils.}
+\item{\code{Pi_eQTL_NK}: cis and trans-eQTLs in the NK cells.}
+\item{\code{Pi_eQTL_shared_CD14}: cis and trans-eQTLs in the
+resting/CD14+ state (based on 228 individuals).}
+\item{\code{Pi_eQTL_shared_LPS2}: cis and trans-eQTLs in the activating
+state induced by 2-hour LPS (based on 228 individuals).}
+\item{\code{Pi_eQTL_shared_LPS24}: cis and trans-eQTLs in the
+activating state induced by 24-hour LPS (based on 228 individuals).}
+\item{\code{Pi_eQTL_shared_IFN}: cis and trans-eQTLs in the activating
+state induced by 24-hour interferon-gamma (based on 228 individuals).}
+}
 }
 \examples{
 \dontrun{
@@ -291,10 +357,10 @@ RData.location <- "http://galahad.well.ox.ac.uk/bigdata"
 # a) provide the SNPs with the significance info
 data(ImmunoBase)
 gr <- ImmunoBase$AS$variants
-AS <- as.data.frame(GenomicRanges::mcols(gr)[, c('Variant','Pvalue')])
+data <- gr$Variant
 
 # b) define eQTL genes
-df_SGS <- xDefineEQTL(data=AS[,1], include.eQTL="JKscience_TS2A",
+df_SGS <- xDefineEQTL(data, include.eQTL="JKscience_TS2A",
 RData.location=RData.location)
 }
 }

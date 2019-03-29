@@ -113,8 +113,6 @@ to define and score seed genes from input genomic regions.
 }
 \examples{
 \dontrun{
-# Load the XGR package and specify the location of built-in data
-library(XGR)
 RData.location <- "http://galahad.well.ox.ac.uk/bigdata"
 
 # a) provide the seed SNPs with the significance info

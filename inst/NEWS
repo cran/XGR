@@ -1,3 +1,35 @@
+CHANGES IN VERSION 1.1.5
+-----------------------
+
+NEW FEATURES
+
+    o Populate annotations
+    
+    o Add functions ('xEnrichRadial', 'xEnrichDotplot', 'xEnrichChord', 'xEnrichD3', 'xEnrichCtree', 'xCtree', 'xEnrichGGraph', 'xGGraph') for radial-, dot-, chord-, D3 and tree-style plot of enrichment results
+
+    o Add functions ('xWCN' and 'xWCNheatmap') for weighted correlation network analysis
+    
+    o Add a new function 'xLayout' for adding graph node coordinates into a graph
+
+    o Add a new function 'xObjSize' for estimating the memory allocation
+
+    o Modify functions ('xSymbol2GeneID', 'xGeneID2Symbol', 'xDefineOntology', 'xEnricherGenes') enabling organism-specific customised analysis
+    
+    o Add functions ('xGraphRWR', 'xGraphSim', 'xGraphPerf') for analysing graph node similarity
+    
+    o Add functions ('xGraphML2AA') for pathway analysis
+
+    o Add functions ('xPieplot') for pie plot
+    
+    o Add functions ('xAge') for Phylostratigraphy analysis
+
+    o Unify auxiliary functions ('xAuxFunArgs', 'xAuxRd2HTML', 'xAuxRdWrap' and 'xAuxEmbed')
+
+    o Add a new function 'xReport' enabling dynamic reports
+    
+    o Add new functions ('xME', 'xMEplot', 'xMEbesd', 'xMEsmr', and 'xMEabf') enabling eQTL and its downstream analysis
+    
+
 CHANGES IN VERSION 1.1.4
 -----------------------
 

@@ -4,7 +4,7 @@
 #'
 #' @param g an object of class "igraph" (or "graphNEL") for a graph with such as a 'community' node attribute
 #' @param node.attr a charatter specifying a node attribute. If NULL or no match, it returns NULL
-#' @param glayout a graph layout function. This function can be one of "layout_nicely" (previously "layout.auto"), "layout_randomly" (previously "layout.random"), "layout_in_circle" (previously "layout.circle"), "layout_on_sphere" (previously "layout.sphere"), "layout_with_fr" (previously "layout.fruchterman.reingold"), "layout_with_kk" (previously "layout.kamada.kawai"), "layout_as_tree" (previously "layout.reingold.tilford"), "layout_with_lgl" (previously "layout.lgl"), "layout_with_graphopt" (previously "layout.graphopt"), "layout_with_sugiyama" (previously "layout.kamada.kawai"), "layout_with_dh" (previously "layout.davidson.harel"), "layout_with_drl" (previously "layout.drl"), "layout_with_gem" (previously "layout.gem"), "layout_with_mds", and "layout_as_bipartite". A full explanation of these layouts can be found in \url{http://igraph.org/r/doc/layout_nicely.html}
+#' @param glayout a graph layout function. This function can be one of "layout_nicely" (previously "layout.auto"), "layout_randomly" (previously "layout.random"), "layout_in_circle" (previously "layout.circle"), "layout_on_sphere" (previously "layout.sphere"), "layout_with_fr" (previously "layout.fruchterman.reingold"), "layout_with_kk" (previously "layout.kamada.kawai"), "layout_as_tree" (previously "layout.reingold.tilford"), "layout_with_lgl" (previously "layout.lgl"), "layout_with_graphopt" (previously "layout.graphopt"), "layout_with_sugiyama" (previously "layout.sugiyama"), "layout_with_dh" (previously "layout.davidson.harel"), "layout_with_drl" (previously "layout.drl"), "layout_with_gem" (previously "layout.gem"), "layout_with_mds", and "layout_as_bipartite". A full explanation of these layouts can be found in \url{http://igraph.org/r/doc/layout_nicely.html}
 #' @param edge.color.alternative two alternative colors for edges within the community (grey70 by default) and edges between communities (grey95 by default)
 #' @param seed an integer specifying the seed
 #' @param verbose logical to indicate whether the messages will be displayed in the screen. By default, it sets to true for display
@@ -14,19 +14,28 @@
 #' @include xAddCoords.r
 #' @examples
 #' # 1) generate a random bipartite graph
-#' set.seed(123)
+#' set.seed(825)
 #' g <- sample_bipartite(100, 50, p=0.1)
 #' V(g)$name <- V(g)
 #' 
 #' \dontrun{
 #' # 2) obtain and append the community
 #' cs <- igraph::cluster_louvain(g)
+#' set.seed(825); cs <- igraph::cluster_spinglass(g)
 #' V(g)$community <- cs$membership
 #' ig <- xAddCoords(g, node.attr="community", edge.color.alternative=c("grey50","grey95"))
+#' if(class(V(ig)$community)=='character') V(ig)$community <- as.factor(V(ig)$community)
 #' gp <- xGGnetwork(ig, node.label='name', node.label.size=2, node.label.color='black', node.label.alpha=0.8, node.label.padding=0, node.label.arrow=0, node.label.force=0.002, node.xcoord='xcoord', node.ycoord='ycoord', node.color='community', node.color.title='Community', colormap='jet.both', ncolors=64, zlim=NULL, edge.color="color",edge.color.alpha=0.5,edge.curve=0,edge.arrow.gap=0)
 #' 
 #' ## make it discrete for the colorbar
-#' gp + scale_colour_gradientn(colors=xColormap('jet')(64),breaks=seq(1,8)) + guides(color=guide_legend(title="Community"))
+#' gp + scale_colour_gradientn(colors=xColormap('jet')(64),breaks=seq(1,9)) + guides(color=guide_legend(title="Community"))
+#' 
+#' ## add vertex hull for each community
+#' df <- gp$data_nodes
+#' ls_res <- lapply(split(x=df,f=df$community), function(z) z[chull(z$x,z$y),])
+#' data <- do.call(rbind, ls_res)
+#' gp + geom_polygon(data=data, aes(x=x,y=y,group=community), alpha=0.1)
+#' gp + geom_polygon(data=data, aes(x=x,y=y,group=community,fill=community), alpha=0.1) + scale_fill_gradientn(colors=xColormap('jet.both')(64)) + guides(fill="none")
 #' }
 
 xAddCoords <- function(g, node.attr=NULL, glayout=layout_with_kk, edge.color.alternative=c("grey70","grey95"), seed=825, verbose=TRUE)
