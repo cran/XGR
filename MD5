@@ -1,4 +1,4 @@
-d02ab0ddd1df1a10ac427588df9f3961 *DESCRIPTION
+51d9afcf78026a1d2502898e5c687545 *DESCRIPTION
 66413ec929153e0f90aa2b573a62667d *NAMESPACE
 e706428f1efccf433502c529f856172f *R/ClassMethod-XGR.r
 6b45307677045f22003815bfb393249d *R/xAddCoords.r
@@ -16,7 +16,7 @@ a0f5421846d8b564ecf54106c9e89d9b *R/xCtree.r
 86f1bc9ba9549335557b9db78d66c6ea *R/xDAGanno.r
 4c97c2d355b43bb44ddce178f923357f *R/xDAGpropagate.r
 fcf731f3bdd37d41b3ed11eb92640240 *R/xDAGsim.r
-c3e63e3e89a59f4317e0dd552ac06007 *R/xDefineEQTL.r
+dfb5b5a07d355e1422e85a36829bcfde *R/xDefineEQTL.r
 73d398aa4001ccf4a25a2de838acdf4e *R/xDefineGenomicAnno.r
 ec4c65e3edbdf67846190b27034648d8 *R/xDefineHIC.r
 cac1df0ca8fd454324d5b5d1208c5f7d *R/xDefineNet.r
@@ -30,7 +30,7 @@ e2a71013d5504da320e9828b3c4c024b *R/xEnrichD3.r
 0342139b883aecbe354417b667570859 *R/xEnrichDAGplot.r
 1ebb8f2ef06fc4af2fcbdd69ce4b7553 *R/xEnrichDAGplotAdv.r
 c390d2fa303f99b40819d7f50bbf183f *R/xEnrichDotplot.r
-2564be916d2ad7a1fc67bb38f4a779ff *R/xEnrichForest.r
+853a87048d8cd8414d8fa78102dbf23a *R/xEnrichForest.r
 493668863b9c3ac05fe40013b7106ad0 *R/xEnrichGGraph.r
 26bd17a9b9aaf082d122b9301e89324f *R/xEnrichHeatmap.r
 5658a2e0bb93369c53bb00211c5c35f3 *R/xEnrichLadder.r
@@ -81,7 +81,7 @@ bb226f0b913539a2509a86d590e5c416 *R/xSNP2cGenes.r
 8843080aa4ada07dd8d73b2cc3bb53af *R/xSNP2eGenes.r
 beef0946d556192f23c7291795d67f45 *R/xSNP2nGenes.r
 cdfeb5c8ee3c790fad0ba5c02d3a9296 *R/xSNPlocations.r
-21c0eee9e8789dc60b100b02b0f57bf4 *R/xSNPscores.r
+5018062ed66bebe13b053e6d551de056 *R/xSNPscores.r
 72c82b9cfce61ca7bfeef85c66da2fb9 *R/xSimplifyNet.r
 7a4cf795d1f91e375fe5bc4679346d0b *R/xSocialiser.r
 7b2cf2af495f6dc9e2fc409f1daf99d5 *R/xSocialiserDAGplot.r
@@ -96,9 +96,9 @@ a4d9a430594134f588c6f077cb5e358b *R/xSubneterGenes.r
 cad5b7c341870fc9a2b4ea969fcec85a *R/xSymbol2GeneID.r
 dbea5f406d501a4e23b89a44e23cc6d0 *R/xVisKernels.r
 fa7a49f093a8d830c47babe67c9b2d41 *R/xVisNet.r
-43504dc00536901ba7dd3308a92d31e1 *data/Haploid_regulators.RData
-0a378822d24e29b9250aa2ee4f3d471f *data/ImmunoBase.RData
-7b857204ed912abee779066f9b29c9ed *data/JKscience_TS2A.RData
+9e060d06e86f1b43cd24bb4ec3897af8 *data/Haploid_regulators.RData
+7d2708812321209313acc1df6dfd59ce *data/ImmunoBase.RData
+fcf481ab9199fc46872426a71eea93a4 *data/JKscience_TS2A.RData
 262db4490a8060e948fb4a33fa098b48 *data/datalist
 2af21f3f98a48b35d26c00d3891e3b24 *inst/CITATION
 9de07b9737ba1455d3a61ba22e0192c9 *inst/DynamicReport/eTerm.Rmd
@@ -140,7 +140,7 @@ c5dd0415979e55512a04f5f8297654b0 *inst/xEnrichCtree.html
 68a582a4315a69e278ff64ed908cc80a *inst/xEnrichDAGplot.html
 bef5e628f003d7372a048ca98b79d9ab *inst/xEnrichDAGplotAdv.html
 5e2a58de4d623ea77513d7512a982d56 *inst/xEnrichDotplot.html
-915090e3a27e8399a14e48045348f7a2 *inst/xEnrichForest.html
+26922a24c5cc14763e159817ee06592f *inst/xEnrichForest.html
 fd8a7db8ce4d56fe88cd3e33682ea283 *inst/xEnrichGGraph.html
 80bee478f1a086afa45d20e335bf42f9 *inst/xEnrichHeatmap.html
 ea952eca08c623505c9b00e84973f8a0 *inst/xEnrichLadder.html
@@ -241,7 +241,7 @@ fa0d869a28b5e103fe2706568161b85c *man/xEnrichCtree.Rd
 6f0b1173686b7c7b42aca6cf9488fc7b *man/xEnrichDAGplot.Rd
 e4af720276d21002fe5ba8e53db9a85e *man/xEnrichDAGplotAdv.Rd
 fa8ea66d4a512da54328c0bf94a34998 *man/xEnrichDotplot.Rd
-98a47a8fcabe90b30af1fb86dd85c306 *man/xEnrichForest.Rd
+3b2f5af90f20874dea8517afca28d778 *man/xEnrichForest.Rd
 471d7b51d05cb710237d859475eb6700 *man/xEnrichGGraph.Rd
 5dd9c33a036aa52f40df0dd856571024 *man/xEnrichHeatmap.Rd
 5b165f1385bc57a1f2d7fed3828af7bd *man/xEnrichLadder.Rd
