@@ -17,31 +17,42 @@ annotations. It returns an object of class &quot;aOnto&quot;.
 <h3>Usage</h3>
 
 <pre>
-xDefineOntology(ontology = c(NA, "GOBP", "GOMF", "GOCC", "PSG", "PS",
-"PS2", "SF", "Pfam", "DO", "HPPA", "HPMI", "HPCM", "HPMA", "MP", "EF",
-"MsigdbH", "MsigdbC1", "MsigdbC2CGP", "MsigdbC2CPall", "MsigdbC2CP",
-"MsigdbC2KEGG", "MsigdbC2REACTOME", "MsigdbC2BIOCARTA", "MsigdbC3TFT",
-"MsigdbC3MIR", "MsigdbC4CGN", "MsigdbC4CM", "MsigdbC5BP", "MsigdbC5MF",
+xDefineOntology(
+ontology = c(NA, "GOBP", "GOMF", "GOCC", "PSG", "PS", "PS2", "SF",
+"Pfam", "DO",
+"HPPA", "HPMI", "HPCM", "HPMA", "MP", "EF", "MsigdbH", "MsigdbC1",
+"MsigdbC2CGP",
+"MsigdbC2CPall", "MsigdbC2CP", "MsigdbC2KEGG", "MsigdbC2REACTOME",
+"MsigdbC2BIOCARTA",
+"MsigdbC3TFT", "MsigdbC3MIR", "MsigdbC4CGN", "MsigdbC4CM",
+"MsigdbC5BP", "MsigdbC5MF",
 "MsigdbC5CC", "MsigdbC6", "MsigdbC7", "DGIdb", "GTExV4", "GTExV6p",
-"GTExV7", "CreedsDisease", "CreedsDiseaseUP", "CreedsDiseaseDN",
-"CreedsDrug", "CreedsDrugUP", "CreedsDrugDN", "CreedsGene",
-"CreedsGeneUP", "CreedsGeneDN", "KEGG", "KEGGmetabolism",
-"KEGGgenetic",
-"KEGGenvironmental", "KEGGcellular", "KEGGorganismal", "KEGGdisease",
-"REACTOME", "REACTOME_ImmuneSystem", "REACTOME_SignalTransduction",
-"CGL", "SIFTS2GOBP", "SIFTS2GOMF", "SIFTS2GOCC", "EnrichrARCHS4Cells",
-"EnrichrARCHS4Tissues", "EnrichrHumanGeneAtlas",
+"GTExV7",
+"CreedsDisease", "CreedsDiseaseUP", "CreedsDiseaseDN", "CreedsDrug",
+"CreedsDrugUP",
+"CreedsDrugDN", "CreedsGene", "CreedsGeneUP", "CreedsGeneDN", "KEGG",
+"KEGGmetabolism", "KEGGgenetic", "KEGGenvironmental", "KEGGcellular",
+"KEGGorganismal", "KEGGdisease", "REACTOME", "REACTOME_ImmuneSystem",
+"REACTOME_SignalTransduction", "CGL", "SIFTS2GOBP", "SIFTS2GOMF",
+"SIFTS2GOCC",
+"EnrichrARCHS4Cells", "EnrichrARCHS4Tissues", "EnrichrHumanGeneAtlas",
 "EnrichrTissueHumanProteomeMap", "EnrichrTissueProteomicsDB",
 "EnrichrAchillesFitnessD", "EnrichrAchillesFitnessI", "EnrichrDSigDB",
-"EnrichrOMIM", "EnrichrOMIMexpanded", "EnrichrdbGaP",
-"EnrichrJensenDiseases", "EnrichrJensenTissues", "EnrichrBioCarta",
-"EnrichrKEGG", "EnrichrNCIpathway", "EnrichrPanther",
-"EnrichrReactome",
-"EnrichrWikiPathways", "EnrichrhuMAP", "EnrichrChEA",
-"EnrichrConsensusTFs", "EnrichrEncodeTF", "EnrichrTFlof",
-"EnrichrTFpert"), ontology.customised = NULL,
-anno.identity = c("GeneID", "Symbol"), verbose = T,
-RData.location = "http://galahad.well.ox.ac.uk/bigdata")
+"EnrichrOMIM",
+"EnrichrOMIMexpanded", "EnrichrdbGaP", "EnrichrJensenDiseases",
+"EnrichrJensenTissues", "EnrichrBioCarta", "EnrichrKEGG",
+"EnrichrNCIpathway",
+"EnrichrPanther", "EnrichrReactome", "EnrichrWikiPathways",
+"EnrichrhuMAP",
+"EnrichrChEA", "EnrichrConsensusTFs", "EnrichrEncodeTF",
+"EnrichrTFlof",
+"EnrichrTFpert"),
+ontology.customised = NULL,
+anno.identity = c("GeneID", "Symbol"),
+verbose = T,
+RData.location = "http://galahad.well.ox.ac.uk/bigdata",
+guid = NULL
+)
 </pre>
 
 
@@ -114,6 +125,11 @@ displayed in the screen. By default, it sets to false for no display</p>
 <td>
 <p>the characters to tell the location of built-in
 RData files. See <code>xRDataLoader</code> for details</p>
+</td></tr>
+<tr valign="top"><td><code>guid</code></td>
+<td>
+<p>a valid (5-character) Global Unique IDentifier for an OSF
+project. See <code>xRDataLoader</code> for details</p>
 </td></tr>
 </table>
 

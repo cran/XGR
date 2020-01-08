@@ -17,10 +17,17 @@ genomic regions.
 <h3>Usage</h3>
 
 <pre>
-xGR(data, format = c("chr:start-end", "data.frame", "bed", "GRanges"),
+xGR(
+data,
+format = c("chr:start-end", "data.frame", "bed", "GRanges"),
 build.conversion = c(NA, "hg38.to.hg19", "hg18.to.hg19"),
-add.name = T, remove.mcol = F, include.strand = F, verbose = T,
-RData.location = "http://galahad.well.ox.ac.uk/bigdata")
+add.name = T,
+remove.mcol = F,
+include.strand = F,
+verbose = T,
+RData.location = "http://galahad.well.ox.ac.uk/bigdata",
+guid = NULL
+)
 </pre>
 
 
@@ -78,6 +85,11 @@ displayed in the screen. By default, it sets to true for display</p>
 <td>
 <p>the characters to tell the location of built-in
 RData files. See <code>xRDataLoader</code> for details</p>
+</td></tr>
+<tr valign="top"><td><code>guid</code></td>
+<td>
+<p>a valid (5-character) Global Unique IDentifier for an OSF
+project. See <code>xRDataLoader</code> for details</p>
 </td></tr>
 </table>
 

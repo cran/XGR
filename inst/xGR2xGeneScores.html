@@ -21,14 +21,23 @@ quantifying the link of a GR to a gene. It returns an object of class
 <h3>Usage</h3>
 
 <pre>
-xGR2xGeneScores(data, significance.threshold = NULL, score.cap = NULL,
+xGR2xGeneScores(
+data,
+significance.threshold = NULL,
+score.cap = NULL,
 build.conversion = c(NA, "hg38.to.hg19", "hg18.to.hg19"),
 crosslink = c("genehancer", "PCHiC_combined", "GTEx_V6p_combined",
-"nearby"), crosslink.customised = NULL, cdf.function = c("original",
-"empirical"), scoring.scheme = c("max", "sum", "sequential"),
-nearby.distance.max = 50000, nearby.decay.kernel = c("rapid", "slow",
-"linear", "constant"), nearby.decay.exponent = 2, verbose = T,
-RData.location = "http://galahad.well.ox.ac.uk/bigdata")
+"nearby"),
+crosslink.customised = NULL,
+cdf.function = c("original", "empirical"),
+scoring.scheme = c("max", "sum", "sequential"),
+nearby.distance.max = 50000,
+nearby.decay.kernel = c("rapid", "slow", "linear", "constant"),
+nearby.decay.exponent = 2,
+verbose = T,
+RData.location = "http://galahad.well.ox.ac.uk/bigdata",
+guid = NULL
+)
 </pre>
 
 
@@ -125,6 +134,11 @@ displayed in the screen. By default, it sets to true for display</p>
 <td>
 <p>the characters to tell the location of built-in
 RData files. See <code>xRDataLoader</code> for details</p>
+</td></tr>
+<tr valign="top"><td><code>guid</code></td>
+<td>
+<p>a valid (5-character) Global Unique IDentifier for an OSF
+project. See <code>xRDataLoader</code> for details</p>
 </td></tr>
 </table>
 

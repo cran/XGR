@@ -18,18 +18,35 @@ color-coded.
 <h3>Usage</h3>
 
 <pre>
-xGraphML2AA(data = NULL, org = c("human", "mouse"),
-query = "AA:hsa04672", curation = c("manual", "automatic", "any"),
-node.label = "label", node.color = "lfc",
-colormap = "deepskyblue-lightyellow-darkorange", ncolors = 64,
-nlegend = 9, zlim = NULL, legend.title = "",
-title.thispath = NULL, node.tooltip = "tooltip",
-node.highlight = "fdr", node.highlight.cutoff = 0.05,
-edge.color = "#00000033", edge.width = 1, color.gene = "#dddddd",
-color.thispath = "#dddddd", color.otherpath = "#eeeeee",
-size.gene = 10, size.gene.found = 11, size.gene.highlight = 12,
-filename = "xGraphML2AA", verbose = TRUE,
-RData.location = "http://galahad.well.ox.ac.uk/bigdata")
+xGraphML2AA(
+data = NULL,
+org = c("human", "mouse"),
+query = "AA:hsa04672",
+curation = c("manual", "automatic", "any"),
+node.label = "label",
+node.color = "lfc",
+colormap = "deepskyblue-lightyellow-darkorange",
+ncolors = 64,
+nlegend = 9,
+zlim = NULL,
+legend.title = "",
+title.thispath = NULL,
+node.tooltip = "tooltip",
+node.highlight = "fdr",
+node.highlight.cutoff = 0.05,
+edge.color = "#00000033",
+edge.width = 1,
+color.gene = "#dddddd",
+color.thispath = "#dddddd",
+color.otherpath = "#eeeeee",
+size.gene = 10,
+size.gene.found = 11,
+size.gene.highlight = 12,
+filename = "xGraphML2AA",
+verbose = TRUE,
+RData.location = "http://galahad.well.ox.ac.uk/bigdata",
+guid = NULL
+)
 </pre>
 
 
@@ -185,6 +202,11 @@ displayed in the screen. By default, it sets to true for display</p>
 <p>the characters to tell the location of built-in
 RData files. See <code>xRDataLoader</code> for details</p>
 </td></tr>
+<tr valign="top"><td><code>guid</code></td>
+<td>
+<p>a valid (5-character) Global Unique IDentifier for an OSF
+project. See <code>xRDataLoader</code> for details</p>
+</td></tr>
 </table>
 
 
@@ -214,7 +236,7 @@ is not NULL, a graphml-formatted file is also output.
 library(XGR)
 RData.location &lt;- "http://galahad.well.ox.ac.uk/bigdata/"
 
-
+## Not run: 
 data(Haploid_regulators)
 ## IRF1 regulators
 data &lt;- subset(Haploid_regulators, Phenotype=='IRF1')
@@ -225,11 +247,10 @@ color.gene='#dde8f1',size.gene=11)
 ## load GWAS genes
 GWAS_Gene &lt;- xRDataLoader(RData.customised='GWAS_Gene',
 RData.location=RData.location)
-data &lt;- GWAS_Gene %&gt;% dplyr::filter(Odds_Ratio!='NULL' &amp;
-Disease_ID=='RA') %&gt;% dplyr::transmute(label=Symbol,
-lfc=log2(as.numeric(Odds_Ratio)), fdr=Pvalue) %&gt;%
-dplyr::group_by(label) %&gt;% dplyr::summarise(lfc=max(lfc),
-fdr=min(fdr))
+data &lt;- GWAS_Gene %&gt;% filter(Odds_Ratio!='NULL',Disease_ID=='RA')
+%&gt;%
+transmute(label=Symbol,lfc=log2(as.numeric(Odds_Ratio)),fdr=Pvalue)
+%&gt;% group_by(label) %&gt;% summarise(lfc=max(lfc),fdr=min(fdr))
 
 ## manual one (the same as curation='any')
 xGraphML2AA(data, query="AA:hsa04630", curation='manual',
@@ -250,6 +271,7 @@ node.color="lfc", node.highlight='fdr', node.highlight.cutoff=5e-8,
 filename='xGraphML2AA', RData.location=RData.location,
 legend.title='log2(Odds ratio)', zlim=c(-1,1))
 
+## End(Not run)
 </pre>
 
 

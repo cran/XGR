@@ -4,12 +4,20 @@
 \alias{xGR2GeneScores}
 \title{Function to identify likely modulated seed genes given a list of genomic regions together with the significance level}
 \usage{
-xGR2GeneScores(data, significance.threshold = 5e-05, score.cap = 10,
+xGR2GeneScores(
+data,
+significance.threshold = 5e-05,
+score.cap = 10,
 build.conversion = c(NA, "hg38.to.hg19", "hg18.to.hg19"),
-distance.max = 50000, decay.kernel = c("slow", "linear", "rapid",
-"constant"), decay.exponent = 2, GR.Gene = c("UCSC_knownGene",
-"UCSC_knownCanonical"), scoring.scheme = c("max", "sum", "sequential"),
-verbose = T, RData.location = "http://galahad.well.ox.ac.uk/bigdata")
+distance.max = 50000,
+decay.kernel = c("slow", "linear", "rapid", "constant"),
+decay.exponent = 2,
+GR.Gene = c("UCSC_knownGene", "UCSC_knownCanonical"),
+scoring.scheme = c("max", "sum", "sequential"),
+verbose = T,
+RData.location = "http://galahad.well.ox.ac.uk/bigdata",
+guid = NULL
+)
 }
 \arguments{
 \item{data}{a named input vector containing the sinificance level for
@@ -71,6 +79,9 @@ displayed in the screen. By default, it sets to true for display}
 
 \item{RData.location}{the characters to tell the location of built-in
 RData files. See \code{\link{xRDataLoader}} for details}
+
+\item{guid}{a valid (5-character) Global Unique IDentifier for an OSF
+project. See \code{\link{xRDataLoader}} for details}
 }
 \value{
 an object of class "mSeed", a list with following components:

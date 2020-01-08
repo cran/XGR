@@ -4,14 +4,23 @@
 \alias{xGR2xGeneScores}
 \title{Function to identify likely modulated seed genes from an input list of genomic regions together with the significance level given the crosslink info}
 \usage{
-xGR2xGeneScores(data, significance.threshold = NULL, score.cap = NULL,
+xGR2xGeneScores(
+data,
+significance.threshold = NULL,
+score.cap = NULL,
 build.conversion = c(NA, "hg38.to.hg19", "hg18.to.hg19"),
 crosslink = c("genehancer", "PCHiC_combined", "GTEx_V6p_combined",
-"nearby"), crosslink.customised = NULL, cdf.function = c("original",
-"empirical"), scoring.scheme = c("max", "sum", "sequential"),
-nearby.distance.max = 50000, nearby.decay.kernel = c("rapid", "slow",
-"linear", "constant"), nearby.decay.exponent = 2, verbose = T,
-RData.location = "http://galahad.well.ox.ac.uk/bigdata")
+"nearby"),
+crosslink.customised = NULL,
+cdf.function = c("original", "empirical"),
+scoring.scheme = c("max", "sum", "sequential"),
+nearby.distance.max = 50000,
+nearby.decay.kernel = c("rapid", "slow", "linear", "constant"),
+nearby.decay.exponent = 2,
+verbose = T,
+RData.location = "http://galahad.well.ox.ac.uk/bigdata",
+guid = NULL
+)
 }
 \arguments{
 \item{data}{a named input vector containing the sinificance level for
@@ -78,6 +87,9 @@ displayed in the screen. By default, it sets to true for display}
 
 \item{RData.location}{the characters to tell the location of built-in
 RData files. See \code{\link{xRDataLoader}} for details}
+
+\item{guid}{a valid (5-character) Global Unique IDentifier for an OSF
+project. See \code{\link{xRDataLoader}} for details}
 }
 \value{
 an object of class "mSeed", a list with following components:

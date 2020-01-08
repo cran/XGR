@@ -18,13 +18,21 @@ weight is calcualted as a decaying function of the gene-to-GR distance.
 <h3>Usage</h3>
 
 <pre>
-xGR2nGenes(data, format = c("chr:start-end", "data.frame", "bed",
-"GRanges"), build.conversion = c(NA, "hg38.to.hg19", "hg18.to.hg19"),
-distance.max = 50000, decay.kernel = c("rapid", "slow", "linear",
-"constant"), decay.exponent = 2, GR.Gene = c("UCSC_knownGene",
-"UCSC_knownCanonical"), scoring = F, scoring.scheme = c("max", "sum",
-"sequential"), scoring.rescale = F, verbose = T,
-RData.location = "http://galahad.well.ox.ac.uk/bigdata")
+xGR2nGenes(
+data,
+format = c("chr:start-end", "data.frame", "bed", "GRanges"),
+build.conversion = c(NA, "hg38.to.hg19", "hg18.to.hg19"),
+distance.max = 50000,
+decay.kernel = c("rapid", "slow", "linear", "constant"),
+decay.exponent = 2,
+GR.Gene = c("UCSC_knownGene", "UCSC_knownCanonical"),
+scoring = F,
+scoring.scheme = c("max", "sum", "sequential"),
+scoring.rescale = F,
+verbose = T,
+RData.location = "http://galahad.well.ox.ac.uk/bigdata",
+guid = NULL
+)
 </pre>
 
 
@@ -119,6 +127,11 @@ displayed in the screen. By default, it sets to true for display</p>
 <td>
 <p>the characters to tell the location of built-in
 RData files. See <code>xRDataLoader</code> for details</p>
+</td></tr>
+<tr valign="top"><td><code>guid</code></td>
+<td>
+<p>a valid (5-character) Global Unique IDentifier for an OSF
+project. See <code>xRDataLoader</code> for details</p>
 </td></tr>
 </table>
 

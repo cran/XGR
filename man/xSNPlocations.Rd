@@ -4,9 +4,13 @@
 \alias{xSNPlocations}
 \title{Function to extract genomic locations given a list of SNPs}
 \usage{
-xSNPlocations(data, GR.SNP = c("dbSNP_GWAS", "dbSNP_Common",
-"dbSNP_Single"), verbose = T,
-RData.location = "http://galahad.well.ox.ac.uk/bigdata")
+xSNPlocations(
+data,
+GR.SNP = c("dbSNP_GWAS", "dbSNP_Common", "dbSNP_Single"),
+verbose = T,
+RData.location = "http://galahad.well.ox.ac.uk/bigdata",
+guid = NULL
+)
 }
 \arguments{
 \item{data}{a input vector containing SNPs. SNPs should be provided as
@@ -31,6 +35,9 @@ displayed in the screen. By default, it sets to true for display}
 
 \item{RData.location}{the characters to tell the location of built-in
 RData files. See \code{\link{xRDataLoader}} for details}
+
+\item{guid}{a valid (5-character) Global Unique IDentifier for an OSF
+project. See \code{\link{xRDataLoader}} for details}
 }
 \value{
 an GR oject, with an additional metadata column called 'variant_id'
@@ -52,7 +59,7 @@ library(XGR)
 RData.location <- "http://galahad.well.ox.ac.uk/bigdata"
 
 \dontrun{
-# a) provide the seed SNPs with the significance info
+# a) provide the SNPs
 ## load ImmunoBase
 ImmunoBase <- xRDataLoader(RData.customised='ImmunoBase',
 RData.location=RData.location)
@@ -60,7 +67,7 @@ RData.location=RData.location)
 gr <- ImmunoBase$AS$variant
 data <- names(gr)
 
-# b) define nearby genes
+# b) find the location
 snp_gr <- xSNPlocations(data=data, RData.location=RData.location)
 }
 }

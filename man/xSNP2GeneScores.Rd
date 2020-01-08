@@ -4,15 +4,25 @@
 \alias{xSNP2GeneScores}
 \title{Function to identify likely modulated seed genes given a list of SNPs together with the significance level (e.g. GWAS reported p-values)}
 \usage{
-xSNP2GeneScores(data, include.LD = NA, LD.customised = NULL,
-LD.r2 = 0.8, significance.threshold = 5e-05, score.cap = 10,
-distance.max = 50000, decay.kernel = c("slow", "linear", "rapid",
-"constant"), decay.exponent = 2, GR.SNP = c("dbSNP_GWAS",
-"dbSNP_Common", "dbSNP_Single"), GR.Gene = c("UCSC_knownGene",
-"UCSC_knownCanonical"), include.TAD = c("none", "GM12878", "IMR90",
-"MSC", "TRO", "H1", "MES", "NPC"), scoring.scheme = c("max", "sum",
-"sequential"), verbose = T,
-RData.location = "http://galahad.well.ox.ac.uk/bigdata")
+xSNP2GeneScores(
+data,
+include.LD = NA,
+LD.customised = NULL,
+LD.r2 = 0.8,
+significance.threshold = 5e-05,
+score.cap = 10,
+distance.max = 50000,
+decay.kernel = c("slow", "linear", "rapid", "constant"),
+decay.exponent = 2,
+GR.SNP = c("dbSNP_GWAS", "dbSNP_Common", "dbSNP_Single"),
+GR.Gene = c("UCSC_knownGene", "UCSC_knownCanonical"),
+include.TAD = c("none", "GM12878", "IMR90", "MSC", "TRO", "H1", "MES",
+"NPC"),
+scoring.scheme = c("max", "sum", "sequential"),
+verbose = T,
+RData.location = "http://galahad.well.ox.ac.uk/bigdata",
+guid = NULL
+)
 }
 \arguments{
 \item{data}{a named input vector containing the sinificance level for
@@ -111,6 +121,9 @@ displayed in the screen. By default, it sets to true for display}
 
 \item{RData.location}{the characters to tell the location of built-in
 RData files. See \code{\link{xRDataLoader}} for details}
+
+\item{guid}{a valid (5-character) Global Unique IDentifier for an OSF
+project. See \code{\link{xRDataLoader}} for details}
 }
 \value{
 an object of class "mSeed", a list with following components:

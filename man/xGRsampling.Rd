@@ -4,9 +4,14 @@
 \alias{xGRsampling}
 \title{Function to generate random samples for data genomic regions from background genomic regions}
 \usage{
-xGRsampling(GR.data, GR.background, num.samples = 100, gap.max = 50000,
-max.distance = NULL, verbose = T,
-RData.location = "http://galahad.well.ox.ac.uk/bigdata")
+xGRsampling(
+GR.data,
+GR.background,
+num.samples = 100,
+gap.max = 50000,
+max.distance = NULL,
+verbose = T
+)
 }
 \arguments{
 \item{GR.data}{an input data GR object, containing a set of genomic
@@ -30,9 +35,6 @@ no such restriction}
 
 \item{verbose}{logical to indicate whether the messages will be
 displayed in the screen. By default, it sets to false for no display}
-
-\item{RData.location}{the characters to tell the location of built-in
-RData files. See \code{\link{xRDataLoader}} for details}
 }
 \value{
 a list of GR ojects, each containing an GR oject storing a sample.
@@ -65,8 +67,7 @@ RData.location=RData.location)
 
 # c) generate random samples as a list of GR objects
 sGR_List <- xGRsampling(GR.data=dbSNP_GWAS,
-GR.background=FANTOM5_Enhancer_Cell, num.samples=1000,
-RData.location=RData.location)
+GR.background=FANTOM5_Enhancer_Cell, num.samples=1000)
 }
 }
 \seealso{

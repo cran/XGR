@@ -4,19 +4,42 @@
 \alias{xGGnetwork}
 \title{Function to visualise an igraph object using ggnetwork}
 \usage{
-xGGnetwork(g, node.label = NULL, label.wrap.width = NULL,
-label.wrap.lineheight = 0.8, node.label.size = NULL,
-node.label.fontface = "plain", node.label.color = "darkblue",
-node.label.alpha = 0.8, node.label.padding = 1,
-node.label.arrow = 0.01, node.label.force = 1, node.shape = 19,
-node.shape.title = NULL, node.xcoord = NULL, node.ycoord = NULL,
-node.color = NULL, node.color.title = NULL,
-colormap = "grey-orange-darkred", ncolors = 64, zlim = NULL,
-na.color = "grey80", node.color.alpha = 1, node.size = NULL,
-node.size.title = NULL, node.size.range = c(1, 4), slim = NULL,
-title = "", edge.size = 0.5, edge.color = "black",
-edge.color.alpha = 0.5, edge.curve = 0.1, edge.arrow = 2,
-edge.arrow.gap = 0.02, ncolumns = NULL)
+xGGnetwork(
+g,
+node.label = NULL,
+label.wrap.width = NULL,
+label.wrap.lineheight = 0.8,
+node.label.size = NULL,
+node.label.fontface = "plain",
+node.label.color = "darkblue",
+node.label.alpha = 0.8,
+node.label.padding = 1,
+node.label.arrow = 0.01,
+node.label.force = 1,
+node.shape = 19,
+node.shape.title = NULL,
+node.xcoord = NULL,
+node.ycoord = NULL,
+node.color = NULL,
+node.color.title = NULL,
+colormap = "grey-orange-darkred",
+ncolors = 64,
+zlim = NULL,
+na.color = "grey80",
+node.color.alpha = 1,
+node.size = NULL,
+node.size.title = NULL,
+node.size.range = c(1, 4),
+slim = NULL,
+title = "",
+edge.size = 0.5,
+edge.color = "black",
+edge.color.alpha = 0.5,
+edge.curve = 0.1,
+edge.arrow = 2,
+edge.arrow.gap = 0.02,
+ncolumns = NULL
+)
 }
 \arguments{
 \item{g}{an object of class "igraph". For an advanced use, it can be a
@@ -100,7 +123,8 @@ specifying which node attribute used for the node size}
 \item{node.size.title}{a character specifying the title for node
 sizing}
 
-\item{node.size.range}{the range of actual node size}
+\item{node.size.range}{the range of actual node size. Can be two values
+(range) or a value (fixed size)}
 
 \item{slim}{the minimum and maximum values for which sizes should be
 plotted}
@@ -109,13 +133,16 @@ plotted}
 
 \item{edge.size}{a numeric value specifying the edge size. By default,
 it is 0.5. It can be a character specifying which edge attribute
-defining the edge colors (though without the legend)}
+defining the edge size (though without the legend)}
 
-\item{edge.color}{a character specifying which edge attribute defining
-the the edge colors}
+\item{edge.color}{a character specifying the edge color. By default, it
+is "black". It can be a character specifying which edge attribute
+defining the edge color (though}
 
 \item{edge.color.alpha}{the 0-1 value specifying transparency of edge
-colors}
+color. By default, it is 0.5. It can be a character specifying which
+edge attribute defining the transparency of edge color (though without
+the legend)}
 
 \item{edge.curve}{a numeric value specifying the edge curve. 0 for the
 straight line}
@@ -212,7 +239,7 @@ gp <- xGGnetwork(g=dag_ig, node.label='term_name', label.wrap.width=30,
 node.label.size=2, node.label.color='black', node.label.alpha=0.9,
 node.label.padding=0, node.label.arrow=0, node.label.force=0.5,
 node.shape=19, node.xcoord='xcoord', node.ycoord='ycoord',
-node.color='node_color', node.color.title='Approved\\n(log2-scale)',
+node.color='node_color', node.color.title='Approved\n(log2-scale)',
 colormap='ggplot2.top', ncolors=64, node.size.range=3,
 edge.color="orange",edge.color.alpha=0.5,edge.curve=0.05,edge.arrow.gap=0.02,
 title='')
@@ -227,7 +254,7 @@ gp <- xGGnetwork(g=g, node.label='name', node.label.size=2,
 node.label.color='black', node.label.alpha=0.8, node.label.padding=0,
 node.label.arrow=0, node.label.force=0.01, node.shape=19,
 node.xcoord='xcoord', node.ycoord='ycoord', node.color='priority',
-node.color.title='5-star\\nrating', colormap='yellow-red', ncolors=64,
+node.color.title='5-star\nrating', colormap='yellow-red', ncolors=64,
 zlim=c(0,5), node.size='degree', node.size.title='Degree', slim=c(0,5),
 edge.color="orange",edge.color.alpha=0.5,edge.curve=0,edge.arrow.gap=0.025,
 title='')
@@ -235,7 +262,7 @@ gp_rating <- xGGnetwork(g=g, node.label='name', node.label.size=2,
 node.label.color='black', node.label.alpha=0.8, node.label.padding=0.1,
 node.label.arrow=0, node.label.force=0.01, node.shape=19,
 node.xcoord='xcoord', node.ycoord='ycoord', node.color='priority',
-node.color.title='5-star\\nrating', colormap='white-yellow-red',
+node.color.title='5-star\nrating', colormap='white-yellow-red',
 ncolors=64, zlim=c(0,5), node.size.range=5,
 edge.color="orange",edge.color.alpha=0.3,edge.curve=0,edge.arrow.gap=0.02,
 title='')

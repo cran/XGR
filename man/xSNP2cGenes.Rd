@@ -4,12 +4,17 @@
 \alias{xSNP2cGenes}
 \title{Function to define HiC genes given a list of SNPs}
 \usage{
-xSNP2cGenes(data, entity = c("SNP", "chr:start-end", "data.frame",
-"bed",
-"GRanges"), include.HiC = NA, GR.SNP = c("dbSNP_GWAS",
-"dbSNP_Common"), cdf.function = c("empirical", "exponential"),
-plot = FALSE, verbose = TRUE,
-RData.location = "http://galahad.well.ox.ac.uk/bigdata")
+xSNP2cGenes(
+data,
+entity = c("SNP", "chr:start-end", "data.frame", "bed", "GRanges"),
+include.HiC = NA,
+GR.SNP = c("dbSNP_GWAS", "dbSNP_Common"),
+cdf.function = c("empirical", "exponential"),
+plot = FALSE,
+verbose = TRUE,
+RData.location = "http://galahad.well.ox.ac.uk/bigdata",
+guid = NULL
+)
 }
 \arguments{
 \item{data}{an input vector containing SNPs. SNPs should be provided as
@@ -53,6 +58,9 @@ displayed in the screen. By default, it sets to true for display}
 
 \item{RData.location}{the characters to tell the location of built-in
 RData files. See \code{\link{xRDataLoader}} for details}
+
+\item{guid}{a valid (5-character) Global Unique IDentifier for an OSF
+project. See \code{\link{xRDataLoader}} for details}
 }
 \value{
 a data frame with following columns:

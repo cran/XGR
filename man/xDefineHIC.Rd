@@ -4,20 +4,26 @@
 \alias{xDefineHIC}
 \title{Function to extract promoter capture HiC-gene pairs given a list of SNPs}
 \usage{
-xDefineHIC(data = NULL, entity = c("SNP", "chr:start-end",
-"data.frame", "bed", "GRanges"), include.HiC = c(NA, "Monocytes",
-"Macrophages_M0", "Macrophages_M1", "Macrophages_M2", "Neutrophils",
-"Megakaryocytes", "Endothelial_precursors", "Erythroblasts",
+xDefineHIC(
+data = NULL,
+entity = c("SNP", "chr:start-end", "data.frame", "bed", "GRanges"),
+include.HiC = c(NA, "Monocytes", "Macrophages_M0", "Macrophages_M1",
+"Macrophages_M2",
+"Neutrophils", "Megakaryocytes", "Endothelial_precursors",
+"Erythroblasts",
 "Fetal_thymus", "Naive_CD4_T_cells", "Total_CD4_T_cells",
 "Activated_total_CD4_T_cells", "Nonactivated_total_CD4_T_cells",
-"Naive_CD8_T_cells", "Total_CD8_T_cells", "Naive_B_cells",
-"Total_B_cells", "PE.Monocytes", "PE.Macrophages_M0",
-"PE.Macrophages_M1", "PE.Macrophages_M2", "PE.Neutrophils",
+"Naive_CD8_T_cells",
+"Total_CD8_T_cells", "Naive_B_cells", "Total_B_cells", "PE.Monocytes",
+"PE.Macrophages_M0", "PE.Macrophages_M1", "PE.Macrophages_M2",
+"PE.Neutrophils",
 "PE.Megakaryocytes", "PE.Erythroblasts", "PE.Naive_CD4_T_cells",
 "PE.Naive_CD8_T_cells", "Combined", "Combined_PE"),
 GR.SNP = c("dbSNP_GWAS", "dbSNP_Common", "dbSNP_Single"),
 verbose = TRUE,
-RData.location = "http://galahad.well.ox.ac.uk/bigdata")
+RData.location = "http://galahad.well.ox.ac.uk/bigdata",
+guid = NULL
+)
 }
 \arguments{
 \item{data}{NULL or an input vector containing SNPs. If NULL, all SNPs
@@ -54,6 +60,9 @@ displayed in the screen. By default, it sets to true for display}
 
 \item{RData.location}{the characters to tell the location of built-in
 RData files. See \code{\link{xRDataLoader}} for details}
+
+\item{guid}{a valid (5-character) Global Unique IDentifier for an OSF
+project. See \code{\link{xRDataLoader}} for details}
 }
 \value{
 If input data is NULL, a data frame with following columns:

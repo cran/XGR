@@ -4,12 +4,20 @@
 \alias{xCtree}
 \title{Function to draw a tree-like circular plot}
 \usage{
-xCtree(ig, leave.label.orientation = c("outwards", "inwards"),
-leave.label.size = 2, leave.label.color = "steelblue",
-leave.label.alpha = 0.7, leave.label.wrap = NULL,
-leave.label.expansion = NULL, leave.size = 0,
-limit.expansion = 1.1, edge.color = "grey", edge.alpha = 0.5,
-edge.width = 0.5)
+xCtree(
+ig,
+leave.label.orientation = c("outwards", "inwards"),
+leave.label.size = 2,
+leave.label.color = "steelblue",
+leave.label.alpha = 0.7,
+leave.label.wrap = NULL,
+leave.label.expansion = NULL,
+leave.size = 0,
+limit.expansion = 1.1,
+edge.color = "grey",
+edge.alpha = 0.5,
+edge.width = 0.5
+)
 }
 \arguments{
 \item{ig}{an object of class "igraph" with node attribute 'name'. It

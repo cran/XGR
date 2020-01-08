@@ -4,14 +4,22 @@
 \alias{xGRviaGenomicAnno}
 \title{Function to conduct region-based enrichment analysis using genomic annotations via binomial test}
 \usage{
-xGRviaGenomicAnno(data.file, annotation.file = NULL,
-background.file = NULL, format.file = c("data.frame", "bed",
-"chr:start-end", "GRanges"), build.conversion = c(NA, "hg38.to.hg19",
-"hg18.to.hg19"), resolution = c("bases", "regions", "hybrid"),
-background.annotatable.only = T, p.tail = c("one-tail", "two-tails"),
+xGRviaGenomicAnno(
+data.file,
+annotation.file = NULL,
+background.file = NULL,
+format.file = c("data.frame", "bed", "chr:start-end", "GRanges"),
+build.conversion = c(NA, "hg38.to.hg19", "hg18.to.hg19"),
+resolution = c("bases", "regions", "hybrid"),
+background.annotatable.only = T,
+p.tail = c("one-tail", "two-tails"),
 p.adjust.method = c("BH", "BY", "bonferroni", "holm", "hochberg",
-"hommel"), GR.annotation = NA, verbose = T,
-RData.location = "http://galahad.well.ox.ac.uk/bigdata")
+"hommel"),
+GR.annotation = NA,
+verbose = T,
+RData.location = "http://galahad.well.ox.ac.uk/bigdata",
+guid = NULL
+)
 }
 \arguments{
 \item{data.file}{an input data file, containing a list of genomic
@@ -102,6 +110,9 @@ displayed in the screen. By default, it sets to false for no display}
 
 \item{RData.location}{the characters to tell the location of built-in
 RData files. See \code{\link{xRDataLoader}} for details}
+
+\item{guid}{a valid (5-character) Global Unique IDentifier for an OSF
+project. See \code{\link{xRDataLoader}} for details}
 }
 \value{
 a data frame with following columns (below explanations are based on
@@ -176,7 +187,7 @@ gp
 ## f) save enrichment results to the file called 'Regions_enrichments.txt'
 output <- xEnrichViewer(eTerm, top_num=length(eTerm$adjp),
 sortBy="adjp", details=TRUE)
-utils::write.table(output, file="Regions_enrichments.txt", sep="\\t",
+utils::write.table(output, file="Regions_enrichments.txt", sep="\t",
 row.names=FALSE)
 
 ##########################################

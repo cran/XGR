@@ -4,14 +4,26 @@
 \alias{xCircos}
 \title{Function to visualise a network as a circos plot}
 \usage{
-xCircos(g, entity = c("SNP", "Gene", "Both"), top_num = 50,
+xCircos(
+g,
+entity = c("SNP", "Gene", "Both"),
+top_num = 50,
 colormap = c("yr", "bwr", "jet", "gbr", "wyr", "br", "rainbow", "wb",
-"lightyellow-orange"), rescale = T, nodes.query = NULL,
-ideogram = T, chr.exclude = "auto", entity.label.cex = 0.7,
-entity.label.side = c("in", "out"), entity.label.track = 1,
-entity.label.query = NULL, GR.SNP = c("dbSNP_GWAS", "dbSNP_Common",
-"dbSNP_Single"), GR.Gene = c("UCSC_knownGene", "UCSC_knownCanonical"),
-verbose = T, RData.location = "http://galahad.well.ox.ac.uk/bigdata")
+"lightyellow-orange"),
+rescale = T,
+nodes.query = NULL,
+ideogram = T,
+chr.exclude = "auto",
+entity.label.cex = 0.7,
+entity.label.side = c("in", "out"),
+entity.label.track = 1,
+entity.label.query = NULL,
+GR.SNP = c("dbSNP_GWAS", "dbSNP_Common", "dbSNP_Single"),
+GR.Gene = c("UCSC_knownGene", "UCSC_knownCanonical"),
+verbose = T,
+RData.location = "http://galahad.well.ox.ac.uk/bigdata",
+guid = NULL
+)
 }
 \arguments{
 \item{g}{an object of class "igraph". For example, it stores semantic
@@ -91,6 +103,9 @@ displayed in the screen. By default, it sets to true for display}
 
 \item{RData.location}{the characters to tell the location of built-in
 RData files. See \code{\link{xRDataLoader}} for details}
+
+\item{guid}{a valid (5-character) Global Unique IDentifier for an OSF
+project. See \code{\link{xRDataLoader}} for details}
 }
 \value{
 a circos plot with edge weights between input snps/genes represented by

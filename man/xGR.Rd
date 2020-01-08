@@ -4,10 +4,17 @@
 \alias{xGR}
 \title{Function to create a GRanges object given a list of genomic regions}
 \usage{
-xGR(data, format = c("chr:start-end", "data.frame", "bed", "GRanges"),
+xGR(
+data,
+format = c("chr:start-end", "data.frame", "bed", "GRanges"),
 build.conversion = c(NA, "hg38.to.hg19", "hg18.to.hg19"),
-add.name = T, remove.mcol = F, include.strand = F, verbose = T,
-RData.location = "http://galahad.well.ox.ac.uk/bigdata")
+add.name = T,
+remove.mcol = F,
+include.strand = F,
+verbose = T,
+RData.location = "http://galahad.well.ox.ac.uk/bigdata",
+guid = NULL
+)
 }
 \arguments{
 \item{data}{input genomic regions (GR). If formatted as "chr:start-end"
@@ -45,6 +52,9 @@ displayed in the screen. By default, it sets to true for display}
 
 \item{RData.location}{the characters to tell the location of built-in
 RData files. See \code{\link{xRDataLoader}} for details}
+
+\item{guid}{a valid (5-character) Global Unique IDentifier for an OSF
+project. See \code{\link{xRDataLoader}} for details}
 }
 \value{
 a GenomicRanges object

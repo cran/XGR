@@ -4,27 +4,48 @@
 \alias{xSubneterSNPs}
 \title{Function to identify a gene network from an input network given a list of seed SNPs together with the significance level (e.g. GWAS reported p-values)}
 \usage{
-xSubneterSNPs(data, include.LD = NA, LD.customised = NULL,
-LD.r2 = 0.8, significance.threshold = 5e-05, score.cap = 10,
-distance.max = 2e+05, decay.kernel = c("slow", "linear", "rapid",
-"constant"), decay.exponent = 2, GR.SNP = c("dbSNP_GWAS",
-"dbSNP_Common", "dbSNP_Single"), GR.Gene = c("UCSC_knownGene",
-"UCSC_knownCanonical"), scoring.scheme = c("max", "sum", "sequential"),
+xSubneterSNPs(
+data,
+include.LD = NA,
+LD.customised = NULL,
+LD.r2 = 0.8,
+significance.threshold = 5e-05,
+score.cap = 10,
+distance.max = 2e+05,
+decay.kernel = c("slow", "linear", "rapid", "constant"),
+decay.exponent = 2,
+GR.SNP = c("dbSNP_GWAS", "dbSNP_Common", "dbSNP_Single"),
+GR.Gene = c("UCSC_knownGene", "UCSC_knownCanonical"),
+scoring.scheme = c("max", "sum", "sequential"),
 network = c("STRING_highest", "STRING_high", "STRING_medium",
-"STRING_low", "PCommonsUN_high", "PCommonsUN_medium",
-"PCommonsDN_high",
-"PCommonsDN_medium", "PCommonsDN_Reactome", "PCommonsDN_KEGG",
-"PCommonsDN_HumanCyc", "PCommonsDN_PID", "PCommonsDN_PANTHER",
-"PCommonsDN_ReconX", "PCommonsDN_TRANSFAC", "PCommonsDN_PhosphoSite",
-"PCommonsDN_CTD", "KEGG", "KEGG_metabolism", "KEGG_genetic",
+"STRING_low",
+"PCommonsUN_high", "PCommonsUN_medium", "PCommonsDN_high",
+"PCommonsDN_medium",
+"PCommonsDN_Reactome", "PCommonsDN_KEGG", "PCommonsDN_HumanCyc",
+"PCommonsDN_PID",
+"PCommonsDN_PANTHER", "PCommonsDN_ReconX", "PCommonsDN_TRANSFAC",
+"PCommonsDN_PhosphoSite", "PCommonsDN_CTD", "KEGG", "KEGG_metabolism",
+"KEGG_genetic",
 "KEGG_environmental", "KEGG_cellular", "KEGG_organismal",
-"KEGG_disease",
-"REACTOME"), network.customised = NULL, seed.genes = T,
-subnet.significance = 5e-05, subnet.size = NULL,
-test.permutation = F, num.permutation = 100, respect = c("none",
-"degree"), aggregateBy = c("Ztransform", "fishers", "logistic",
-"orderStatistic"), verbose = T, silent = F,
-RData.location = "http://galahad.well.ox.ac.uk/bigdata")
+"KEGG_disease", "REACTOME"),
+STRING.only = c(NA, "neighborhood_score", "fusion_score",
+"cooccurence_score",
+"coexpression_score", "experimental_score", "database_score",
+"textmining_score")[1],
+network.customised = NULL,
+seed.genes = T,
+subnet.significance = 5e-05,
+subnet.size = NULL,
+test.permutation = F,
+num.permutation = 100,
+respect = c("none", "degree"),
+aggregateBy = c("Ztransform", "fishers", "logistic", "orderStatistic"),
+num.subnets = NA,
+verbose = T,
+silent = F,
+RData.location = "http://galahad.well.ox.ac.uk/bigdata",
+guid = NULL
+)
 }
 \arguments{
 \item{data}{a named input vector containing the sinificance level for
@@ -149,6 +170,14 @@ pathways, 'KEGG_cellular' for 'Cellular Processes' pathways,
 for 'Human Diseases' pathways. 'REACTOME' for protein-protein
 interactions derived from Reactome pathways}
 
+\item{STRING.only}{the further restriction of STRING by interaction
+type. If NA, no such restriction. Otherwide, it can be one or more of
+"neighborhood_score","fusion_score","cooccurence_score","coexpression_score","experimental_score","database_score","textmining_score".
+Useful options are c("experimental_score","database_score"): only
+experimental data (extracted from BIND, DIP, GRID, HPRD, IntAct, MINT,
+and PID) and curated data (extracted from Biocarta, BioCyc, GO, KEGG,
+and Reactome) are used}
+
 \item{network.customised}{an object of class "igraph". By default, it
 is NULL. It is designed to allow the user analysing their customised
 network data that are not listed in the above argument 'network'. This
@@ -197,6 +226,10 @@ when the evidence is at least moderately strong; the logistic method
 provides a compromise between these two. Notably, the aggregate methods
 'Ztransform' and 'logistic' are preferred here}
 
+\item{num.subnets}{the number of subnets to be iteratively identified.
+If NA, this functionality is disabled. If NULL, all subnets will be
+identified until subnet.significance is no less than 0.05}
+
 \item{verbose}{logical to indicate whether the messages will be
 displayed in the screen. By default, it sets to true for display}
 
@@ -206,6 +239,9 @@ forced to be false}
 
 \item{RData.location}{the characters to tell the location of built-in
 RData files. See \code{\link{xRDataLoader}} for details}
+
+\item{guid}{a valid (5-character) Global Unique IDentifier for an OSF
+project. See \code{\link{xRDataLoader}} for details}
 }
 \value{
 a subgraph with a maximum score, an object of class "igraph". It has
@@ -228,6 +264,8 @@ nearby genes that are located within distance window of input and/or LD
 SNPs. The second step is to use \code{\link{xSubneterGenes}} for
 identifying a maximum-scoring gene subnetwork that contains as many
 highly scored genes as possible but a few less scored genes as linkers.
+Also supported at the second step is to identify multiple subnetwoks
+using \code{\link{xSubneterGenesAdv}} when num.subnets is not NA.
 }
 \examples{
 \dontrun{
@@ -253,10 +291,10 @@ subnet.size=30, RData.location=RData.location)
 
 # c) save subnet results to the files called 'subnet_edges.txt' and 'subnet_nodes.txt'
 output <- igraph::get.data.frame(subnet, what="edges")
-utils::write.table(output, file="subnet_edges.txt", sep="\\t",
+utils::write.table(output, file="subnet_edges.txt", sep="\t",
 row.names=FALSE)
 output <- igraph::get.data.frame(subnet, what="vertices")
-utils::write.table(output, file="subnet_nodes.txt", sep="\\t",
+utils::write.table(output, file="subnet_nodes.txt", sep="\t",
 row.names=FALSE)
 
 # d) visualise the identified subnet
@@ -274,5 +312,6 @@ RData.location=RData.location)
 }
 }
 \seealso{
-\code{\link{xSNP2GeneScores}}, \code{\link{xSubneterGenes}}
+\code{\link{xSNP2GeneScores}}, \code{\link{xSubneterGenes}},
+\code{\link{xSubneterGenesAdv}}
 }

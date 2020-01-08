@@ -4,14 +4,24 @@
 \alias{xSocialiserSNPs}
 \title{Function to calculate pair-wise semantic similarity given a list of SNPs and the ontology in query}
 \usage{
-xSocialiserSNPs(data, ontology = c("EF", "EF_disease", "EF_phenotype",
-"EF_bp"), include.LD = NA, LD.r2 = 0.8, measure = c("BM.average",
-"BM.max", "BM.complete", "average", "max"), method.term = c("Resnik",
-"Lin", "Schlicker", "Jiang", "Pesquita"), rescale = TRUE,
-force = TRUE, fast = TRUE, parallel = TRUE, multicores = NULL,
+xSocialiserSNPs(
+data,
+ontology = c("EF", "EF_disease", "EF_phenotype", "EF_bp"),
+include.LD = NA,
+LD.r2 = 0.8,
+measure = c("BM.average", "BM.max", "BM.complete", "average", "max"),
+method.term = c("Resnik", "Lin", "Schlicker", "Jiang", "Pesquita"),
+rescale = TRUE,
+force = TRUE,
+fast = TRUE,
+parallel = TRUE,
+multicores = NULL,
 path.mode = c("all_paths", "shortest_paths", "all_shortest_paths"),
-true.path.rule = T, verbose = T,
-RData.location = "http://galahad.well.ox.ac.uk/bigdata")
+true.path.rule = T,
+verbose = T,
+RData.location = "http://galahad.well.ox.ac.uk/bigdata",
+guid = NULL
+)
 }
 \arguments{
 \item{data}{an input vector. It contains a list of SNPs of interest}
@@ -111,6 +121,9 @@ displayed in the screen. By default, it sets to false for no display}
 
 \item{RData.location}{the characters to tell the location of built-in
 RData files. See \code{\link{xRDataLoader}} for details}
+
+\item{guid}{a valid (5-character) Global Unique IDentifier for an OSF
+project. See \code{\link{xRDataLoader}} for details}
 }
 \value{
 It returns an object of class "igraph", with nodes for input SNPs and
@@ -157,7 +170,7 @@ sim <- xSocialiserSNPs(data=data, RData.location=RData.location)
 
 # c) save similarity results to the file called 'EF_similarity.txt'
 output <- igraph::get.data.frame(sim, what="edges")
-utils::write.table(output, file="EF_similarity.txt", sep="\\t",
+utils::write.table(output, file="EF_similarity.txt", sep="\t",
 row.names=FALSE)
 
 # d) visualise the SNP network

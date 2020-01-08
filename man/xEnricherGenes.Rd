@@ -4,17 +4,30 @@
 \alias{xEnricherGenes}
 \title{Function to conduct enrichment analysis given a list of genes and the ontology in query}
 \usage{
-xEnricherGenes(data, background = NULL, check.symbol.identity = F,
-ontology = NA, ontology.customised = NULL, size.range = c(10,
-2000), min.overlap = 5, which.distance = NULL, test = c("fisher",
-"hypergeo", "binomial"), background.annotatable.only = NULL,
-p.tail = c("one-tail", "two-tails"), p.adjust.method = c("BH", "BY",
-"bonferroni", "holm", "hochberg", "hommel"),
+xEnricherGenes(
+data,
+background = NULL,
+check.symbol.identity = F,
+ontology = NA,
+ontology.customised = NULL,
+size.range = c(10, 2000),
+min.overlap = 5,
+which.distance = NULL,
+test = c("fisher", "hypergeo", "binomial"),
+background.annotatable.only = NULL,
+p.tail = c("one-tail", "two-tails"),
+p.adjust.method = c("BH", "BY", "bonferroni", "holm", "hochberg",
+"hommel"),
 ontology.algorithm = c("none", "pc", "elim", "lea"),
-elim.pvalue = 0.01, lea.depth = 2, path.mode = c("all_paths",
-"shortest_paths", "all_shortest_paths"), true.path.rule = F,
-verbose = T, silent = F,
-RData.location = "http://galahad.well.ox.ac.uk/bigdata")
+elim.pvalue = 0.01,
+lea.depth = 2,
+path.mode = c("all_paths", "shortest_paths", "all_shortest_paths"),
+true.path.rule = F,
+verbose = T,
+silent = F,
+RData.location = "http://galahad.well.ox.ac.uk/bigdata",
+guid = NULL
+)
 }
 \arguments{
 \item{data}{an input vector containing gene symbols}
@@ -116,6 +129,9 @@ forced to be false}
 
 \item{RData.location}{the characters to tell the location of built-in
 RData files. See \code{\link{xRDataLoader}} for details}
+
+\item{guid}{a valid (5-character) Global Unique IDentifier for an OSF
+project. See \code{\link{xRDataLoader}} for details}
 }
 \value{
 an object of class "eTerm", a list with following components:
@@ -214,7 +230,7 @@ xEnrichViewer(eTerm)
 res <- xEnrichViewer(eTerm, top_num=length(eTerm$adjp), sortBy="adjp",
 details=TRUE)
 output <- data.frame(term=rownames(res), res)
-utils::write.table(output, file="REACTOME_enrichments.txt", sep="\\t",
+utils::write.table(output, file="REACTOME_enrichments.txt", sep="\t",
 row.names=FALSE)
 
 # e) barplot of significant enrichment results

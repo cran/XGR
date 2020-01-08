@@ -4,15 +4,26 @@
 \alias{xGR2xGenes}
 \title{Function to define genes from an input list of genomic regions given the crosslink info}
 \usage{
-xGR2xGenes(data, format = c("chr:start-end", "data.frame", "bed",
-"GRanges"), build.conversion = c(NA, "hg38.to.hg19", "hg18.to.hg19"),
-crosslink = c("genehancer", "PCHiC_combined", "GTEx_V6p_combined",
-"nearby"), crosslink.customised = NULL, cdf.function = c("original",
-"empirical"), scoring = F, scoring.scheme = c("max", "sum",
-"sequential"), scoring.rescale = F, nearby.distance.max = 50000,
+xGR2xGenes(
+data,
+format = c("chr:start-end", "data.frame", "bed", "GRanges"),
+build.conversion = c(NA, "hg38.to.hg19", "hg18.to.hg19"),
+crosslink = c("genehancer", "PCHiC_PMID27863249_combined",
+"GTEx_V6p_combined",
+"nearby"),
+crosslink.customised = NULL,
+cdf.function = c("original", "empirical"),
+scoring = F,
+scoring.scheme = c("max", "sum", "sequential"),
+scoring.rescale = F,
+nearby.distance.max = 50000,
 nearby.decay.kernel = c("rapid", "slow", "linear", "constant"),
-nearby.decay.exponent = 2, verbose = T, silent = F,
-RData.location = "http://galahad.well.ox.ac.uk/bigdata")
+nearby.decay.exponent = 2,
+verbose = T,
+silent = F,
+RData.location = "http://galahad.well.ox.ac.uk/bigdata",
+guid = NULL
+)
 }
 \arguments{
 \item{data}{input genomic regions (GR). If formatted as "chr:start-end"
@@ -41,12 +52,14 @@ the link of a GR to a gene. It can be one of 'genehancer' (enhancer
 genes; PMID:28605766), 'nearby' (nearby genes; if so, please also
 specify the relevant parameters 'nearby.distance.max',
 'nearby.decay.kernel' and 'nearby.decay.exponent' below),
-'PCHiC_combined' (conformation genes; PMID:27863249),
+'PCHiC_PMID27863249_combined' (conformation genes; PMID:27863249),
+'PCHiC_PMID31501517_combined' (conformation genes; PMID:31501517),
 'GTEx_V6p_combined' (eQTL genes; PMID:29022597),
 'eQTL_scRNAseq_combined' (eQTL genes; PMID:29610479),
 'eQTL_jpRNAseq_combined' (eQTL genes; PMID:28553958),
 'eQTL_ImmuneCells_combined' (eQTL genes;
-PMID:24604202,22446964,26151758,28248954,24013639)}
+PMID:24604202,22446964,26151758,28248954,24013639),
+'eQTL_DICE_combined' (eQTL genes; PMID:30449622)}
 
 \item{crosslink.customised}{the crosslink info with a score quantifying
 the link of a GR to a gene. A user-input matrix or data frame with 4
@@ -96,6 +109,9 @@ forced to be false}
 
 \item{RData.location}{the characters to tell the location of built-in
 RData files. See \code{\link{xRDataLoader}} for details}
+
+\item{guid}{a valid (5-character) Global Unique IDentifier for an OSF
+project. See \code{\link{xRDataLoader}} for details}
 }
 \value{
 If scoring sets to false, a data frame with following columns:

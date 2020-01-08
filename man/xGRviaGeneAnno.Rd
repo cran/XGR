@@ -4,19 +4,31 @@
 \alias{xGRviaGeneAnno}
 \title{Function to conduct region-based enrichment analysis using nearby gene annotations}
 \usage{
-xGRviaGeneAnno(data.file, background.file = NULL,
+xGRviaGeneAnno(
+data.file,
+background.file = NULL,
 format.file = c("data.frame", "bed", "chr:start-end", "GRanges"),
 build.conversion = c(NA, "hg38.to.hg19", "hg18.to.hg19"),
-gap.max = 0, GR.Gene = c("UCSC_knownGene", "UCSC_knownCanonical"),
-ontology = NA, size.range = c(10, 2000), min.overlap = 5,
-which.distance = NULL, test = c("fisher", "hypergeo", "binomial"),
-background.annotatable.only = NULL, p.tail = c("one-tail",
-"two-tails"), p.adjust.method = c("BH", "BY", "bonferroni", "holm",
-"hochberg", "hommel"), ontology.algorithm = c("none", "pc", "elim",
-"lea"), elim.pvalue = 0.01, lea.depth = 2,
+gap.max = 0,
+GR.Gene = c("UCSC_knownGene", "UCSC_knownCanonical"),
+ontology = NA,
+size.range = c(10, 2000),
+min.overlap = 5,
+which.distance = NULL,
+test = c("fisher", "hypergeo", "binomial"),
+background.annotatable.only = NULL,
+p.tail = c("one-tail", "two-tails"),
+p.adjust.method = c("BH", "BY", "bonferroni", "holm", "hochberg",
+"hommel"),
+ontology.algorithm = c("none", "pc", "elim", "lea"),
+elim.pvalue = 0.01,
+lea.depth = 2,
 path.mode = c("all_paths", "shortest_paths", "all_shortest_paths"),
-true.path.rule = F, verbose = T,
-RData.location = "http://galahad.well.ox.ac.uk/bigdata")
+true.path.rule = F,
+verbose = T,
+RData.location = "http://galahad.well.ox.ac.uk/bigdata",
+guid = NULL
+)
 }
 \arguments{
 \item{data.file}{an input data file, containing a list of genomic
@@ -147,6 +159,9 @@ displayed in the screen. By default, it sets to false for no display}
 
 \item{RData.location}{the characters to tell the location of built-in
 RData files. See \code{\link{xRDataLoader}} for details}
+
+\item{guid}{a valid (5-character) Global Unique IDentifier for an OSF
+project. See \code{\link{xRDataLoader}} for details}
 }
 \value{
 an object of class "eTerm", a list with following components:
@@ -239,7 +254,7 @@ xEnrichViewer(eTerm)
 output <- xEnrichViewer(eTerm, top_num=length(eTerm$adjp),
 sortBy="adjp", details=TRUE)
 utils::write.table(output, file="Regions2genes_enrichments.txt",
-sep="\\t", row.names=FALSE)
+sep="\t", row.names=FALSE)
 
 ## e) barplot of significant enrichment results
 bp <- xEnrichBarplot(eTerm, top_num=10, displayBy="fc")

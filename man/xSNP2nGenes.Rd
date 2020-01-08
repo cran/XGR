@@ -4,13 +4,19 @@
 \alias{xSNP2nGenes}
 \title{Function to define nearby genes given a list of SNPs}
 \usage{
-xSNP2nGenes(data, distance.max = 2e+05, decay.kernel = c("rapid",
-"slow", "linear", "constant"), decay.exponent = 2,
+xSNP2nGenes(
+data,
+distance.max = 2e+05,
+decay.kernel = c("rapid", "slow", "linear", "constant"),
+decay.exponent = 2,
 GR.SNP = c("dbSNP_GWAS", "dbSNP_Common", "dbSNP_Single"),
 GR.Gene = c("UCSC_knownGene", "UCSC_knownCanonical"),
 include.TAD = c("none", "GM12878", "IMR90", "MSC", "TRO", "H1", "MES",
-"NPC"), verbose = T,
-RData.location = "http://galahad.well.ox.ac.uk/bigdata")
+"NPC"),
+verbose = T,
+RData.location = "http://galahad.well.ox.ac.uk/bigdata",
+guid = NULL
+)
 }
 \arguments{
 \item{data}{an input vector containing SNPs. SNPs should be provided as
@@ -70,6 +76,9 @@ displayed in the screen. By default, it sets to true for display}
 
 \item{RData.location}{the characters to tell the location of built-in
 RData files. See \code{\link{xRDataLoader}} for details}
+
+\item{guid}{a valid (5-character) Global Unique IDentifier for an OSF
+project. See \code{\link{xRDataLoader}} for details}
 }
 \value{
 a data frame with following columns:

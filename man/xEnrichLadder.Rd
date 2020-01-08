@@ -4,12 +4,23 @@
 \alias{xEnrichLadder}
 \title{Function to visualise enrichment results using ladder-like plot}
 \usage{
-xEnrichLadder(eTerm, sortBy = c("fdr", "or", "adjp", "pvalue",
-"zscore",
-"fc", "nAnno", "nOverlap", "none"), top_num = 5, FDR.cutoff = 0.05,
-CI.one = T, colormap = "lightgrey-grey-black", x.rotate = 90,
-x.text.size = 6, y.text.size = 6, shape = 22, size = 2,
-label = c("concise", "full"), verbose = T, ...)
+xEnrichLadder(
+eTerm,
+sortBy = c("fdr", "or", "adjp", "pvalue", "zscore", "fc", "nAnno",
+"nOverlap", "none"),
+top_num = 5,
+FDR.cutoff = 0.05,
+CI.one = T,
+colormap = "lightgrey-grey-black",
+x.rotate = 90,
+x.text.size = 6,
+y.text.size = 6,
+shape = 22,
+size = 2,
+label = c("concise", "full"),
+verbose = T,
+...
+)
 }
 \arguments{
 \item{eTerm}{an object of class "eTerm"}

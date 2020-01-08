@@ -23,19 +23,31 @@ annotatable genes will be used.
 <h3>Usage</h3>
 
 <pre>
-xGRviaGeneAnno(data.file, background.file = NULL,
+xGRviaGeneAnno(
+data.file,
+background.file = NULL,
 format.file = c("data.frame", "bed", "chr:start-end", "GRanges"),
 build.conversion = c(NA, "hg38.to.hg19", "hg18.to.hg19"),
-gap.max = 0, GR.Gene = c("UCSC_knownGene", "UCSC_knownCanonical"),
-ontology = NA, size.range = c(10, 2000), min.overlap = 5,
-which.distance = NULL, test = c("fisher", "hypergeo", "binomial"),
-background.annotatable.only = NULL, p.tail = c("one-tail",
-"two-tails"), p.adjust.method = c("BH", "BY", "bonferroni", "holm",
-"hochberg", "hommel"), ontology.algorithm = c("none", "pc", "elim",
-"lea"), elim.pvalue = 0.01, lea.depth = 2,
+gap.max = 0,
+GR.Gene = c("UCSC_knownGene", "UCSC_knownCanonical"),
+ontology = NA,
+size.range = c(10, 2000),
+min.overlap = 5,
+which.distance = NULL,
+test = c("fisher", "hypergeo", "binomial"),
+background.annotatable.only = NULL,
+p.tail = c("one-tail", "two-tails"),
+p.adjust.method = c("BH", "BY", "bonferroni", "holm", "hochberg",
+"hommel"),
+ontology.algorithm = c("none", "pc", "elim", "lea"),
+elim.pvalue = 0.01,
+lea.depth = 2,
 path.mode = c("all_paths", "shortest_paths", "all_shortest_paths"),
-true.path.rule = F, verbose = T,
-RData.location = "http://galahad.well.ox.ac.uk/bigdata")
+true.path.rule = F,
+verbose = T,
+RData.location = "http://galahad.well.ox.ac.uk/bigdata",
+guid = NULL
+)
 </pre>
 
 
@@ -212,6 +224,11 @@ displayed in the screen. By default, it sets to false for no display</p>
 <td>
 <p>the characters to tell the location of built-in
 RData files. See <code>xRDataLoader</code> for details</p>
+</td></tr>
+<tr valign="top"><td><code>guid</code></td>
+<td>
+<p>a valid (5-character) Global Unique IDentifier for an OSF
+project. See <code>xRDataLoader</code> for details</p>
 </td></tr>
 </table>
 
